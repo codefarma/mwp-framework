@@ -4,7 +4,7 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package    Modern Wordpress Framework
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.0.0
  */
@@ -15,7 +15,7 @@ namespace Wordpress;
  * @Annotation 
  * @Target( { "PROPERTY", "METHOD" } )
  */
-class PostType extends \Modern\Wordpress\Annotation
+class PostType extends \MWP\Framework\Annotation
 {
     /**
      * @var string

@@ -1,9 +1,8 @@
 <?php
 /**
- * Plugin Name: Modern Framework for Wordpress
+ * Plugin Name: MWP Application Framework
  * Version: 1.4.0
- * Provides: lib-modern-framework
- * Description: Provides an object oriented utility framework for modern wordpress plugins.
+ * Description: Provides an object oriented utility framework for mwp application framework plugins.
  * Author: Kevin Carwile
  * Author URI: http://www.miller-media.com/
  * License: GPL2 or later
@@ -14,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Optional development config */
-if ( basename( __DIR__ ) == 'modern-framework' and file_exists( __DIR__ . '/dev_config.php' ) ) {
+if ( basename( __DIR__ ) == 'mwp-framework' and file_exists( __DIR__ . '/dev_config.php' ) ) {
 	include_once __DIR__ . '/dev_config.php'; 
 }
 
@@ -45,7 +44,7 @@ call_user_func( function() {
 	}
 	
 	/** 
-	 * When activating a new plugin, check if it has a bundled modern wordpress framework and attempt
+	 * When activating a new plugin, check if it has a bundled mwp application framework and attempt
 	 * to include it now because it might resolve as the most current version, and be needed for the plugin
 	 * to activate successfully.
 	 */
@@ -54,7 +53,7 @@ call_user_func( function() {
 	{
 		$activating_plugin = $_REQUEST['plugin'];
 		$activating_plugin_path = dirname( WP_PLUGIN_DIR . '/' . plugin_basename( trim( $activating_plugin ) ) );
-		if ( file_exists( $activating_plugin_path . '/framework/modern-framework.php' ) )
+		if ( file_exists( $activating_plugin_path . '/framework/mwp-framework.php' ) )
 		{
 			include_once $activating_plugin_path . '/framework/plugin.php';
 		}
@@ -72,8 +71,8 @@ call_user_func( function() {
 	add_action( 'plugins_loaded', function() use ( $plugin_meta, &$_mwp_version )
 	{
 		// Let's always skip including bundled frameworks if we are in development
-		$in_development = ( defined( 'MODERN_WORDPRESS_DEV' ) and \MODERN_WORDPRESS_DEV );
-		if ( $in_development and basename( __DIR__ ) != 'modern-framework' )
+		$in_development = ( defined( 'MWP_FRAMEWORK_DEBUG' ) and \MWP_FRAMEWORK_DEBUG );
+		if ( $in_development and basename( __DIR__ ) != 'mwp-framework' )
 		{
 			return;
 		}
@@ -89,7 +88,7 @@ call_user_func( function() {
 		}
 
 		/* Load Only Once, Ever */
-		if ( ! class_exists( 'ModernWordpressFramework' ) )
+		if ( ! class_exists( 'MWPFramework' ) )
 		{
 
 			/* Include packaged autoloader if present */
@@ -102,7 +101,7 @@ call_user_func( function() {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			
 			/* Optional development config */
-			if ( basename( __DIR__ ) == 'modern-framework' and file_exists( __DIR__ . '/dev_config.php' ) ) {
+			if ( basename( __DIR__ ) == 'mwp-framework' and file_exists( __DIR__ . '/dev_config.php' ) ) {
 				include_once __DIR__ . '/dev_config.php'; 
 			}
 			
@@ -122,31 +121,31 @@ call_user_func( function() {
 			$annotationRegistry::registerFile( __DIR__ . "/annotations/Stylesheet.php" );
 			$annotationRegistry::registerFile( __DIR__ . "/annotations/Script.php" );
 
-			class ModernWordpressFramework
+			class MWPFramework
 			{
 				public static function init()
 				{
 					/* FAAP: Framework As A Plugin :) */
-					$framework = \Modern\Wordpress\Framework::instance();		
+					$framework = \MWP\Framework\Framework::instance();		
 					$framework->setPath( rtrim( plugin_dir_path( __FILE__ ), '/' ) );
 					$framework->attach( $framework );
 					
 					if ( is_admin() ) {
-						$framework->attach( \Modern\Wordpress\Controller\Tasks::instance() );
+						$framework->attach( \MWP\Framework\Controller\Tasks::instance() );
 					}
 					
-					$ajaxHandlers = \Modern\Wordpress\AjaxHandlers::instance();
+					$ajaxHandlers = \MWP\Framework\AjaxHandlers::instance();
 					$framework->attach( $ajaxHandlers );
 
-					$settings = \Modern\Wordpress\Settings::instance();
+					$settings = \MWP\Framework\Settings::instance();
 					$framework->addSettings( $settings );
 					$framework->attach( $settings );
 					
-					do_action( 'modern_wordpress_init' );
+					do_action( 'mwp_framework_init' );
 				}		
 			}
 			
-			ModernWordpressFramework::init();
+			MWPFramework::init();
 		}
 	}, 0 );
 

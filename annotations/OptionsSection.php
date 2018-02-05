@@ -4,7 +4,7 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package    Modern Wordpress Framework
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.0.0
  */
@@ -15,7 +15,7 @@ namespace Wordpress\Options;
  * @Annotation 
  * @Target( "CLASS" )
  */
-class Section extends \Modern\Wordpress\Annotation
+class Section extends \MWP\Framework\Annotation
 {	
 	/**
 	 * @var string
@@ -39,7 +39,7 @@ class Section extends \Modern\Wordpress\Annotation
 	{
 		extract( $vars );
 		
-		if ( $instance instanceof \Modern\Wordpress\Plugin\Settings and isset( $page_id ) )
+		if ( $instance instanceof \MWP\Framework\Plugin\Settings and isset( $page_id ) )
 		{
 			$section_id = md5( $this->title );
 			$self = $this;

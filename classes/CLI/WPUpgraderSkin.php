@@ -4,11 +4,11 @@
  *
  * Created:   December 18, 2016
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.0.1
  */
-namespace Modern\Wordpress\CLI;
+namespace MWP\Framework\CLI;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );

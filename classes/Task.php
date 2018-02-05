@@ -4,18 +4,18 @@
  *
  * Created:   December 18, 2016
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.0.1
  */
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use \Modern\Wordpress\Pattern\ActiveRecord;
-use \Modern\Wordpress\Framework;
+use \MWP\Framework\Pattern\ActiveRecord;
+use \MWP\Framework\Framework;
 
 /**
  * Task Class
@@ -245,7 +245,7 @@ class Task extends ActiveRecord
 	{
 		if ( $this->completed )
 		{
-			$next_start = __( 'N/A', 'modern-framework' );
+			$next_start = __( 'N/A', 'mwp-framework' );
 		}
 		else 
 		{
@@ -255,7 +255,7 @@ class Task extends ActiveRecord
 			}
 			else
 			{
-				$next_start = __( 'ASAP', 'modern-framework' );
+				$next_start = __( 'ASAP', 'mwp-framework' );
 			}
 		}
 		
@@ -275,7 +275,7 @@ class Task extends ActiveRecord
 		}
 		else
 		{
-			$last_start = __( 'Never', 'modern-framework' );
+			$last_start = __( 'Never', 'mwp-framework' );
 		}
 		
 		return apply_filters( 'mwp_task_last_start_display', $last_start, $this );

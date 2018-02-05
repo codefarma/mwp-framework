@@ -4,19 +4,19 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package   Modern Wordpress Framework
+ * @package   MWP Application Framework
  * @author    Kevin Carwile
  * @since     1.0.0
  */
 
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Framework;
-use Modern\Wordpress\Pattern\Singleton;
+use MWP\Framework\Framework;
+use MWP\Framework\Pattern\Singleton;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Form\Forms;
@@ -26,7 +26,7 @@ use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Templating\DelegatingEngine;
 
 /**
- * All modern wordpress plugins should extend this class.
+ * All mwp application framework plugins should extend this class.
  */
 abstract class Plugin extends Singleton
 {
@@ -78,7 +78,7 @@ abstract class Plugin extends Singleton
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -145,7 +145,7 @@ abstract class Plugin extends Singleton
 		$build_meta = $this->data( 'build-meta' );
 		
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		$dbHelper = \Modern\Wordpress\DbHelper::instance();
+		$dbHelper = \MWP\Framework\DbHelper::instance();
 		
 		$delta_updates = array();
 		
@@ -541,7 +541,7 @@ abstract class Plugin extends Singleton
 		{
 			// If neither the child nor parent theme have overridden the template,
 			// we load the template from the 'templates' directory of this plugin,
-			// or alternatively fall back to the modern wordpress framework template
+			// or alternatively fall back to the mwp application framework template
 			$templateFile = $this->pluginFile( 'templates/' . $template, 'php' );
 			
 			if ( file_exists( $templateFile ) )
@@ -595,7 +595,7 @@ abstract class Plugin extends Singleton
 	public function createForm( $name, $data=null, $options=array(), $implementation=null )
 	{
 		$formImplementation = apply_filters( 'mwp_form_implementation', $implementation, $name, $this, $data, $options );
-		$formClass = apply_filters( 'mwp_form_class', 'Modern\Wordpress\Helpers\Form\SymfonyForm', $name, $this, $data, $options, $formImplementation );
+		$formClass = apply_filters( 'mwp_form_class', 'MWP\Framework\Helpers\Form\SymfonyForm', $name, $this, $data, $options, $formImplementation );
 		
 		$form = new $formClass( $name, $this, $data, $options );
 		
@@ -611,10 +611,10 @@ abstract class Plugin extends Singleton
 	 */
 	public function _pluginActivated()
 	{
-		wp_clear_scheduled_hook( 'modern_wordpress_queue_run' );
-		wp_clear_scheduled_hook( 'modern_wordpress_queue_maintenance' );
-		wp_schedule_event( time(), 'minutely', 'modern_wordpress_queue_run' );
-		wp_schedule_event( time(), 'hourly', 'modern_wordpress_queue_maintenance' );
+		wp_clear_scheduled_hook( 'mwp_framework_queue_run' );
+		wp_clear_scheduled_hook( 'mwp_framework_queue_maintenance' );
+		wp_schedule_event( time(), 'minutely', 'mwp_framework_queue_run' );
+		wp_schedule_event( time(), 'hourly', 'mwp_framework_queue_maintenance' );
 		$this->updateSchema();
 	}
 
@@ -633,7 +633,7 @@ abstract class Plugin extends Singleton
 	/**
 	 * Internal: Framework Plugin Finder
 	 *
-	 * @Wordpress\Filter( for="modern_wordpress_find_plugins" )
+	 * @Wordpress\Filter( for="mwp_framework_plugins" )
 	 *
 	 * @param	array		$plugins		Found plugins
 	 * @return	array
@@ -734,7 +734,7 @@ abstract class Plugin extends Singleton
 		if ( ! isset( $options[ 'skip_db_dump' ] ) or ! $options[ 'skip_db_dump' ] ) 
 		{
 			$build_meta = array();
-			$dbHelper = \Modern\Wordpress\DbHelper::instance();
+			$dbHelper = \MWP\Framework\DbHelper::instance();
 			
 			/* Update table schema data file */
 			if ( isset( $meta_data[ 'tables' ] ) and $meta_data[ 'tables' ] )
@@ -778,14 +778,14 @@ abstract class Plugin extends Singleton
 		
 		$bundle = ( ( isset( $options['bundle'] ) and $options['bundle'] ) or ( ! isset( $options[ 'nobundle' ] ) or ! $options[ 'nobundle' ] ) );
 		
-		// Bundle the modern wordpress framework in with the plugin
-		if ( $slug !== 'modern-framework' and $bundle )
+		// Bundle the mwp application framework in with the plugin
+		if ( $slug !== 'mwp-framework' and $bundle )
 		{
 			static::rmdir( WP_PLUGIN_DIR . '/' . $slug . '/framework' );
-			static::rmdir( WP_PLUGIN_DIR . '/' . $slug . '/modern-framework' );
+			static::rmdir( WP_PLUGIN_DIR . '/' . $slug . '/mwp-framework' );
 			
 			try {
-				$bundle_filename = \Modern\Wordpress\Plugin::createBuild( 'modern-framework', array( 'nobundle' => true, 'skip_db_dump' => true ) );
+				$bundle_filename = \MWP\Framework\Plugin::createBuild( 'mwp-framework', array( 'nobundle' => true, 'skip_db_dump' => true ) );
 			}
 			catch( \Exception $e ) {
 				$message = $e->getMessage();
@@ -798,11 +798,11 @@ abstract class Plugin extends Singleton
 			$framework_zip->close();
 			
 			/* Prevent bundled framework from being detected as another plugin by installer skin */
-			$contents = file_get_contents( WP_PLUGIN_DIR . '/' . $slug . '/modern-framework/plugin.php' );
+			$contents = file_get_contents( WP_PLUGIN_DIR . '/' . $slug . '/mwp-framework/plugin.php' );
 			$contents = str_replace( '* Plugin Name:', '* Plugin:', $contents );
-			file_put_contents( WP_PLUGIN_DIR . '/' . $slug . '/modern-framework/plugin.php', $contents );
+			file_put_contents( WP_PLUGIN_DIR . '/' . $slug . '/mwp-framework/plugin.php', $contents );
 			
-			rename( WP_PLUGIN_DIR . '/' . $slug . '/modern-framework', WP_PLUGIN_DIR . '/' . $slug . '/framework' );
+			rename( WP_PLUGIN_DIR . '/' . $slug . '/mwp-framework', WP_PLUGIN_DIR . '/' . $slug . '/framework' );
 		}
 		
 		/**

@@ -4,7 +4,7 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package    Modern Wordpress Framework
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.0.0
  */
@@ -15,7 +15,7 @@ namespace Wordpress\Options;
  * @Annotation 
  * @Target( "CLASS" )
  */
-class Field extends \Modern\Wordpress\Annotation
+class Field extends \MWP\Framework\Annotation
 {
     /**
      * @var string
@@ -58,7 +58,7 @@ class Field extends \Modern\Wordpress\Annotation
 	/**
 	 * Get Field
 	 *
-	 * @param	\Modern\Wordpress\Plugin\Settings		$settings 			The settings store
+	 * @param	\MWP\Framework\Plugin\Settings		$settings 			The settings store
 	 */
 	public function getFieldHtml( $settings )
 	{
@@ -93,7 +93,7 @@ class Field extends \Modern\Wordpress\Annotation
 	{
 		extract( $vars );
 		
-		if ( $instance instanceof \Modern\Wordpress\Plugin\Settings )
+		if ( $instance instanceof \MWP\Framework\Plugin\Settings )
 		{
 			$instance->setDefault( $this->name, $this->default );
 			

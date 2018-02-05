@@ -1,8 +1,8 @@
 <?php
 /**
- * Modern Wordpress Global Functions
+ * MWP Application Framework Global Functions
  *
- * @package		Modern Wordpress
+ * @package		MWP Application Framework
  * @author		Kevin Carwile
  * @since		Dec 10, 2016
  */

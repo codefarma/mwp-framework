@@ -2,7 +2,7 @@
 /**
  * Plugin HTML Template
  *
- * @var    $settings        \Modern\Wordpress\Plugin\Settings            The settings store
+ * @var    $settings        \MWP\Framework\Plugin\Settings            The settings store
  * @var        $field            \Wordpress\Options\Field                    The options field definition
  */
 

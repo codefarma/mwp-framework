@@ -4,17 +4,17 @@
  *
  * Created:   April 2, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.3.12
  */
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Pattern\Singleton;
+use MWP\Framework\Pattern\Singleton;
 
 /**
  * Symfony Class
@@ -52,7 +52,7 @@ class Symfony extends Singleton
 		if ( ! isset( $this->formFactory ) )
 		{
 			$csrfGenerator = new \Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator();
-			$csrfStorage = new \Modern\Wordpress\Symfony\WPTokenStorage();
+			$csrfStorage = new \MWP\Framework\Symfony\WPTokenStorage();
 			$csrfTokenManager = new \Symfony\Component\Security\Csrf\CsrfTokenManager( $csrfGenerator, $csrfStorage );
 			$csrfExtension = new \Symfony\Component\Form\Extension\Csrf\CsrfExtension( $csrfTokenManager );
 			
@@ -61,9 +61,9 @@ class Symfony extends Singleton
 			
 			$httpFoundationExtension = new \Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension();
 			
-			$formTypeExtension = new \Modern\Wordpress\Helpers\Form\SymfonyForm\FormTypeExtension();
-			$choiceTypeExtension = new \Modern\Wordpress\Helpers\Form\SymfonyForm\ChoiceTypeExtension();
-			$buttonTypeExtension = new \Modern\Wordpress\Helpers\Form\SymfonyForm\ButtonTypeExtension();
+			$formTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\FormTypeExtension();
+			$choiceTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\ChoiceTypeExtension();
+			$buttonTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\ButtonTypeExtension();
 
 			$formFactory = \Symfony\Component\Form\Forms::createFormFactoryBuilder()
 				->addExtension( $csrfExtension )

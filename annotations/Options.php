@@ -4,7 +4,7 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package    Modern Wordpress Framework
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.0.0
  */
@@ -15,7 +15,7 @@ namespace Wordpress;
  * @Annotation 
  * @Target( "CLASS" )
  */
-class Options extends \Modern\Wordpress\Annotation
+class Options extends \MWP\Framework\Annotation
 {
     /**
      * @var string
@@ -41,7 +41,7 @@ class Options extends \Modern\Wordpress\Annotation
 	 */
 	public function applyToObject( $instance, $vars )
 	{
-		if ( $instance instanceof \Modern\Wordpress\Plugin\Settings )
+		if ( $instance instanceof \MWP\Framework\Plugin\Settings )
 		{
 			$menu 	= $this->menu ?: $instance->getPlugin()->name;
 			$title 	= $this->title ?: $menu . ' ' . __( 'Options' );

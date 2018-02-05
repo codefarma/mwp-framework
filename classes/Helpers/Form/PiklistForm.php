@@ -4,17 +4,17 @@
  *
  * Created:   January 25, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.1.4
  */
-namespace Modern\Wordpress\Helpers\Form;
+namespace MWP\Framework\Helpers\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Helpers\Form;
+use MWP\Framework\Helpers\Form;
 
 /**
  * Form Class
@@ -22,7 +22,7 @@ use Modern\Wordpress\Helpers\Form;
 class PiklistForm extends Form
 {	
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected $plugin;
 	
@@ -66,7 +66,7 @@ class PiklistForm extends Form
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -78,7 +78,7 @@ class PiklistForm extends Form
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function setPlugin( \MWP\Framework\Plugin $plugin=NULL )
 	{
 		$this->plugin = $plugin;
 		return $this;
@@ -92,13 +92,13 @@ class PiklistForm extends Form
 	/**
 	 * Constructor
 	 *
-	 * @param	\Modern\Wordpress\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
+	 * @param	\MWP\Framework\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
 	 * @return	void
 	 */
-	public function __construct( $name, \Modern\Wordpress\Plugin $plugin=NULL, $data=NULL, $options=array() )
+	public function __construct( $name, \MWP\Framework\Plugin $plugin=NULL, $data=NULL, $options=array() )
 	{
 		$this->name = $name;
-		$this->plugin = $plugin ?: \Modern\Wordpress\Framework::instance();
+		$this->plugin = $plugin ?: \MWP\Framework\Framework::instance();
 		
 		if ( isset( $data ) ) {
 			$this->defaultData = $data;

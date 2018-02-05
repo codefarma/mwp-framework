@@ -4,11 +4,11 @@
  *
  * Created:   March 2, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.2.4
  */
-namespace Modern\Wordpress\Helpers;
+namespace MWP\Framework\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -21,7 +21,7 @@ class ActiveRecordController
 {
 	
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected $plugin;
 	
@@ -38,7 +38,7 @@ class ActiveRecordController
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -50,7 +50,7 @@ class ActiveRecordController
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function setPlugin( \MWP\Framework\Plugin $plugin=NULL )
 	{
 		$this->plugin = $plugin;
 		return $this;
@@ -156,7 +156,7 @@ class ActiveRecordController
 	 * Get the active record display table
 	 *
 	 * @param	array			$table_options					Table options that override default configuration
-	 * @return	Modern\Wordpress\Helpers\ActiveRecordTable
+	 * @return	MWP\Framework\Helpers\ActiveRecordTable
 	 */
 	public function createDisplayTable( $table_options=array() )
 	{

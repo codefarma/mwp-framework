@@ -4,11 +4,11 @@
  *
  * Created:   April 9, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.3.12
  */
-namespace Modern\Wordpress\Symfony;
+namespace MWP\Framework\Symfony;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );

@@ -4,13 +4,13 @@
  *
  * Created:  January 4, 2018
  *
- * @package  Modern Framework for Wordpress
+ * @package  MWP Application Framework
  * @author   Kevin Carwile
  * @since    1.4.0
  *
  * @param	Plugin		$this		The plugin instance which is loading this template
  *
- * @param	Modern\Wordpress\Helpers\ActiveRecordTable			$table			The active record display table
+ * @param	MWP\Framework\Helpers\ActiveRecordTable			$table			The active record display table
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

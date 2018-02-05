@@ -4,7 +4,7 @@
  *
  * Created:  July 14, 2017
  *
- * @package  Modern Framework for Wordpress
+ * @package  MWP Application Framework
  * @author   Kevin Carwile
  * @since    1.3.3
  *

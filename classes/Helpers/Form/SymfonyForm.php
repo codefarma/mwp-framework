@@ -4,19 +4,19 @@
  *
  * Created:   January 25, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.1.4
  */
-namespace Modern\Wordpress\Helpers\Form;
+namespace MWP\Framework\Helpers\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Framework;
-use Modern\Wordpress\Symfony;
-use Modern\Wordpress\Helpers\Form;
+use MWP\Framework\Framework;
+use MWP\Framework\Symfony;
+use MWP\Framework\Helpers\Form;
 
 /**
  * Form Class
@@ -24,7 +24,7 @@ use Modern\Wordpress\Helpers\Form;
 class SymfonyForm extends Form
 {	
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected $plugin;
 	
@@ -84,7 +84,7 @@ class SymfonyForm extends Form
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -96,7 +96,7 @@ class SymfonyForm extends Form
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function setPlugin( \MWP\Framework\Plugin $plugin=NULL )
 	{
 		$this->plugin = $plugin;
 		return $this;
@@ -106,12 +106,12 @@ class SymfonyForm extends Form
 	 * Constructor
 	 *
 	 * @param	string						$name			The name of the form
-	 * @param	Modern\Wordpress\Plugin		$plugin			The plugin to associate this class with, or NULL to auto-associate
+	 * @param	MWP\Framework\Plugin		$plugin			The plugin to associate this class with, or NULL to auto-associate
 	 * @param	object|array				$data			The initial form data state
 	 * @param	array						$options		Set options for the form
 	 * @return	void
 	 */
-	public function __construct( $name, \Modern\Wordpress\Plugin $plugin=NULL, $data=null, $options=array() )
+	public function __construct( $name, \MWP\Framework\Plugin $plugin=NULL, $data=null, $options=array() )
 	{
 		$this->name = $name;
 		$this->plugin = $plugin ?: Framework::instance();
@@ -122,10 +122,10 @@ class SymfonyForm extends Form
 		
 		if ( isset( $plugin ) )
 		{
-			$engines[] = new \Modern\Wordpress\Symfony\TemplateEngine( $plugin );
+			$engines[] = new \MWP\Framework\Symfony\TemplateEngine( $plugin );
 		}
 		
-		$engines[] = new \Modern\Wordpress\Symfony\TemplateEngine( Framework::instance() );
+		$engines[] = new \MWP\Framework\Symfony\TemplateEngine( Framework::instance() );
 		$templateEngine = new \Symfony\Component\Templating\DelegatingEngine( $engines );
 		
 		$this->setTemplateEngine( $templateEngine );
@@ -314,9 +314,9 @@ class SymfonyForm extends Form
 		'button'       => 'Symfony\Component\Form\Extension\Core\Type\ButtonType',
 		'reset'        => 'Symfony\Component\Form\Extension\Core\Type\ResetType',
 		'submit'       => 'Symfony\Component\Form\Extension\Core\Type\SubmitType',
-		'fieldgroup'   => 'Modern\Wordpress\Helpers\Form\SymfonyForm\FieldgroupType',
-		'tab'          => 'Modern\Wordpress\Helpers\Form\SymfonyForm\TabType',
-		'html'         => 'Modern\Wordpress\Helpers\Form\SymfonyForm\HtmlType',
+		'fieldgroup'   => 'MWP\Framework\Helpers\Form\SymfonyForm\FieldgroupType',
+		'tab'          => 'MWP\Framework\Helpers\Form\SymfonyForm\TabType',
+		'html'         => 'MWP\Framework\Helpers\Form\SymfonyForm\HtmlType',
 	);
 	
 	/**
@@ -680,7 +680,7 @@ class SymfonyForm extends Form
 			'form' => $this->getForm()->createView(),
 		) );
 		
-		$this->renderHelper = new \Modern\Wordpress\Symfony\FormRenderHelper( 
+		$this->renderHelper = new \MWP\Framework\Symfony\FormRenderHelper( 
 			new \Symfony\Component\Form\FormRenderer( 
 				new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 					$this->getTemplateEngine(), array_merge( $this->themes, array( 'form/symfony' ) )
@@ -688,7 +688,7 @@ class SymfonyForm extends Form
 			)
 		);
 		
-		$this->translatorHelper = new \Modern\Wordpress\Symfony\TranslatorHelper();
+		$this->translatorHelper = new \MWP\Framework\Symfony\TranslatorHelper();
 		
 		foreach( $this->engines as $engine ) {
 			$engine->addHelpers( array( $this->renderHelper, $this->translatorHelper ) );

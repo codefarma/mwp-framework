@@ -4,7 +4,7 @@
  *
  * Created:  March 2, 2017
  *
- * @package  Modern Framework for Wordpress
+ * @package  MWP Application Framework
  * @author   Kevin Carwile
  * @since    1.2.4
  *
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Task;
+use MWP\Framework\Task;
 ?>
 
 <div class="wrap">

@@ -4,11 +4,11 @@
  *
  * Created:   January 4, 2018
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.4.0
  */
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * AjaxHandlers Class
  */
-class AjaxHandlers extends \Modern\Wordpress\Pattern\Singleton
+class AjaxHandlers extends \MWP\Framework\Pattern\Singleton
 {
 	/**
 	 * @var	self
@@ -25,14 +25,14 @@ class AjaxHandlers extends \Modern\Wordpress\Pattern\Singleton
 	protected static $_instance;
 	
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected $plugin;
 	
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -44,7 +44,7 @@ class AjaxHandlers extends \Modern\Wordpress\Pattern\Singleton
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function setPlugin( \MWP\Framework\Plugin $plugin=NULL )
 	{
 		$this->plugin = $plugin;
 		return $this;
@@ -53,12 +53,12 @@ class AjaxHandlers extends \Modern\Wordpress\Pattern\Singleton
 	/**
 	 * Constructor
 	 *
-	 * @param	\Modern\Wordpress\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
+	 * @param	\MWP\Framework\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
 	 * @return	void
 	 */
-	public function __construct( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function __construct( \MWP\Framework\Plugin $plugin=NULL )
 	{
-		$this->setPlugin( $plugin ?: \Modern\Wordpress\Framework::instance() );
+		$this->setPlugin( $plugin ?: \MWP\Framework\Framework::instance() );
 	}
 	
 	/**
@@ -75,7 +75,7 @@ class AjaxHandlers extends \Modern\Wordpress\Pattern\Singleton
 		if ( current_user_can( 'administrator' ) ) 
 		{
 			$recordClass = wp_unslash( $_POST['class'] );
-			if ( class_exists( $recordClass ) and is_subclass_of( $recordClass, 'Modern\Wordpress\Pattern\ActiveRecord' ) and isset( $recordClass::$sequence_col ) ) {
+			if ( class_exists( $recordClass ) and is_subclass_of( $recordClass, 'MWP\Framework\Pattern\ActiveRecord' ) and isset( $recordClass::$sequence_col ) ) {
 				$sequence_col = $recordClass::$sequence_col;			
 				foreach( $_POST['sequence'] as $index => $record_id ) {
 					$record = $recordClass::load( $record_id );

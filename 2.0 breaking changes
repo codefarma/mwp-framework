@@ -1,0 +1,11 @@
+MWP Framework 2.0 Breaking Changes
+--------------------
+
+- Class namespacing has been changed from Modern\Wordpress to MWP\Framework
+- Hooks:
+  modern_wordpress_init => mwp_framework_init
+  modern_wordpress_find_plugins => mwp_framework_plugins
+  modern_wordpress_queue_run => mwp_framework_queue_run
+  modern_wordpress_queue_maintenance => mwp_framework_queue_maintenance
+- Constant MODERN_WORDPRESS_DEV changed to MWP_FRAMEWORK_DEBUG
+- Class ModernWordpressFramework => MWPFramework

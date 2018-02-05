@@ -16,16 +16,16 @@ if ( ! class_exists( 'WP_UnitTestCase' ) )
 /**
  * Test the framework
  */
-class ModernWordpressFrameworkTest extends WP_UnitTestCase 
+class MWPFrameworkTest extends WP_UnitTestCase 
 {
 	/**
-	 * Test that the framework is actually an instance of a modern wordpress plugin
+	 * Test that the framework is actually an instance of a mwp application framework plugin
 	 */
 	public function test_plugin_class() 
 	{
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		
-		// Check that the framework is a subclass of Modern\Wordpress\Plugin 
-		$this->assertTrue( $framework instanceof \Modern\Wordpress\Plugin );
+		// Check that the framework is a subclass of MWP\Framework\Plugin 
+		$this->assertTrue( $framework instanceof \MWP\Framework\Plugin );
 	}
 }

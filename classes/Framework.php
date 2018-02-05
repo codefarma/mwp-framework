@@ -4,12 +4,12 @@
  * 
  * Created:    Nov 20, 2016
  *
- * @package    Modern Wordpress Framework
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.0.0
  */
 
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -54,7 +54,7 @@ class Framework extends Plugin
 		
 		/* Register WP CLI */
 		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
-			\WP_CLI::add_command( 'mwp', 'Modern\Wordpress\CLI' );
+			\WP_CLI::add_command( 'mwp', 'MWP\Framework\CLI' );
 		}
 		
 		/* Init Parent */
@@ -109,8 +109,8 @@ class Framework extends Plugin
 	public function isDev()
 	{
 		// Respect a hard setting
-		if ( defined( 'MODERN_WORDPRESS_DEV' ) ) {
-			return \MODERN_WORDPRESS_DEV === TRUE;
+		if ( defined( 'MWP_FRAMEWORK_DEBUG' ) ) {
+			return \MWP_FRAMEWORK_DEBUG === TRUE;
 		}
 		
 		// Fallback to soft setting
@@ -127,7 +127,7 @@ class Framework extends Plugin
 	public function initialized()
 	{
 		// Ensure task runner is activated
-		if ( wp_get_schedule( 'modern_wordpress_queue_run' ) == false ) 
+		if ( wp_get_schedule( 'mwp_framework_queue_run' ) == false ) 
 		{
 			$this->frameworkActivated();
 		}
@@ -182,7 +182,7 @@ class Framework extends Plugin
 		{
 			$version = isset( $plugin_meta['version'] ) ? " ({$plugin_meta['version']})" : '';
 		}
-		wp_add_dashboard_widget( 'mwp-console', __( "Modern Wordpress Console", 'modern-framework' ) . $version, function() 
+		wp_add_dashboard_widget( 'mwp-console', __( "MWP Application Framework Console", 'mwp-framework' ) . $version, function() 
 		{
 			echo $this->getTemplateContent( 'widget/dashboard' );
 		});
@@ -223,8 +223,8 @@ class Framework extends Plugin
 	{
 		switch( $implementation ) 
 		{
-			case 'symfony':	return 'Modern\Wordpress\Helpers\Form\SymfonyForm';
-			case 'piklist': return 'Modern\Wordpress\Helpers\Form\PiklistForm';
+			case 'symfony':	return 'MWP\Framework\Helpers\Form\SymfonyForm';
+			case 'piklist': return 'MWP\Framework\Helpers\Form\PiklistForm';
 		}
 		
 		return $form_class;
@@ -256,7 +256,7 @@ class Framework extends Plugin
 		 */
 		foreach( $this->reader->getClassAnnotations( $reflClass ) as $annotation )
 		{
-			if ( $annotation instanceof \Modern\Wordpress\Annotation )
+			if ( $annotation instanceof \MWP\Framework\Annotation )
 			{
 				$result = $annotation->applyToObject( $instance, $vars );
 				if ( ! empty( $result ) )
@@ -273,7 +273,7 @@ class Framework extends Plugin
 		{
 			foreach ( $this->reader->getPropertyAnnotations( $property ) as $annotation ) 
 			{
-				if ( $annotation instanceof \Modern\Wordpress\Annotation )
+				if ( $annotation instanceof \MWP\Framework\Annotation )
 				{
 					$result = $annotation->applyToProperty( $instance, $property, $vars );
 					if ( ! empty( $result ) )
@@ -291,7 +291,7 @@ class Framework extends Plugin
 		{
 			foreach ( $this->reader->getMethodAnnotations( $method ) as $annotation ) 
 			{
-				if ( $annotation instanceof \Modern\Wordpress\Annotation )
+				if ( $annotation instanceof \MWP\Framework\Annotation )
 				{
 					$result = $annotation->applyToMethod( $instance, $method, $vars );
 					if ( ! empty( $result ) )
@@ -326,13 +326,13 @@ class Framework extends Plugin
 	/**
 	 * Initialize other resources before the wordpress init action
 	 * 
-	 * @Wordpress\Action( for="modern_wordpress_init" )
+	 * @Wordpress\Action( for="mwp_framework_init" )
 	 * 
 	 * @return	void
 	 */
 	public function loadOtherResources()
 	{
-		$form_validators = new \Modern\Wordpress\Helpers\Form\PiklistValidators;
+		$form_validators = new \MWP\Framework\Helpers\Form\PiklistValidators;
 		$this->attach( $form_validators );		
 	}
 	
@@ -398,7 +398,7 @@ class Framework extends Plugin
 	}
 	
 	/**
-	 * Get all modern wordpress plugins
+	 * Get all mwp application framework plugins
 	 *
 	 * @api
 	 *
@@ -411,7 +411,7 @@ class Framework extends Plugin
 		
 		if ( ! isset( $plugins ) or $recache )
 		{
-			$plugins = apply_filters( 'modern_wordpress_find_plugins', array() );
+			$plugins = apply_filters( 'mwp_framework_plugins', array() );
 		}
 		
 		return $plugins;
@@ -477,8 +477,8 @@ class Framework extends Plugin
 	 */
 	public function frameworkActivated()
 	{
-		wp_clear_scheduled_hook( 'modern_wordpress_queue_run' );
-		wp_schedule_event( time(), 'minutely', 'modern_wordpress_queue_run' );
+		wp_clear_scheduled_hook( 'mwp_framework_queue_run' );
+		wp_schedule_event( time(), 'minutely', 'mwp_framework_queue_run' );
 	}
 	
 	/**
@@ -490,13 +490,13 @@ class Framework extends Plugin
 	 */
 	public function frameworkDeactivated()
 	{
-		wp_clear_scheduled_hook( 'modern_wordpress_queue_run' );
+		wp_clear_scheduled_hook( 'mwp_framework_queue_run' );
 	}
 	
 	/**
 	 * Run any queued tasks
 	 *
-	 * @Wordpress\Action( for="modern_wordpress_queue_run" )
+	 * @Wordpress\Action( for="mwp_framework_queue_run" )
 	 *
 	 * @return	void
 	 */
@@ -631,7 +631,7 @@ class Framework extends Plugin
 	/**
 	 * Perform task queue maintenance
 	 *
-	 * @Wordpress\Action( for="modern_wordpress_queue_maintenance" )
+	 * @Wordpress\Action( for="mwp_framework_queue_maintenance" )
 	 *
 	 * @return	void
 	 */
@@ -662,7 +662,7 @@ class Framework extends Plugin
 		if ( ! $data[ 'vendor' ] )    { throw new \InvalidArgumentException( 'No vendor name provided.' );  }
 		if ( ! $data[ 'namespace' ] ) { throw new \InvalidArgumentException( 'No namespace provided.' );    }
 		
-		if ( ! is_dir( WP_PLUGIN_DIR . '/modern-framework/boilerplate' ) )
+		if ( ! is_dir( WP_PLUGIN_DIR . '/mwp-framework/boilerplate' ) )
 		{
 			throw new \ErrorException( "Boilerplate plugin not present. Can't create a new one.", 1 );
 		}
@@ -679,11 +679,11 @@ class Framework extends Plugin
 /* Load framework for tests */
 if ( defined( 'DIR_TESTDATA' ) ) {
 	\$plugin_dir = dirname( dirname( __FILE__ ) );
-	if ( ! file_exists( \$plugin_dir . '/modern-framework/plugin.php' ) ) {
-		die( 'Error: Modern framework must be present in ' . \$plugin_dir . '/modern-framework to run tests on this plugin.' );
+	if ( ! file_exists( \$plugin_dir . '/mwp-framework/plugin.php' ) ) {
+		die( 'Error: MWP must be present in ' . \$plugin_dir . '/mwp-framework to run tests on this plugin.' );
 	}
 	
-	require_once \$plugin_dir . '/modern-framework/plugin.php';
+	require_once \$plugin_dir . '/mwp-framework/plugin.php';
 }
 
 require_once 'plugin.php';" );
@@ -766,7 +766,7 @@ require_once 'plugin.php';" );
 	 */
 	public function createJavascript( $slug, $name )
 	{
-		if ( ! file_exists( WP_PLUGIN_DIR . '/modern-framework/boilerplate/assets/js/main.js' ) )
+		if ( ! file_exists( WP_PLUGIN_DIR . '/mwp-framework/boilerplate/assets/js/main.js' ) )
 		{
 			throw new \ErrorException( "The boilerplate plugin is not present. \nTry using: $ wp mwp update-boilerplate" );
 		}
@@ -788,7 +788,7 @@ require_once 'plugin.php';" );
 			throw new \ErrorException( "The javascript file already exists: " . $slug . '/assets/js/' . $name . '.js' );
 		}
 		
-		if ( ! copy( WP_PLUGIN_DIR . '/modern-framework/boilerplate/assets/js/main.js', $javascript_file ) )
+		if ( ! copy( WP_PLUGIN_DIR . '/mwp-framework/boilerplate/assets/js/main.js', $javascript_file ) )
 		{
 			throw new \ErrorException( 'Error copying file to destination: ' . $slug . '/assets/js/' . $name . '.js' );
 		}
@@ -814,7 +814,7 @@ require_once 'plugin.php';" );
 	 */
 	public function createStylesheet( $slug, $name )
 	{
-		if ( ! file_exists( WP_PLUGIN_DIR . '/modern-framework/boilerplate/assets/css/style.css' ) )
+		if ( ! file_exists( WP_PLUGIN_DIR . '/mwp-framework/boilerplate/assets/css/style.css' ) )
 		{
 			throw new \ErrorException( "The boilerplate plugin is not present. \nTry using: $ wp mwp update-boilerplate" );
 		}
@@ -836,7 +836,7 @@ require_once 'plugin.php';" );
 			throw new \ErrorException( "The stylesheet file already exists: " . $slug . '/assets/css/' . $name . '.css' );
 		}
 		
-		if ( ! copy( WP_PLUGIN_DIR . '/modern-framework/boilerplate/assets/css/style.css', $stylesheet_file ) )
+		if ( ! copy( WP_PLUGIN_DIR . '/mwp-framework/boilerplate/assets/css/style.css', $stylesheet_file ) )
 		{
 			throw new \ErrorException( 'Error copying file to destination: ' . $slug . '/assets/css/' . $name . '.css' );
 		}
@@ -862,7 +862,7 @@ require_once 'plugin.php';" );
 	 */
 	public function createTemplate( $slug, $name )
 	{
-		if ( ! file_exists( WP_PLUGIN_DIR . '/modern-framework/boilerplate/templates/snippet.php' ) )
+		if ( ! file_exists( WP_PLUGIN_DIR . '/mwp-framework/boilerplate/templates/snippet.php' ) )
 		{
 			throw new \ErrorException( "The boilerplate plugin is not present. \nTry using: $ wp mwp update-boilerplate" );
 		}
@@ -896,7 +896,7 @@ require_once 'plugin.php';" );
 			}
 		}
 		
-		if ( ! copy( WP_PLUGIN_DIR . '/modern-framework/boilerplate/templates/snippet.php', $template_file ) )
+		if ( ! copy( WP_PLUGIN_DIR . '/mwp-framework/boilerplate/templates/snippet.php', $template_file ) )
 		{
 			throw new \ErrorException( 'Error copying file to destination: ' . $slug . '/templates/' . $name . '.php' );
 		}
@@ -993,14 +993,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class $classname
 {
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected \$plugin;
 	
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -1012,7 +1012,7 @@ class $classname
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin \$plugin=NULL )
+	public function setPlugin( \MWP\Framework\Plugin \$plugin=NULL )
 	{
 		\$this->plugin = \$plugin;
 		return \$this;
@@ -1021,10 +1021,10 @@ class $classname
 	/**
 	 * Constructor
 	 *
-	 * @param	\Modern\Wordpress\Plugin	\$plugin			The plugin to associate this class with, or NULL to auto-associate
+	 * @param	\MWP\Framework\Plugin	\$plugin			The plugin to associate this class with, or NULL to auto-associate
 	 * @return	void
 	 */
-	public function __construct( \Modern\Wordpress\Plugin \$plugin=NULL )
+	public function __construct( \MWP\Framework\Plugin \$plugin=NULL )
 	{
 		\$this->setPlugin( \$plugin ?: \MillerMedia\Boilerplate\Plugin::instance() );
 	}

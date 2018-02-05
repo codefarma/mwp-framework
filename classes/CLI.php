@@ -4,24 +4,24 @@
  * 
  * Created:    Nov 20, 2016
  *
- * @package   Modern Wordpress Framework
+ * @package   MWP Application Framework
  * @author    Kevin Carwile
  * @since     1.0.0
  */
 
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
 /**
- * Modern wordpress framework commands that can be executed from the WP CLI.
+ * MWP Framework commands that can be executed from the WP CLI.
  */
 class CLI extends \WP_CLI_Command {
 
 	/**
-	 * Creates a new boilerplate modern wordpress plugin.
+	 * Creates a new boilerplate mwp application framework plugin.
 	 *
 	 * @param	$args		array		Positional command line arguments
 	 * @param	$assoc		array		Named command line arguments
@@ -63,13 +63,13 @@ class CLI extends \WP_CLI_Command {
 	 */
 	public function createPlugin( $args, $assoc ) 
 	{
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		
 		$assoc[ 'name' ] = $args[0];
 		
 		if ( ! isset( $assoc[ 'vendor' ] ) )
 		{
-			$assoc[ 'vendor' ] = "Modern Wordpress";
+			$assoc[ 'vendor' ] = "MWP Application Framework";
 		}
 		
 		if ( ! isset( $assoc[ 'namespace' ] ) )
@@ -181,9 +181,9 @@ class CLI extends \WP_CLI_Command {
 			return;
 		}
 		
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		$download_url = $args[0] ?: 'https://github.com/Miller-Media/wp-plugin-boilerplate/archive/master.zip';
-		$upgrader = new \WP_Upgrader( new \Modern\Wordpress\CLI\WPUpgraderSkin );
+		$upgrader = new \WP_Upgrader( new \MWP\Framework\CLI\WPUpgraderSkin );
 
 		\WP_CLI::line( 'Downloading package...' );
 		
@@ -236,7 +236,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 * 
 	 * <name>
 	 * : The name of the javascript file
@@ -252,7 +252,7 @@ class CLI extends \WP_CLI_Command {
 	 */
 	public function createJavascriptModule( $args, $assoc )
 	{
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		
 		if ( ! ( $args[0] and $args[1] ) )
 		{
@@ -281,7 +281,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 * 
 	 * <name>
 	 * : The name of the stylesheet file
@@ -297,7 +297,7 @@ class CLI extends \WP_CLI_Command {
 	 */
 	public function createStylesheetFile( $args, $assoc )
 	{
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		
 		if ( ! ( $args[0] and $args[1] ) )
 		{
@@ -326,7 +326,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 * 
 	 * <name>
 	 * : The name of the template file
@@ -342,7 +342,7 @@ class CLI extends \WP_CLI_Command {
 	 */
 	public function createTemplateFile( $args, $assoc )
 	{
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		
 		if ( ! ( $args[0] and $args[1] ) )
 		{
@@ -371,7 +371,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 * 
 	 * <name>
 	 * : The name of the new class (can be namespaced)
@@ -387,7 +387,7 @@ class CLI extends \WP_CLI_Command {
 	 */
 	public function createClassFile( $args, $assoc )
 	{
-		$framework = \Modern\Wordpress\Framework::instance();
+		$framework = \MWP\Framework\Framework::instance();
 		
 		try
 		{
@@ -411,7 +411,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 * 
 	 * [--auto-update]
 	 * : Automatically update meta data by reading plugin header
@@ -527,7 +527,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 *
 	 * ## EXAMPLES
 	 *
@@ -564,7 +564,7 @@ class CLI extends \WP_CLI_Command {
 					\WP_CLI::error( 'Could not detect plugin namespace.' );
 				}
 				
-				$pluginClass = $meta_data['namespace'] . ( $slug == 'modern-framework' ? '\Framework' : '\Plugin' );
+				$pluginClass = $meta_data['namespace'] . ( $slug == 'mwp-framework' ? '\Framework' : '\Plugin' );
 				$plugin = $pluginClass::instance();
 				$deltaUpdate = $plugin->updateSchema();
 				
@@ -591,7 +591,7 @@ class CLI extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <slug>
-	 * : The slug of the modern wordpress plugin
+	 * : The slug of the mwp application framework plugin
 	 * 
 	 * [--version-update=<version>]
 	 * : The new plugin version can be set explicitly, or auto incremented by using =(major, minor, point, patch)
@@ -603,7 +603,7 @@ class CLI extends \WP_CLI_Command {
 	 * : Use flag to update the latest-dev.zip to the current build
 	 *
 	 * [--nobundle]
-	 * : Use flag to prevent the modern wordpress framework from being bundled in with the plugin
+	 * : Use flag to prevent the mwp application framework from being bundled in with the plugin
 	 *
 	 * ## EXAMPLES
 	 *
@@ -620,7 +620,7 @@ class CLI extends \WP_CLI_Command {
 		
 		try {
 			\WP_CLI::line( 'Building...' );
-			$build_file = \Modern\Wordpress\Plugin::createBuild( $slug, $assoc );
+			$build_file = \MWP\Framework\Plugin::createBuild( $slug, $assoc );
 		}
 		catch( \Exception $e )
 		{

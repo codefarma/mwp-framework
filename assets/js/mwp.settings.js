@@ -3,7 +3,7 @@
  *
  * Created     August 1, 2017
  *
- * @package    Modern Framework for Wordpress
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.3.5
  */
@@ -33,11 +33,11 @@
 	 *
 	 * Example:
 	 *
-	 * <div data-view-model="modern-framework">
+	 * <div data-view-model="mwp-framework-settings">
 	 *   <span data-bind="text: title"></span>
 	 * </div>
 	 */
-	var mainController = mwp.controller( 'mwp-settings', 
+	var mwpFrameworkSettings = mwp.controller.model( 'mwp-framework-settings', 
 	{
 		
 		/**

@@ -4,7 +4,7 @@
  *
  * Created:  June 8, 2017
  *
- * @package  Modern Framework for Wordpress
+ * @package  MWP Application Framework
  * @author   Kevin Carwile
  * @since    1.3.1
  *
@@ -21,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Task;
-use Modern\Wordpress\Framework;
+use MWP\Framework\Task;
+use MWP\Framework\Framework;
 
 $notices = array();
 $framework = Framework::instance();
@@ -31,16 +31,16 @@ if ( isset( $_POST['mwp_clear_caches'] ) and $_POST['mwp_clear_caches'] )
 {
 	update_site_option( 'mwp_cache_latest', time() );
 	$framework->clearAnnotationsCache();
-	$notices[] = __( "Temporary caches have been cleared.", 'modern-framework' );
+	$notices[] = __( "Temporary caches have been cleared.", 'mwp-framework' );
 }
 
 if ( isset( $_POST['mwp_update_schema'] ) and $_POST['mwp_update_schema'] )
 {
-	foreach( apply_filters( 'modern_wordpress_find_plugins', array() ) as $plugin )
+	foreach( apply_filters( 'mwp_framework_plugins', array() ) as $plugin )
 	{
 		$plugin->updateSchema();
 	}
-	$notices[] = __( "Database table schemas have been brought up to date.", 'modern-framework' );
+	$notices[] = __( "Database table schemas have been brought up to date.", 'mwp-framework' );
 }
 
 $failed_task_count = Task::countTasks( null, null, 'failed' );

@@ -4,12 +4,12 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package   Modern Wordpress Framework
+ * @package   MWP Application Framework
  * @author    Kevin Carwile
  * @since     1.0.0
  */
 
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );

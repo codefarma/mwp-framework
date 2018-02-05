@@ -4,12 +4,12 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package     Modern Wordpress Framework
+ * @package     MWP Application Framework
  * @author      Kevin Carwile
  * @since       1.0.0
  */
 
-namespace Modern\Wordpress\Plugin;
+namespace MWP\Framework\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -23,12 +23,12 @@ abstract class Widget extends \WP_Widget
 	/**
 	 * @var	string	Plugin name
 	 */
-	public $name = 'Modern Wordpress Widget';
+	public $name = 'MWP Application Framework Widget';
 	
 	/**
 	 * @var	string	Plugin description
 	 */
-	public $description = 'A modern wordpress widget';
+	public $description = 'A mwp application framework widget';
 	
 	/**
 	 * @var string	HTML class to apply to widget
@@ -48,10 +48,10 @@ abstract class Widget extends \WP_Widget
 	/**
 	 * Set Plugin
 	 *
-	 * @param	\Modern\Wordpress\Plugin	$plugin		The plugin associated with these settings
+	 * @param	\MWP\Framework\Plugin	$plugin		The plugin associated with these settings
 	 * @return	void
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin )
+	public function setPlugin( \MWP\Framework\Plugin $plugin )
 	{
 		static::$plugin = $plugin;
 	}
@@ -71,7 +71,7 @@ abstract class Widget extends \WP_Widget
 	 *
 	 * @param	Plugin		$plugin			The plugin that this widget belongs to
 	 */
-	public static function enableOn( \Modern\Wordpress\Plugin $plugin )
+	public static function enableOn( \MWP\Framework\Plugin $plugin )
 	{
 		static::$plugin = $plugin;
 		$classname = get_called_class();
@@ -157,7 +157,7 @@ abstract class Widget extends \WP_Widget
 	 */
 	public function widget( $args, $instance ) 
 	{
-		return $this->getPlugin()->getTemplateContent( 'widget/layout/standard', array( 'args' => $args, 'title' => 'Modern Wordpress Widget', 'content' => 'Override the WP_Widget::widget() method in your widget class to output customized content.' ) );
+		return $this->getPlugin()->getTemplateContent( 'widget/layout/standard', array( 'args' => $args, 'title' => 'MWP Application Framework Widget', 'content' => 'Override the WP_Widget::widget() method in your widget class to output customized content.' ) );
 	}	
 	
 }

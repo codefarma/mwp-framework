@@ -8,7 +8,7 @@
  * @link: {plugin_author_url}
  * @since: {date_time}
  */
-namespace Modern\Wordpress;
+namespace MWP\Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * ---------------------------------------------------
  * @Wordpress\Options\Field( name="mwp_developer_mode", type="checkbox", title="Enable Developer Mode", description="Developer mode will disable caching mechanisms and automatic plugin schema updates.", default=false )
  */
-class Settings extends \Modern\Wordpress\Plugin\Settings
+class Settings extends \MWP\Framework\Plugin\Settings
 {
 	/**
 	 * Instance Cache - Required for singleton
@@ -77,8 +77,8 @@ class Settings extends \Modern\Wordpress\Plugin\Settings
 	 */
 	public function developerDescription()
 	{
-		if ( defined( 'MODERN_WORDPRESS_DEV' ) ) {
-			return "Developer mode currently has an override set to <span style='color:red'>" . ( \MODERN_WORDPRESS_DEV ? 'ON' : 'OFF' ) . "</span> due to global MODERN_WORDPRESS_DEV constant being set in dev_config.php";
+		if ( defined( 'MWP_FRAMEWORK_DEBUG' ) ) {
+			return "Developer mode currently has an override set to <span style='color:red'>" . ( \MWP_FRAMEWORK_DEBUG ? 'ON' : 'OFF' ) . "</span> due to global MWP_FRAMEWORK_DEBUG constant being set in dev_config.php";
 		}
 	}
 }

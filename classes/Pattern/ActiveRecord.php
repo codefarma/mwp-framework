@@ -4,18 +4,18 @@
  *
  * Created:   December 18, 2016
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.0.1
  */
-namespace Modern\Wordpress\Pattern;
+namespace MWP\Framework\Pattern;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Framework;
-use Modern\Wordpress\Helpers\ActiveRecordTable;
+use MWP\Framework\Framework;
+use MWP\Framework\Helpers\ActiveRecordTable;
 
 /**
  * An active record design pattern
@@ -56,7 +56,7 @@ abstract class ActiveRecord
 	/**
 	 * @var	string
 	 */
-	public static $plugin_class = 'Modern\Wordpress\Framework';
+	public static $plugin_class = 'MWP\Framework\Framework';
 	
 	/**
 	 * @var	string
@@ -151,7 +151,7 @@ abstract class ActiveRecord
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -247,15 +247,15 @@ abstract class ActiveRecord
 							
 							if ( is_object( $value ) )
 							{
-								if ( $value instanceof \Modern\Wordpress\Pattern\ActiveRecord and is_a( $value, $class ) )
+								if ( $value instanceof \MWP\Framework\Pattern\ActiveRecord and is_a( $value, $class ) )
 								{
 									$value = $value->id();
 								}
 								else
 								{
-									if ( ! $value instanceof \Modern\Wordpress\Pattern\ActiveRecord )
+									if ( ! $value instanceof \MWP\Framework\Pattern\ActiveRecord )
 									{
-										throw new \InvalidArgumentException( 'Object is not a subclass of Modern\Wordpress\Pattern\ActiveRecord' );
+										throw new \InvalidArgumentException( 'Object is not a subclass of MWP\Framework\Pattern\ActiveRecord' );
 									}
 									throw new \InvalidArgumentException( 'Object expected to be an active record of type: ' . $class . ' but it is a: ' . get_class( $value ) );
 								}
@@ -567,7 +567,7 @@ abstract class ActiveRecord
 	 * Build an editing form
 	 *
 	 * @param	ActiveRecord		$record					The record to edit
-	 * @return	Modern\Wordpress\Helpers\Form
+	 * @return	MWP\Framework\Helpers\Form
 	 */
 	public static function getForm( $record=null )
 	{
@@ -583,7 +583,7 @@ abstract class ActiveRecord
 	/**
 	 * Confirm delete form
 	 *
-	 * @return	Modern\Wordpress\Helpers\Form
+	 * @return	MWP\Framework\Helpers\Form
 	 */
 	public function getDeleteForm()
 	{

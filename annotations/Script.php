@@ -4,7 +4,7 @@
  *
  * Created:    Nov 20, 2016
  *
- * @package    Modern Wordpress Framework
+ * @package    MWP Application Framework
  * @author     Kevin Carwile
  * @since      1.0.0
  */
@@ -15,7 +15,7 @@ namespace Wordpress;
  * @Annotation 
  * @Target( "PROPERTY" )
  */
-class Script extends \Modern\Wordpress\Annotation
+class Script extends \MWP\Framework\Annotation
 {
 	/**
 	 * @var array
@@ -52,9 +52,9 @@ class Script extends \Modern\Wordpress\Annotation
 	 */
 	public function applyToProperty( $instance, $property, $vars )
 	{
-		if ( $instance instanceof \Modern\Wordpress\Plugin or is_callable( array( $instance, 'getPlugin' ) ) )
+		if ( $instance instanceof \MWP\Framework\Plugin or is_callable( array( $instance, 'getPlugin' ) ) )
 		{
-			$plugin = ( $instance instanceof \Modern\Wordpress\Plugin ) ? $instance : $instance->getPlugin();
+			$plugin = ( $instance instanceof \MWP\Framework\Plugin ) ? $instance : $instance->getPlugin();
 			$fileUrl = $plugin->fileUrl( $instance->{$property->name} );
 			$annotation = $this;
 			

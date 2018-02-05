@@ -4,24 +4,24 @@
  *
  * Created:   March 2, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.2.4
  */
-namespace Modern\Wordpress\Controller;
+namespace MWP\Framework\Controller;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use Modern\Wordpress\Task;
+use MWP\Framework\Task;
 
 /**
  * Tasks Controller
  *
  * @Wordpress\AdminPage( title="Tasks Management", menu="MWP Task Runner", slug="mwp-tasks", type="management" )
  */
-class Tasks extends \Modern\Wordpress\Pattern\Singleton
+class Tasks extends \MWP\Framework\Pattern\Singleton
 {
 	/**
 	 * @var	object			Singleton instance
@@ -29,14 +29,14 @@ class Tasks extends \Modern\Wordpress\Pattern\Singleton
 	protected static $_instance;
 	
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected $plugin;
 	
 	/**
  	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -48,7 +48,7 @@ class Tasks extends \Modern\Wordpress\Pattern\Singleton
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function setPlugin( \MWP\Framework\Plugin $plugin=NULL )
 	{
 		$this->plugin = $plugin;
 		return $this;
@@ -57,12 +57,12 @@ class Tasks extends \Modern\Wordpress\Pattern\Singleton
 	/**
 	 * Constructor
 	 *
-	 * @param	\Modern\Wordpress\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
+	 * @param	\MWP\Framework\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
 	 * @return	void
 	 */
-	public function __construct( \Modern\Wordpress\Plugin $plugin=NULL )
+	public function __construct( \MWP\Framework\Plugin $plugin=NULL )
 	{
-		$this->plugin = $plugin ?: \Modern\Wordpress\Framework::instance();
+		$this->plugin = $plugin ?: \MWP\Framework\Framework::instance();
 	}
 	
 	/**
@@ -76,13 +76,13 @@ class Tasks extends \Modern\Wordpress\Pattern\Singleton
 		
 		$table->columns = array
 		( 
-			'task_action'       => __( 'Task Item', 'modern-framework' ), 
-			'task_last_start'   => __( 'Last Started', 'modern-framework' ), 
-			'task_next_start'   => __( 'Next Start', 'modern-framework' ), 
-			'task_running'      => __( 'Activity', 'modern-framework' ), 
-			'task_fails'        => __( 'Fails', 'modern-framework' ), 
-			'task_data'         => __( 'Status', 'modern-framework' ),
-			'task_priority'     => __( 'Priority', 'modern-framework' ),
+			'task_action'       => __( 'Task Item', 'mwp-framework' ), 
+			'task_last_start'   => __( 'Last Started', 'mwp-framework' ), 
+			'task_next_start'   => __( 'Next Start', 'mwp-framework' ), 
+			'task_running'      => __( 'Activity', 'mwp-framework' ), 
+			'task_fails'        => __( 'Fails', 'mwp-framework' ), 
+			'task_data'         => __( 'Status', 'mwp-framework' ),
+			'task_priority'     => __( 'Priority', 'mwp-framework' ),
 		);
 		
 		$table->sortableColumns = array(
@@ -128,10 +128,10 @@ class Tasks extends \Modern\Wordpress\Pattern\Singleton
 			'task_running' => function( $task ) 
 			{
 				if ( $task[ 'task_running' ] ) {
-					return __( "Running", 'modern-framwork' );
+					return __( "Running", 'mwp-framework' );
 				}
 				
-				return __( "Idle", 'modern-framework' );
+				return __( "Idle", 'mwp-framework' );
 			},
 			'task_data' => function( $task ) 
 			{

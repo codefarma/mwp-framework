@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Modern\\Wordpress\\": "classes/"
+            "MWP\\Framework\\": "classes/"
         }
     },
     "extra": {

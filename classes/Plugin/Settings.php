@@ -4,18 +4,18 @@
  * 
  * Created:    Nov 20, 2016
  *
- * @package   Modern Wordpress Framework
+ * @package   MWP Application Framework
  * @author    Kevin Carwile
  * @since     1.0.0
  */
 
-namespace Modern\Wordpress\Plugin;
+namespace MWP\Framework\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use \Modern\Wordpress\Pattern\Singleton;
+use \MWP\Framework\Pattern\Singleton;
 
 /**
  * Provides base class to easily define new plugin settings.
@@ -84,10 +84,10 @@ abstract class Settings extends Singleton
 	/**
 	 * Set Plugin
 	 *
-	 * @param	\Modern\Wordpress\Plugin	$plugin		The plugin associated with these settings
+	 * @param	\MWP\Framework\Plugin	$plugin		The plugin associated with these settings
 	 * @return	void
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin )
+	public function setPlugin( \MWP\Framework\Plugin $plugin )
 	{
 		$this->plugin = $plugin;
 	}

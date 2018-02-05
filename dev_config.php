@@ -1,3 +1,3 @@
 <?php
 
-define( 'MODERN_WORDPRESS_DEV', TRUE );
+define( 'MWP_FRAMEWORK_DEBUG', TRUE );

@@ -16,10 +16,10 @@ if ( ! class_exists( 'WP_UnitTestCase' ) )
 /**
  * Test the framework
  */
-class ModernWordpressAnnotationsTest extends WP_UnitTestCase 
+class MWPAnnotationsTest extends WP_UnitTestCase 
 {
 	/**
-	 * @var	\Modern\Wordpress\Framework
+	 * @var	\MWP\Framework\Framework
 	 */
 	protected $framework;
 	
@@ -28,7 +28,7 @@ class ModernWordpressAnnotationsTest extends WP_UnitTestCase
 	 */
 	public function __construct()
 	{
-		\Modern\Wordpress\Framework::instance()->attach( new AnnotationsTest );
+		\MWP\Framework\Framework::instance()->attach( new AnnotationsTest );
 	}
 	
 	/**

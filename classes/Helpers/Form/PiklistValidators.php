@@ -4,11 +4,11 @@
  *
  * Created:   January 25, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.1.4
  */
-namespace Modern\Wordpress\Helpers\Form;
+namespace MWP\Framework\Helpers\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -34,7 +34,7 @@ class PiklistValidators
 			'callback' => function( $index, $value, $options, $field, $fields ) 
 			{
 				if ( $value and ! in_array( $value, array_keys( $field[ 'choices' ] ) ) ) {
-					return __( 'The selected value was not one of the given choices.', 'modern-framework' );
+					return __( 'The selected value was not one of the given choices.', 'mwp-framework' );
 				}
 				
 				return true;
@@ -46,15 +46,15 @@ class PiklistValidators
 			'callback' => function( $index, $value, $options, $field, $fields ) 
 			{
 				if ( ! is_numeric( $value ) ) {
-					return __( 'The value is expected to be numeric.', 'modern-framework' );
+					return __( 'The value is expected to be numeric.', 'mwp-framework' );
 				}
 				
 				if ( isset( $field[ 'attributes' ][ 'min' ] ) and $value < $field[ 'attributes' ][ 'min' ] ) {
-					return __( 'The value is less than the minimum value of: ' . $field[ 'attributes' ][ 'min' ], 'modern-framework' );
+					return __( 'The value is less than the minimum value of: ' . $field[ 'attributes' ][ 'min' ], 'mwp-framework' );
 				}
 				
 				if ( isset( $field[ 'attributes' ][ 'max' ] ) and $value > $field[ 'attributes' ][ 'max' ] ) {
-					return __( 'The value is more than the maximum value of: ' . $field[ 'attributes' ][ 'max' ], 'modern-framework' );
+					return __( 'The value is more than the maximum value of: ' . $field[ 'attributes' ][ 'max' ], 'mwp-framework' );
 				}
 				
 				return true;

@@ -17,7 +17,7 @@
  * @access private
  */
 
-namespace Modern\Wordpress\Helpers; 
+namespace MWP\Framework\Helpers; 
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -39,7 +39,7 @@ if ( ! function_exists ( 'get_column_headers' ) ) {
 	require_once ABSPATH . '/wp-admin/includes/screen.php';
 }
 
-use Modern\Wordpress\Framework;
+use MWP\Framework\Framework;
 
 /**
  * Used to create tables to display and manage active records
@@ -160,7 +160,7 @@ class ActiveRecordTable extends \WP_List_Table
 	public $displayBottomHeaders = false;	
 	
 	/**
-	 * @var	Modern\Wordpress\Plugin
+	 * @var	MWP\Framework\Plugin
 	 */
 	protected $plugin;
 	
@@ -236,7 +236,7 @@ class ActiveRecordTable extends \WP_List_Table
 		if ( ! isset( $this->plugin ) ) {
 			$recordClass = $this->activeRecordClass;
 			$pluginClass = $recordClass::$plugin_class;
-			if ( class_exists( $pluginClass ) and is_subclass_of( $pluginClass, 'Modern\Wordpress\Plugin' ) ) {
+			if ( class_exists( $pluginClass ) and is_subclass_of( $pluginClass, 'MWP\Framework\Plugin' ) ) {
 				$this->plugin = $pluginClass::instance();
 			}
 		}

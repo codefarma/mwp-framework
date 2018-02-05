@@ -4,15 +4,15 @@
  *
  * Created:  December 13, 2017
  *
- * @package  Modern Framework for Wordpress
+ * @package  MWP Application Framework
  * @author   Kevin Carwile
  * @since    1.4.0
  *
  * @param	Plugin		$this		The plugin instance which is loading this template
  *
- * @param	Modern\Wordpress\Helpers\Form						$form			The form that was built
- * @param	Modern\Wordpress\Plugin								$plugin			The plugin that created the controller
- * @param	Modern\Wordpress\Helpers\ActiveRecordController		$controller		The active record controller
+ * @param	MWP\Framework\Helpers\Form						$form			The form that was built
+ * @param	MWP\Framework\Plugin								$plugin			The plugin that created the controller
+ * @param	MWP\Framework\Helpers\ActiveRecordController		$controller		The active record controller
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

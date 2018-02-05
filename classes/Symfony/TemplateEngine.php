@@ -4,11 +4,11 @@
  *
  * Created:   April 1, 2017
  *
- * @package:  Modern Framework for Wordpress
+ * @package:  MWP Application Framework
  * @author:   Kevin Carwile
  * @since:    1.3.12
  */
-namespace Modern\Wordpress\Symfony;
+namespace MWP\Framework\Symfony;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
@@ -23,7 +23,7 @@ use Symfony\Component\Templating\Helper\HelperInterface;
 class TemplateEngine implements EngineInterface, \ArrayAccess
 {
 	/**
-	 * @var 	\Modern\Wordpress\Plugin		Provides access to the plugin instance
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
 	 */
 	protected $plugin;
 
@@ -42,7 +42,7 @@ class TemplateEngine implements EngineInterface, \ArrayAccess
 	/**
 	 * Get plugin
 	 *
-	 * @return	\Modern\Wordpress\Plugin
+	 * @return	\MWP\Framework\Plugin
 	 */
 	public function getPlugin()
 	{
@@ -54,7 +54,7 @@ class TemplateEngine implements EngineInterface, \ArrayAccess
 	 *
 	 * @return	this			Chainable
 	 */
-	public function setPlugin( \Modern\Wordpress\Plugin $plugin )
+	public function setPlugin( \MWP\Framework\Plugin $plugin )
 	{
 		$this->plugin = $plugin;
 		return $this;
@@ -63,10 +63,10 @@ class TemplateEngine implements EngineInterface, \ArrayAccess
 	/**
 	 * Constructor
 	 *
-	 * @param	\Modern\Wordpress\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
+	 * @param	\MWP\Framework\Plugin	$plugin			The plugin to associate this class with, or NULL to auto-associate
 	 * @return	void
 	 */
-	public function __construct( \Modern\Wordpress\Plugin $plugin )
+	public function __construct( \MWP\Framework\Plugin $plugin )
 	{
 		$this->setPlugin( $plugin );
 	}
@@ -111,7 +111,7 @@ class TemplateEngine implements EngineInterface, \ArrayAccess
 	}
 
 	/**
-	 * Translate a template file name to modern wordpress expected format
+	 * Translate a template file name to mwp application framework expected format
 	 *
 	 * @param		string			$name			The template name
 	 * @return		string

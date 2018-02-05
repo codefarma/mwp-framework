@@ -1,4 +1,4 @@
-Modern Framework for Wordpress
+MWP Application Framework
 ==================================
 
 This "plugin" provides a foundation of object oriented design patterns, bootstrap classes, and api abstractions for wordpress that enable very rapid development of new wordpress plugins. It also provides several utilities to auto generate new plugin resources and automatically manage new plugin builds/releases.
@@ -27,16 +27,16 @@ This "plugin" provides a foundation of object oriented design patterns, bootstra
 
 Once you have WP CLI installed:
 ```
-$ wp plugin install https://github.com/Miller-Media/modern-wordpress/raw/master/builds/modern-framework-stable.zip --activate
+$ wp plugin install https://github.com/Miller-Media/modern-wordpress/raw/master/builds/mwp-framework-stable.zip --activate
 ```
 > Note: If installing to a multisite wordpress, use --activate-network instead of --activate to activate the plugin from the command line.
 
 2) Enable developer mode 
 
-> To enable developer mode: Create or edit the **dev_config.php** file in the *wp-content/plugins/modern-framework/* directory and add:
+> To enable developer mode: Create or edit the **dev_config.php** file in the *wp-content/plugins/mwp-framework/* directory and add:
 ```php
 <?php
-define( 'MODERN_WORDPRESS_DEV', TRUE );
+define( 'MWP_FRAMEWORK_DEBUG', TRUE );
 ```
 
 ### Create A New Plugin
@@ -58,7 +58,7 @@ $ wp mwp add-template myplugin-slug views/template-name
 $ wp mwp add-class myplugin-slug New\Class
 ```
 
-Visit the [boilerplate repository](https://github.com/Miller-Media/wp-plugin-boilerplate) to get a quick rundown of the development tools available to you through modern wordpress.
+Visit the [boilerplate repository](https://github.com/Miller-Media/wp-plugin-boilerplate) to get a quick rundown of the development tools available to you through mwp application framework.
 
 ### Distribute It
 When you are ready to build a new release of your plugin, that's easy too:
