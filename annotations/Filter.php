@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation: Wordpress\Filter  
+ * Annotation: WordPress\Filter  
  *
  * Created:    Nov 20, 2016
  *
@@ -9,7 +9,15 @@
  * @since      1.0.0
  */
  
-namespace Wordpress;
+namespace WordPress;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+if ( class_exists( 'WordPress\Filter' ) ) {
+	return;
+}
 
 /**
  * @Annotation 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation: Wordpress\Options\Field  
+ * Annotation: WordPress\Options\Field  
  *
  * Created:    Nov 20, 2016
  *
@@ -9,7 +9,15 @@
  * @since      1.0.0
  */
 
-namespace Wordpress\Options;
+namespace WordPress\Options;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+if ( class_exists( 'WordPress\Options\Field' ) ) {
+	return;
+}
 
 /**
  * @Annotation 

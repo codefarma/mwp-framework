@@ -3,7 +3,7 @@ return <<<'JSON'
 {
     "tables": [
         {
-            "name": "queued_tasks",
+            "name": "mwp_queued_tasks",
             "columns": {
                 "task_id": {
                     "allow_null": false,

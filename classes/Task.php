@@ -30,7 +30,7 @@ class Task extends ActiveRecord
 	/**
 	 * @var	string		Table name
 	 */
-	public static $table = 'queued_tasks';
+	public static $table = 'mwp_queued_tasks';
 	
 	/**
 	 * @var	array		Table columns

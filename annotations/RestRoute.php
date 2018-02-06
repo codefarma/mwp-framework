@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation: Wordpress\AdminPage
+ * Annotation: WordPress\RestRoute
  *
  * Created:    Nov 20, 2016
  *
@@ -9,7 +9,15 @@
  * @since      1.0.0
  */
  
-namespace Wordpress;
+namespace WordPress;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+if ( class_exists( 'WordPress\RestRoute' ) ) {
+	return;
+}
 
 /**
  * @Annotation 

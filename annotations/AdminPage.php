@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation: Wordpress\AdminPage
+ * Annotation: WordPress\AdminPage
  *
  * Created:    Nov 20, 2016
  *
@@ -8,8 +8,16 @@
  * @author     Kevin Carwile
  * @since      1.0.0
  */
- 
-namespace Wordpress;
+
+namespace WordPress;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+if ( class_exists( 'WordPress\AdminPage' ) ) {
+	return;
+}
 
 /**
  * @Annotation 
