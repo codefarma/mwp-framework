@@ -297,10 +297,8 @@ abstract class Plugin extends Singleton
 	public function getSettings( $key='main' )
 	{
 		/* Return a specific settings id */
-		if ( $key !== NULL )
-		{
-			if ( isset( $this->settings[ $key ] ) )
-			{
+		if ( $key !== NULL ) {
+			if ( isset( $this->settings[ $key ] ) ) {
 				return $this->settings[ $key ];
 			}
 			
@@ -323,17 +321,18 @@ abstract class Plugin extends Singleton
 	public function getSetting( $name, $key=NULL )
 	{
 		/* Get from specific settings page */
-		if ( $key !== NULL )
-		{
-			return $this->getSettings( $key )->getSetting( $name );
+		if ( $key !== NULL ) {
+			if ( $settings = $this->getSettings( $key ) ) {
+				return $settings->getSetting( $name );
+			}
+			
+			return NULL;
 		}
 		
 		/* Search all settings */
-		foreach( $this->getSettings( NULL ) as $settings )
-		{
+		foreach( $this->getSettings( NULL ) as $settings ) {
 			$value = $settings->getSetting( $name );
-			if ( $value !== NULL )
-			{
+			if ( $value !== NULL ) {
 				return $value;
 			}
 		}
@@ -580,7 +579,7 @@ abstract class Plugin extends Singleton
 		include $templateFile;
 		$templateContent = ob_get_clean();
 		
-		return apply_filters( 'mwp_tmpl', $templateContent, $this->pluginSlug(), $template, $vars );
+		return apply_filters( 'mwp_fw_tmpl', $templateContent, $this->pluginSlug(), $template, $vars );
 	}
 	
 	/**
@@ -594,8 +593,8 @@ abstract class Plugin extends Singleton
 	 */
 	public function createForm( $name, $data=null, $options=array(), $implementation=null )
 	{
-		$formImplementation = apply_filters( 'mwp_form_implementation', $implementation, $name, $this, $data, $options );
-		$formClass = apply_filters( 'mwp_form_class', 'MWP\Framework\Helpers\Form\SymfonyForm', $name, $this, $data, $options, $formImplementation );
+		$formImplementation = apply_filters( 'mwp_fw_form_implementation', $implementation, $name, $this, $data, $options );
+		$formClass = apply_filters( 'mwp_fw_form_class', 'MWP\Framework\Helpers\Form\SymfonyForm', $name, $this, $data, $options, $formImplementation );
 		
 		$form = new $formClass( $name, $this, $data, $options );
 		

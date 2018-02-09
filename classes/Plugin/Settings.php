@@ -147,6 +147,9 @@ abstract class Settings extends Singleton
 			$this->settings = get_option( $this->storageId, array() );
 		}
 		
+		$this->settings[ $name ] = $val;
+		$this->saveSettings();
+		
 		return $this;
 	}
 	
