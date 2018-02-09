@@ -138,9 +138,9 @@ call_user_func( function() {
 					do_action( 'mwp_framework_init' );
 				}		
 			}
-			
+
 			MWPFramework::init();
 		}
-	}, 0 );
+	}, 1 );
 
 });

@@ -182,7 +182,7 @@ class Framework extends Plugin
 		{
 			$version = isset( $plugin_meta['version'] ) ? " ({$plugin_meta['version']})" : '';
 		}
-		wp_add_dashboard_widget( 'mwp-console', __( "MWP Application Framework Console", 'mwp-framework' ) . $version, function() 
+		wp_add_dashboard_widget( 'mwp-fw-console', __( "MWP Application Framework Console", 'mwp-framework' ) . $version, function() 
 		{
 			echo $this->getTemplateContent( 'widget/dashboard' );
 		});
@@ -209,7 +209,7 @@ class Framework extends Plugin
 	/**
 	 * Return the form class for supported form engines
 	 * 
-	 * @Wordpress\Filter( for="mwp_form_class", args=6 )
+	 * @Wordpress\Filter( for="mwp_fw_form_class", args=6 )
 	 * 
 	 * @param	string			$form_class			The current form class
 	 * @param	string			$name				The form name
@@ -231,7 +231,7 @@ class Framework extends Plugin
 	}
 	
 	/**
-	 * Attach instances to wordpress
+	 * Attach Functionality to WordPress
 	 *
 	 * @api
 	 *
@@ -254,13 +254,10 @@ class Framework extends Plugin
 		/**
 		 * Class Annotations
 		 */
-		foreach( $this->reader->getClassAnnotations( $reflClass ) as $annotation )
-		{
-			if ( $annotation instanceof \MWP\Framework\Annotation )
-			{
+		foreach( $this->reader->getClassAnnotations( $reflClass ) as $annotation ) {
+			if ( is_callable( array( $annotation, 'applyToObject' ) ) ) {
 				$result = $annotation->applyToObject( $instance, $vars );
-				if ( ! empty( $result ) )
-				{
+				if ( ! empty( $result ) ) {
 					$vars = array_merge( $vars, $result );
 				}
 			}
@@ -269,15 +266,11 @@ class Framework extends Plugin
 		/**
 		 * Property Annotations
 		 */
-		foreach ( $reflClass->getProperties() as $property ) 
-		{
-			foreach ( $this->reader->getPropertyAnnotations( $property ) as $annotation ) 
-			{
-				if ( $annotation instanceof \MWP\Framework\Annotation )
-				{
+		foreach ( $reflClass->getProperties() as $property ) {
+			foreach ( $this->reader->getPropertyAnnotations( $property ) as $annotation ) {
+				if ( is_callable( array( $annotation, 'applyToProperty' ) ) ) {
 					$result = $annotation->applyToProperty( $instance, $property, $vars );
-					if ( ! empty( $result ) )
-					{
+					if ( ! empty( $result ) ) {
 						$vars = array_merge( $vars, $result );
 					}
 				}
@@ -287,15 +280,11 @@ class Framework extends Plugin
 		/**
 		 * Method Annotations
 		 */
-		foreach ( $reflClass->getMethods() as $method ) 
-		{
-			foreach ( $this->reader->getMethodAnnotations( $method ) as $annotation ) 
-			{
-				if ( $annotation instanceof \MWP\Framework\Annotation )
-				{
+		foreach ( $reflClass->getMethods() as $method ) {
+			foreach ( $this->reader->getMethodAnnotations( $method ) as $annotation ) {
+				if ( is_callable( array( $annotation, 'applyToMethod' ) ) ) {
 					$result = $annotation->applyToMethod( $instance, $method, $vars );
-					if ( ! empty( $result ) )
-					{
+					if ( ! empty( $result ) ) {
 						$vars = array_merge( $vars, $result );
 					}
 				}
@@ -339,9 +328,9 @@ class Framework extends Plugin
 	/**
 	 * Register framework resources and dependency chains
 	 * 
-	 * @Wordpress\Action( for="wp_enqueue_scripts", priority=0 )
-	 * @Wordpress\Action( for="admin_enqueue_scripts", priority=0 )
-	 * @Wordpress\Action( for="login_enqueue_scripts", priority=0 )
+	 * @Wordpress\Action( for="wp_enqueue_scripts", priority=-1 )
+	 * @Wordpress\Action( for="admin_enqueue_scripts", priority=-1 )
+	 * @Wordpress\Action( for="login_enqueue_scripts", priority=-1 )
 	 */
 	public function enqueueScripts()
 	{
