@@ -135,7 +135,7 @@ call_user_func( function() {
 					$framework->addSettings( $settings );
 					$framework->attach( $settings );
 					
-					do_action( 'mwp_framework_init' );
+					do_action( 'mwp_framework_init', $framework );
 				}		
 			}
 

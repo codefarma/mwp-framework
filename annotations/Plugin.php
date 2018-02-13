@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation: WordPress\Plugin  
+ * Annotation: MWP\WordPress\Plugin  
  *
  * Created:    Nov 20, 2016
  *
@@ -9,13 +9,13 @@
  * @since      1.0.0
  */
 
-namespace WordPress;
+namespace MWP\WordPress;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-if ( class_exists( 'WordPress\Plugin' ) ) {
+if ( class_exists( 'MWP\WordPress\Plugin' ) ) {
 	return;
 }
 

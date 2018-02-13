@@ -154,7 +154,7 @@ class Framework extends Plugin
 	 */
 	public function adminInit()
 	{
-		remove_action( 'install_plugins_upload', 'install_plugins_upload' );		
+		remove_action( 'install_plugins_upload', 'install_plugins_upload' );
 	}
 	
 	/**
@@ -1015,7 +1015,7 @@ class $classname
 	 */
 	public function __construct( \MWP\Framework\Plugin \$plugin=NULL )
 	{
-		\$this->setPlugin( \$plugin ?: \MillerMedia\Boilerplate\Plugin::instance() );
+		\$this->setPlugin( \$plugin ?: \MWP\Boilerplate\Plugin::instance() );
 	}
 }
 
@@ -1049,9 +1049,9 @@ CLASS;
 		return strtr( $source, array
 		( 
 			'b7f88d4569eea7ab0b52f6a8c0e0e90c'  => md5( $data[ 'slug' ] ),
-			'MillerMedia\Boilerplate'           => $data[ 'namespace' ],
-			'MillerMedia\\\Boilerplate'         => str_replace( '\\', '\\\\', $data[ 'namespace' ] ),
-			'millermedia/boilerplate'           => strtolower( str_replace( '\\', '/', $data[ 'namespace' ] ) ),
+			'MWP\Boilerplate'           => $data[ 'namespace' ],
+			'MWP\\\Boilerplate'         => str_replace( '\\', '\\\\', $data[ 'namespace' ] ),
+			'mwp/boilerplate'           => strtolower( str_replace( '\\', '/', $data[ 'namespace' ] ) ),
 			'BoilerplatePlugin'                 => str_replace( '\\', '', $data[ 'namespace'] ) . 'Plugin',
 			'{vendor_name}'                     => $data[ 'vendor' ],
 			'{plugin_name}'                     => $data[ 'name' ],

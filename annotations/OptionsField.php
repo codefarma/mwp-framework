@@ -1,21 +1,21 @@
 <?php
 /**
- * Annotation: WordPress\Options\Field  
+ * Annotation: MWP\WordPress\Options\Field  
  *
- * Created:    Nov 20, 2016
+ * Created:    Feb 9, 2018
  *
  * @package    MWP Application Framework
  * @author     Kevin Carwile
- * @since      1.0.0
+ * @since      2.0.0
  */
 
-namespace WordPress\Options;
+namespace MWP\WordPress\Options;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-if ( class_exists( 'WordPress\Options\Field' ) ) {
+if ( class_exists( 'MWP\WordPress\Options\Field' ) ) {
 	return;
 }
 

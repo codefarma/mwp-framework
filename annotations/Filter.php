@@ -1,21 +1,21 @@
 <?php
 /**
- * Annotation: WordPress\Filter  
+ * Annotation: MWP\WordPress\Filter  
  *
- * Created:    Nov 20, 2016
+ * Created:    Feb 9, 2018
  *
  * @package    MWP Application Framework
  * @author     Kevin Carwile
- * @since      1.0.0
+ * @since      2.0.0
  */
  
-namespace WordPress;
+namespace MWP\WordPress;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-if ( class_exists( 'WordPress\Filter' ) ) {
+if ( class_exists( 'MWP\WordPress\Filter' ) ) {
 	return;
 }
 

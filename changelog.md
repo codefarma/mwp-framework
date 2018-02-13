@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Breaking Changes
 - (changed) all class namespacing has been changed from "Modern\Wordpress" to "MWP\Framework"
 - (changed) class ModernWordpressFramework => MWPFramework
-- (changed) annotations base namespace to WordPress (i.e. @WordPress\Action )
+- (changed) annotations base namespace to MWP\WordPress (i.e. @MWP\WordPress\Action )
 - (changed) hooks:
   > modern_wordpress_init => mwp_framework_init
   > modern_wordpress_find_plugins => mwp_framework_plugins

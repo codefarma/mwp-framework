@@ -10,6 +10,8 @@
  */
 namespace MWP\Framework;
 
+use MWP\WordPress as WordPress;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }

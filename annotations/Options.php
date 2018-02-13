@@ -1,21 +1,21 @@
 <?php
 /**
- * Annotation: WordPress\Options  
+ * Annotation: MWP\WordPress\Options  
  *
- * Created:    Nov 20, 2016
+ * Created:    Feb 9, 2018
  *
  * @package    MWP Application Framework
  * @author     Kevin Carwile
- * @since      1.0.0
+ * @since      2.0.0
  */
 
-namespace WordPress;
+namespace MWP\WordPress;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-if ( class_exists( 'WordPress\Options' ) ) {
+if ( class_exists( 'MWP\WordPress\Options' ) ) {
 	return;
 }
 
@@ -56,16 +56,13 @@ class Options extends \MWP\Framework\Annotation
 			$capability = $this->capability;
 			$page_id = $instance->getStorageId();
 			
-			add_action( 'admin_menu', function() use ( $menu, $title, $capability, $page_id, $instance )
-			{
-				add_options_page( $title, $menu, $capability, $page_id, function() use ( $title, $page_id, $instance )
-				{
+			add_action( 'admin_menu', function() use ( $menu, $title, $capability, $page_id, $instance ) {
+				add_options_page( $title, $menu, $capability, $page_id, function() use ( $title, $page_id, $instance ) {
 					echo $instance->getPlugin()->getTemplateContent( 'admin/settings/form', array( 'title' => $title, 'page_id' => $page_id ) );
 				});
 			});
 			
-			add_action( 'admin_init', function() use ( $page_id, $instance )
-			{
+			add_action( 'admin_init', function() use ( $page_id, $instance ) {
 				register_setting( $page_id, $page_id, array( $instance, 'validate' ) );
 			});
 			
