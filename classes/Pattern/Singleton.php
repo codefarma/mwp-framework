@@ -50,11 +50,6 @@ abstract class Singleton
 		{
 			$classname = get_called_class();
 			static::$_instance = new $classname;
-			
-			// initialize if necessary
-			if ( is_callable( array( static::$_instance, 'init' ) ) ) {
-				call_user_func( array( static::$_instance, 'init' ) );
-			}
 		}
 		
 		return static::$_instance;
