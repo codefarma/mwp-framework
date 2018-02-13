@@ -620,7 +620,23 @@ class _CLI extends \WP_CLI_Command {
 		
 		try {
 			\WP_CLI::line( 'Building...' );
-			$build_file = \MWP\Framework\Plugin::createBuild( $slug, $assoc );
+			
+			$pluginClass = 'MWP\Framework\Plugin';
+			
+			/* Read existing metadata */
+			if ( file_exists( WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php' ) ) {
+				$meta_data = json_decode( include WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php', TRUE );
+				if ( isset( $meta_data['namespace'] ) and class_exists( $meta_data['namespace'] . '\Plugin' ) ) {
+					if ( is_subclass_of( $meta_data['namespace'] . '\Plugin', 'Modern\Wordpress\Plugin' ) ) {
+						if ( ! class_exists( 'Modern\Wordpress\Framework' ) ) {
+							\WP_CLI::error( 'This plugin uses the MWP 1.x framework which is not present on this system. Unable to build.' );
+						}
+						$pluginClass = 'Modern\Wordpress\Plugin';
+					}
+				}
+			}
+			
+			$build_file = $pluginClass::createBuild( $slug, $assoc );
 		}
 		catch( \Exception $e )
 		{
