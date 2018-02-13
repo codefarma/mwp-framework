@@ -44,7 +44,7 @@ use MWP\Framework\Framework;
 /**
  * Used to create tables to display and manage active records
  */
-class ActiveRecordTable extends \WP_List_Table
+class _ActiveRecordTable extends \WP_List_Table
 {
 
 	/**

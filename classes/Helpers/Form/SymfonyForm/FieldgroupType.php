@@ -24,7 +24,7 @@ use MWP\Framework\Helpers\Form\SymfonyForm;
 /**
  * FieldgroupType Class
  */
-class FieldgroupType extends AbstractType
+class _FieldgroupType extends AbstractType
 {
     /**
      * @param OptionsResolverInterface $resolver

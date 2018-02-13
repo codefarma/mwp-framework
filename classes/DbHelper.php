@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Provides helper functions for managing the database
  */
-class DbHelper extends Singleton
+class _DbHelper extends Singleton
 {
 	protected static $_instance;
 	

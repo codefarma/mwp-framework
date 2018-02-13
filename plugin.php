@@ -57,10 +57,11 @@ call_user_func( function() {
 	
 	/**
 	 * Only attempt to load the framework which is the most up to date after
-	 * all plugins have had a chance to report their bundled framework version.
+	 * all plugins have been included, and had a chance to report their bundled 
+	 * framework version.
 	 *
-	 * Also: If we are in mwp development mode, then we should never load any
-	 * other version than that.
+	 * Also: If we are in development mode, then we should never load any
+	 * other version than the standalone copy.
 	 *
 	 * @return	void
 	 */
@@ -99,26 +100,93 @@ call_user_func( function() {
 				include_once __DIR__ . '/dev_config.php'; 
 			}
 			
-			$annotationRegistry = 'Doctrine\Common\Annotations\AnnotationRegistry';
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/AdminPage.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/AjaxHandler.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Plugin.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Action.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Filter.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/MetaBox.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Shortcode.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Options.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/OptionsSection.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/OptionsField.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/PostType.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/RestRoute.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Stylesheet.php" );
-			$annotationRegistry::registerFile( __DIR__ . "/annotations/Script.php" );
-
 			class MWPFramework
 			{
+				protected static $extensions = array();
+				
+				/**
+				 * Register an extension directory
+				 *
+				 * @param	string			$namespace			The namespace used by classes in the directory
+				 * @param	string			$path				The directory where the extensions are located
+				 * @return	void
+				 */
+				public static function register_extensions( $namespace, $path ) {
+					if ( $namespace and is_dir( $path ) ) {
+						foreach( glob( $path . '/*.php' ) as $file ) {
+							$bunchedClassname = substr( basename( $file ), 0, -4 );
+							if ( $bunchedClassname ) {
+								if ( ! isset( static::$extensions[ $bunchedClassname ] ) ) {
+									static::$extensions[ $bunchedClassname ] = array();
+								}
+								
+								static::$extensions[ $bunchedClassname ][] = array( 'namespace' => $namespace, 'file' => $file );
+							}
+						}
+					}
+				}
+				
+				/**
+				 * Initialize framework and all plugins
+				 * 
+				 * @return	void
+				 */
 				public static function init()
 				{
+					/* Register extension directories */
+					foreach( apply_filters( 'mwp_framework_extension_dirs', array() ) as $dir ) {
+						if ( isset( $dir['namespace'] ) and isset( $dir['path'] ) ) {
+							static::register_extensions( $dir['namespace'], $dir['path'] );
+						}
+					}
+					
+					$extensions = static::$extensions;
+					
+					/* Extensible Autoloader */
+					spl_autoload_register( function( $class ) use ( $extensions ) {
+						$pieces = explode( '\\', $class );
+						$classname = array_pop( $pieces );
+						$namespace = implode( '\\', $pieces );
+						if ( substr( $classname, 0, 1 ) != '_' ) {
+							if ( class_exists( $namespace . '\\_' . $classname ) ) {
+								$reflectionClass = new \ReflectionClass( $namespace . '\\_' . $classname );
+								$classType = $reflectionClass->isAbstract() ? 'abstract' : '';
+								$bunchedClassname = str_replace( '\\', '', $class );
+								$latestClassname = $namespace . '\\_' . $classname;
+								if ( isset( $extensions[ $bunchedClassname ] ) and is_array( $extensions[ $bunchedClassname ] ) ) {
+									foreach( $extensions[ $bunchedClassname ] as $extension ) {
+										if ( isset( $extension['namespace'] ) and isset( $extension['file'] ) and file_exists( $extension['file'] ) ) {
+											eval( "namespace {$extension['namespace']}; {$classType} class _{$bunchedClassname} extends \\{$latestClassname} {}" );
+											include_once $extension['file'];
+											if ( class_exists( $extension['namespace'] . '\\' . $bunchedClassname ) ) {
+												$latestClassname = $extension['namespace'] . '\\' . $bunchedClassname;
+											}
+										}
+									}
+								}
+								eval( "namespace {$namespace}; {$classType} class {$classname} extends \\{$latestClassname} {}" );
+							}
+						}
+					});
+					
+					$annotationRegistry = 'Doctrine\Common\Annotations\AnnotationRegistry';
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Inherit.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Override.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/AdminPage.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/AjaxHandler.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Plugin.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Action.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Filter.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/MetaBox.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Shortcode.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Options.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/OptionsSection.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/OptionsField.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/PostType.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/RestRoute.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Stylesheet.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/Script.php" );
+
 					/* FAAP: Framework As A Plugin :) */
 					$framework = \MWP\Framework\Framework::instance();		
 					$framework->setPath( rtrim( plugin_dir_path( __FILE__ ), '/' ) );

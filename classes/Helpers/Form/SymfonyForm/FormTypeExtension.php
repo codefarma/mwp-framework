@@ -23,7 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 /**
  * FormTypeExtension Class
  */
-class FormTypeExtension extends AbstractTypeExtension
+class _FormTypeExtension extends AbstractTypeExtension
 {
     /**
      * Extends the form type which all other types extend

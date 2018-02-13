@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Provides placeholder methods for annotations.
  */
-abstract class Annotation
+abstract class _Annotation
 {
 	/**
 	 * Apply to Object

@@ -24,7 +24,7 @@ use MWP\Framework\Helpers\Form\SymfonyForm;
 /**
  * HtmlType Class
  */
-class HtmlType extends AbstractType
+class _HtmlType extends AbstractType
 {
     /**
      * @param OptionsResolverInterface $resolver

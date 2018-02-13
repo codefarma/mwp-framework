@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Form Class
  */
-abstract class Form
+abstract class _Form
 {	
 	/**
 	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance

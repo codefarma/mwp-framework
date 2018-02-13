@@ -21,7 +21,7 @@ use \Doctrine\Common\Annotations\FileCacheReader;
 /**
  * Provides access to core framework methods and features. 
  */
-class Framework extends Plugin
+class _Framework extends Plugin
 {
 	/**
 	 * Instance Cache - Required for all singleton subclasses
@@ -44,7 +44,7 @@ class Framework extends Plugin
 		try 
 		{
 			// Attempt to read from file caches
-			$this->reader = new FileCacheReader( new AnnotationReader(), __DIR__ . "/../annotations/cache", $this->isDev() );
+			$this->reader = new FileCacheReader( new AnnotationReader(), dirname( __DIR__ ) . "/annotations/cache", $this->isDev() );
 		} 
 		catch( \InvalidArgumentException $e )
 		{
@@ -120,7 +120,7 @@ class Framework extends Plugin
 	/**
 	 * Initialization
 	 *
-	 * @Wordpress\Action( for="init" )
+	 * @MWP\WordPress\Action( for="init" )
 	 *
 	 * @return	void
 	 */
@@ -140,7 +140,7 @@ class Framework extends Plugin
 			// Clear caches for this instance if we know they are out of date
 			if ( ! isset( $instance_meta[ 'cache_timestamp' ] ) or $instance_meta[ 'cache_timestamp' ] < $mwp_cache_latest ) 
 			{
-				$this->clearAnnotationsCache();
+				$this->clearCaches();
 			}
 		}
 	}
@@ -148,7 +148,7 @@ class Framework extends Plugin
 	/**
 	 * Admin init
 	 * 
-	 * @Wordpress\Action( for="admin_init" )
+	 * @MWP\WordPress\Action( for="admin_init" )
 	 * 
 	 * @return	void
 	 */
@@ -160,7 +160,7 @@ class Framework extends Plugin
 	/**
 	 * Modify the upload plugin form 
 	 * 
-	 * @Wordpress\Action( for="install_plugins_upload", output=true )
+	 * @MWP\WordPress\Action( for="install_plugins_upload", output=true )
 	 * 
 	 * @return	string
 	 */
@@ -172,7 +172,7 @@ class Framework extends Plugin
 	/**
 	 * Add dashboard widget
 	 *
-	 * @Wordpress\Action( for="wp_dashboard_setup" )
+	 * @MWP\WordPress\Action( for="wp_dashboard_setup" )
 	 * 
 	 * @return	void
 	 */
@@ -191,7 +191,7 @@ class Framework extends Plugin
 	/**
 	 * Allow plugins to be upgraded by uploading a new version
 	 * 
-	 * @Wordpress\Filter( for="upgrader_package_options" )
+	 * @MWP\WordPress\Filter( for="upgrader_package_options" )
 	 * 
 	 * @param	array			$options				The upgrader options
 	 * @return	array
@@ -209,7 +209,7 @@ class Framework extends Plugin
 	/**
 	 * Return the form class for supported form engines
 	 * 
-	 * @Wordpress\Filter( for="mwp_fw_form_class", args=6 )
+	 * @MWP\WordPress\Filter( for="mwp_fw_form_class", args=6 )
 	 * 
 	 * @param	string			$form_class			The current form class
 	 * @param	string			$name				The form name
@@ -250,11 +250,39 @@ class Framework extends Plugin
 		
 		$reflClass = new \ReflectionClass( get_class( $instance ) );
 		$vars = array();
+		$framework = $this;
 		
 		/**
 		 * Class Annotations
 		 */
-		foreach( $this->reader->getClassAnnotations( $reflClass ) as $annotation ) {
+		$getClassAnnotationsRecursively = function( $reflClass ) use ( $framework, &$getClassAnnotationsRecursively ) 
+		{
+			$annotations = $reflClass->getDocComment() ? $framework->reader->getClassAnnotations( $reflClass ) : array();
+			$inheritByDefault = true;
+			foreach( $annotations as $k => $annotation ) {
+				if ( $annotation instanceof \MWP\Annotations\Inherit ) {
+					if ( $parentReflClass = $reflClass->getParentClass() ) {
+						array_splice( $annotations, $k, 1, $getClassAnnotationsRecursively( $parentReflClass ) );
+					}
+					$inheritByDefault = false;
+					break;
+				}
+				if ( $annotation instanceof \MWP\Annotations\Override ) {
+					$inheritByDefault = false;
+					break;
+				}
+			}
+			
+			if ( $inheritByDefault ) {
+				if ( $parentReflClass = $reflClass->getParentClass() ) {
+					$annotations = array_merge( $annotations, $getClassAnnotationsRecursively( $parentReflClass ) );
+				}
+			}
+			
+			return $annotations;
+		};
+		
+		foreach( $getClassAnnotationsRecursively( $reflClass ) as $annotation ) {
 			if ( is_callable( array( $annotation, 'applyToObject' ) ) ) {
 				$result = $annotation->applyToObject( $instance, $vars );
 				if ( ! empty( $result ) ) {
@@ -266,8 +294,43 @@ class Framework extends Plugin
 		/**
 		 * Property Annotations
 		 */
+		$getPropertyAnnotationsRecursively = function( $property ) use ( $framework, &$getPropertyAnnotationsRecursively ) 
+		{
+			$annotations = $framework->reader->getPropertyAnnotations( $property );
+			$inheritByDefault = true;
+			foreach( $annotations as $k => $annotation ) {
+				if ( $annotation instanceof \MWP\Annotations\Inherit ) {
+					if ( $parentReflClass = $property->getDeclaringClass()->getParentClass() ) {
+						try {
+							if ( $parentProperty = $parentReflClass->getProperty( $property->getName() ) ) {
+								array_splice( $annotations, $k, 1, $getPropertyAnnotationsRecursively( $parentProperty ) );
+							}
+						} catch( \ReflectionException $e ) {}
+					}
+					$inheritByDefault = false;
+					break;
+				}
+				if ( $annotation instanceof \MWP\Annotations\Override ) {
+					$inheritByDefault = false;
+					break;
+				}
+			}
+			
+			if ( $inheritByDefault ) {
+				if ( $parentReflClass = $property->getDeclaringClass()->getParentClass() ) {
+					try {
+						if ( $parentProperty = $parentReflClass->getProperty( $property->getName() ) ) {
+							$annotations = array_merge( $annotations, $getPropertyAnnotationsRecursively( $parentProperty ) );
+						}
+					} catch( \ReflectionException $e ) {}
+				}
+			}
+			
+			return $annotations;
+		};
+		
 		foreach ( $reflClass->getProperties() as $property ) {
-			foreach ( $this->reader->getPropertyAnnotations( $property ) as $annotation ) {
+			foreach ( $getPropertyAnnotationsRecursively( $property ) as $annotation ) {
 				if ( is_callable( array( $annotation, 'applyToProperty' ) ) ) {
 					$result = $annotation->applyToProperty( $instance, $property, $vars );
 					if ( ! empty( $result ) ) {
@@ -275,13 +338,47 @@ class Framework extends Plugin
 					}
 				}
 			}
-		}		
+		}
 		
 		/**
 		 * Method Annotations
 		 */
+		$getMethodAnnotationsRecursively = function( $method ) use ( $framework, &$getMethodAnnotationsRecursively ) {
+			$annotations = $framework->reader->getMethodAnnotations( $method );
+			$inheritByDefault = true;
+			foreach( $annotations as $k => $annotation ) {
+				if ( $annotation instanceof \MWP\Annotations\Inherit ) {
+					if ( $parentReflClass = $method->getDeclaringClass()->getParentClass() ) {
+						try {
+							if ( $parentMethod = $parentReflClass->getMethod( $method->getName() ) ) {
+								array_splice( $annotations, $k, 1, $getMethodAnnotationsRecursively( $parentMethod ) );
+							}
+						} catch( \ReflectionException $e ) {}
+					}
+					$inheritByDefault = false;
+					break;
+				}
+				if ( $annotation instanceof \MWP\Annotations\Override ) {
+					$inheritByDefault = false;
+					break;
+				}
+			}
+			
+			if ( $inheritByDefault ) {
+				if ( $parentReflClass = $method->getDeclaringClass()->getParentClass() ) {
+					try { 
+						if ( $parentMethod = $parentReflClass->getMethod( $method->getName() ) ) {
+							$annotations = array_merge( $annotations, $getMethodAnnotationsRecursively( $parentMethod ) );
+						}
+					} catch( \ReflectionException $e ) {}
+				}
+			}
+			
+			return $annotations;
+		};
+		
 		foreach ( $reflClass->getMethods() as $method ) {
-			foreach ( $this->reader->getMethodAnnotations( $method ) as $annotation ) {
+			foreach ( $getMethodAnnotationsRecursively( $method ) as $annotation ) {
 				if ( is_callable( array( $annotation, 'applyToMethod' ) ) ) {
 					$result = $annotation->applyToMethod( $instance, $method, $vars );
 					if ( ! empty( $result ) ) {
@@ -299,13 +396,12 @@ class Framework extends Plugin
 	 *
 	 * @return	void
 	 */
-	public function clearAnnotationsCache()
+	public function clearCaches()
 	{
 		// Delete files in cache folder
 		array_map( 'unlink', glob( __DIR__ . "/../annotations/cache/*.cache.php" ) );
 		
-		if ( ! $this->isDev() )
-		{
+		if ( ! $this->isDev() ) {
 			$instance_meta = $this->data( 'instance-meta' ) ?: array();		
 			$instance_meta[ 'cache_timestamp' ] = time();
 			$this->setData( 'instance-meta', $instance_meta );
@@ -315,7 +411,7 @@ class Framework extends Plugin
 	/**
 	 * Initialize other resources before the wordpress init action
 	 * 
-	 * @Wordpress\Action( for="mwp_framework_init" )
+	 * @MWP\WordPress\Action( for="mwp_framework_init" )
 	 * 
 	 * @return	void
 	 */
@@ -328,9 +424,9 @@ class Framework extends Plugin
 	/**
 	 * Register framework resources and dependency chains
 	 * 
-	 * @Wordpress\Action( for="wp_enqueue_scripts", priority=-1 )
-	 * @Wordpress\Action( for="admin_enqueue_scripts", priority=-1 )
-	 * @Wordpress\Action( for="login_enqueue_scripts", priority=-1 )
+	 * @MWP\WordPress\Action( for="wp_enqueue_scripts", priority=-1 )
+	 * @MWP\WordPress\Action( for="admin_enqueue_scripts", priority=-1 )
+	 * @MWP\WordPress\Action( for="login_enqueue_scripts", priority=-1 )
 	 */
 	public function enqueueScripts()
 	{
@@ -378,7 +474,7 @@ class Framework extends Plugin
 	/**
 	 * Register admin related scripts
 	 *
-	 * @Wordpress\Action( for="admin_enqueue_scripts" )
+	 * @MWP\WordPress\Action( for="admin_enqueue_scripts" )
 	 *
 	 * @return	void
 	 */
@@ -409,7 +505,7 @@ class Framework extends Plugin
 	/**
 	 * Include localized data with mwp scripts when concatenation is turned on
 	 *
-	 * @Wordpress\Filter( for="script_loader_tag", args=3 )
+	 * @MWP\WordPress\Filter( for="script_loader_tag", args=3 )
 	 * 
 	 * @param	string			$tag				The script tag
 	 * @param	string			$handle				The script handle
@@ -442,7 +538,7 @@ class Framework extends Plugin
 	/**
 	 * Add a one minute time period to the wordpress cron schedule
 	 *
-	 * @Wordpress\Filter( for="cron_schedules" )
+	 * @MWP\WordPress\Filter( for="cron_schedules" )
 	 *
 	 * @param	array		$schedules		Array of schedule frequencies
 	 * @return	array
@@ -460,7 +556,7 @@ class Framework extends Plugin
 	/**
 	 * Setup the queue schedule on framework activation
 	 *
-	 * @Wordpress\Plugin( on="activation", file="plugin.php" )
+	 * @MWP\WordPress\Plugin( on="activation", file="plugin.php" )
 	 *
 	 * @return	void
 	 */
@@ -473,7 +569,7 @@ class Framework extends Plugin
 	/**
 	 * Clear the queue schedule on framework deactivation
 	 *
-	 * @Wordpress\Plugin( on="deactivation", file="plugin.php" )
+	 * @MWP\WordPress\Plugin( on="deactivation", file="plugin.php" )
 	 *
 	 * @return	void
 	 */
@@ -485,7 +581,7 @@ class Framework extends Plugin
 	/**
 	 * Run any queued tasks
 	 *
-	 * @Wordpress\Action( for="mwp_framework_queue_run" )
+	 * @MWP\WordPress\Action( for="mwp_framework_queue_run" )
 	 *
 	 * @return	void
 	 */
@@ -620,7 +716,7 @@ class Framework extends Plugin
 	/**
 	 * Perform task queue maintenance
 	 *
-	 * @Wordpress\Action( for="mwp_framework_queue_maintenance" )
+	 * @MWP\WordPress\Action( for="mwp_framework_queue_maintenance" )
 	 *
 	 * @return	void
 	 */
@@ -979,7 +1075,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * $classname Class
  */
-class $classname
+class _$classname
 {
 	/**
 	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance

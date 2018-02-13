@@ -19,7 +19,7 @@ use MWP\Framework\Pattern\Singleton;
 /**
  * Symfony Class
  */
-class Symfony extends Singleton
+class _Symfony extends Singleton
 {
 	/**
 	 * @var	self			Required for singletons

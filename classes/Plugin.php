@@ -28,7 +28,7 @@ use Symfony\Component\Templating\DelegatingEngine;
 /**
  * All mwp application framework plugins should extend this class.
  */
-abstract class Plugin extends Singleton
+abstract class _Plugin extends Singleton
 {
 	/**
 	 * @var string 	Plugin path
@@ -88,7 +88,7 @@ abstract class Plugin extends Singleton
 	/**
 	 * Check if plugin version has been updated
 	 *
-	 * @Wordpress\Action( for="init" )
+	 * @MWP\WordPress\Action( for="init" )
 	 *
 	 * @return	void
 	 */
@@ -129,8 +129,8 @@ abstract class Plugin extends Singleton
 		/* Update install meta */
 		$this->setData( 'install-meta', $install );
 		
-		/* Clear the annotations cache */
-		Framework::instance()->clearAnnotationsCache();
+		/* Clear temporary caches */
+		Framework::instance()->clearCaches();
 	}
 
 	/**
@@ -604,7 +604,7 @@ abstract class Plugin extends Singleton
 	/**
 	 * Ensure that the framework task runner is set up
 	 *
-	 * @Wordpress\Plugin( on="activation", file="plugin.php" )
+	 * @MWP\WordPress\Plugin( on="activation", file="plugin.php" )
 	 *
 	 * @return	void
 	 */
@@ -620,7 +620,7 @@ abstract class Plugin extends Singleton
 	/**
 	 * Clear the queue schedule on framework deactivation
 	 *
-	 * @Wordpress\Plugin( on="deactivation", file="plugin.php" )
+	 * @MWP\WordPress\Plugin( on="deactivation", file="plugin.php" )
 	 *
 	 * @return	void
 	 */
@@ -632,7 +632,7 @@ abstract class Plugin extends Singleton
 	/**
 	 * Internal: Framework Plugin Finder
 	 *
-	 * @Wordpress\Filter( for="mwp_framework_plugins" )
+	 * @MWP\WordPress\Filter( for="mwp_framework_plugins" )
 	 *
 	 * @param	array		$plugins		Found plugins
 	 * @return	array

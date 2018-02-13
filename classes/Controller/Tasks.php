@@ -19,9 +19,9 @@ use MWP\Framework\Task;
 /**
  * Tasks Controller
  *
- * @Wordpress\AdminPage( title="Tasks Management", menu="MWP Task Runner", slug="mwp-tasks", type="management" )
+ * @MWP\WordPress\AdminPage( title="Tasks Management", menu="MWP Task Runner", slug="mwp-tasks", type="management" )
  */
-class Tasks extends \MWP\Framework\Pattern\Singleton
+class _Tasks extends \MWP\Framework\Pattern\Singleton
 {
 	/**
 	 * @var	object			Singleton instance

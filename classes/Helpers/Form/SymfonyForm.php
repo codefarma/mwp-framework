@@ -21,7 +21,7 @@ use MWP\Framework\Helpers\Form;
 /**
  * Form Class
  */
-class SymfonyForm extends Form
+class _SymfonyForm extends Form
 {	
 	/**
 	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance

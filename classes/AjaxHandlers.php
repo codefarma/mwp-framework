@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * AjaxHandlers Class
  */
-class AjaxHandlers extends \MWP\Framework\Pattern\Singleton
+class _AjaxHandlers extends \MWP\Framework\Pattern\Singleton
 {
 	/**
 	 * @var	self
@@ -64,7 +64,7 @@ class AjaxHandlers extends \MWP\Framework\Pattern\Singleton
 	/**
 	 * Load available studio projects
 	 *
-	 * @Wordpress\AjaxHandler( action="mwp_resequence_records", for={"users"} )
+	 * @MWP\WordPress\AjaxHandler( action="mwp_resequence_records", for={"users"} )
 	 *
 	 * @return	void
 	 */

@@ -18,12 +18,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * A container for our custom validation and sanitization routines 
  */
-class PiklistValidators
+class _PiklistValidators
 {
 	/**
 	 * Register piklist validation rules
 	 * 
-	 * @Wordpress\Filter( for="piklist_validation_rules" )
+	 * @MWP\WordPress\Filter( for="piklist_validation_rules" )
 	 * 
 	 * @param	array		$rules				The piklist validation rules array
 	 */
@@ -67,7 +67,7 @@ class PiklistValidators
 	/**
 	 * Register piklist sanitization rules
 	 * 
-	 * @Wordpress\Filter( for="piklist_sanitization_rules" )
+	 * @MWP\WordPress\Filter( for="piklist_sanitization_rules" )
 	 * 
 	 * @param	array		$rules				The piklist sanitizations rules array
 	 */

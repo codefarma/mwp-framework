@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * MWP Framework commands that can be executed from the WP CLI.
  */
-class CLI extends \WP_CLI_Command {
+class _CLI extends \WP_CLI_Command {
 
 	/**
 	 * Creates a new boilerplate mwp application framework plugin.

@@ -23,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * TabType Class
  */
-class TabType extends AbstractType
+class _TabType extends AbstractType
 {
     /**
      * @param OptionsResolverInterface $resolver

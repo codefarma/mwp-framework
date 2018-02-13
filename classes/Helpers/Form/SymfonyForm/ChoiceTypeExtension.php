@@ -23,7 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 /**
  * ChoiceTypeExtension Class
  */
-class ChoiceTypeExtension extends AbstractTypeExtension
+class _ChoiceTypeExtension extends AbstractTypeExtension
 {
     /**
      * Extends the form type which all other types extend

@@ -20,7 +20,7 @@ use \MWP\Framework\Framework;
 /**
  * Task Class
  */
-class Task extends ActiveRecord
+class _Task extends ActiveRecord
 {
 	/**
 	 * @var	array		Multitons cache (needs to be defined in subclasses also)

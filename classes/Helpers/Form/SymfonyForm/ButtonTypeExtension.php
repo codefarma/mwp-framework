@@ -23,7 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 /**
  * ButtonTypeExtension Class
  */
-class ButtonTypeExtension extends AbstractTypeExtension
+class _ButtonTypeExtension extends AbstractTypeExtension
 {
     /**
      * Extends the form type which all other types extend
