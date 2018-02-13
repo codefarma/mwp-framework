@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 - (added) changelog.md
+- (added) New class extensibility pattern that allows any class prefixed with underscore to be internally decorated
+- (added) CLI builds using both 1.x and 2.x versions of MWP depending on the target plugin
 
 ### Breaking Changes
 - (changed) all class namespacing has been changed from "Modern\Wordpress" to "MWP\Framework"
@@ -21,6 +23,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   > mwp_form_implementation => mwp_fw_form_implementation
   > mwp_tmpl => mwp_fw_tmpl
 - (changed) Constant MODERN_WORDPRESS_DEV changed to MWP_FRAMEWORK_DEBUG
+- (changed) removed the automatic init() method call on singleton instances
+- (changed) moved the framework init back to the 'after_setup_theme' hook to allow themes to extend plugins
+- (changed) relocated the plugin templates overrides to the 'templates' subfolder of the plugin slug directory in the theme
 
 ## [1.4.0] - 2018-01-29
 - 1.4.0 release
