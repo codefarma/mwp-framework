@@ -530,7 +530,7 @@ abstract class _Plugin extends Singleton
 	 */
 	public function getTemplate( $template )
 	{
-		if ( $overridden_template = locate_template( $this->pluginSlug() . '/' . $template . '.php' ) ) 
+		if ( $overridden_template = locate_template( $this->pluginSlug() . '/templates/' . $template . '.php' ) ) 
 		{
 			// locate_template() returns path to file
 			// if either the child theme or the parent theme have overridden the template
