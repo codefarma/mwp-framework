@@ -57,15 +57,15 @@ call_user_func( function() {
 	
 	/**
 	 * Only attempt to load the framework which is the most up to date after
-	 * all plugins have been included, and had a chance to report their bundled 
-	 * framework version.
+	 * all plugins and themes have been included, and had a chance to report 
+	 * their bundled framework version.
 	 *
 	 * Also: If we are in development mode, then we should never load any
 	 * other version than the standalone copy.
 	 *
 	 * @return	void
 	 */
-	add_action( 'plugins_loaded', function() use ( $plugin_meta, &$_mwp_fw_latest )
+	add_action( 'after_setup_theme', function() use ( $plugin_meta, &$_mwp_fw_latest )
 	{
 		// Let's always skip including bundled frameworks if we are in development
 		$in_development = ( defined( 'MWP_FRAMEWORK_DEBUG' ) and \MWP_FRAMEWORK_DEBUG );
@@ -133,7 +133,7 @@ call_user_func( function() {
 				 */
 				public static function init()
 				{
-					/* Register extension directories */
+					/* Register extension directories */					
 					foreach( apply_filters( 'mwp_framework_extension_dirs', array() ) as $dir ) {
 						if ( isset( $dir['namespace'] ) and isset( $dir['path'] ) ) {
 							static::register_extensions( $dir['namespace'], $dir['path'] );
