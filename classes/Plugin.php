@@ -727,12 +727,17 @@ abstract class _Plugin extends Singleton
 			}
 		}
 		
+		$bundle = ( ( isset( $options['bundle'] ) and $options['bundle'] ) or ( ! isset( $options[ 'nobundle' ] ) or ! $options[ 'nobundle' ] ) );
+		
 		/**
 		 * Create build meta data
 		 */
 		if ( ! isset( $options[ 'skip_db_dump' ] ) or ! $options[ 'skip_db_dump' ] ) 
 		{
-			$build_meta = array();
+			$build_meta = array(
+				'framework_version' => Framework::instance()->data('plugin-meta')['version'],
+				'framework_bundled' => $bundle,
+			);
 			$dbHelper = \MWP\Framework\DbHelper::instance();
 			
 			/* Update table schema data file */
@@ -774,8 +779,6 @@ abstract class _Plugin extends Singleton
 			/* Save the build meta */
 			file_put_contents( WP_PLUGIN_DIR . '/' . $slug . '/data/build-meta.php', "<?php\nreturn <<<'JSON'\n" . json_encode( $build_meta, JSON_PRETTY_PRINT ) . "\nJSON;\n" );
 		}
-		
-		$bundle = ( ( isset( $options['bundle'] ) and $options['bundle'] ) or ( ! isset( $options[ 'nobundle' ] ) or ! $options[ 'nobundle' ] ) );
 		
 		// Bundle the mwp application framework in with the plugin
 		if ( $slug !== 'mwp-framework' and $bundle )

@@ -142,7 +142,7 @@ call_user_func( function() {
 					
 					$extensions = static::$extensions;
 					
-					/* Extensible Autoloader */
+					/* Extensible Class Autoloader */
 					spl_autoload_register( function( $class ) use ( $extensions ) {
 						$pieces = explode( '\\', $class );
 						$classname = array_pop( $pieces );
