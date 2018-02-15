@@ -19,7 +19,7 @@
 	var controllers = {};
 	var models = {};
 	var collections = {};
-	var local = mw_localized_data;
+	var local = window.mwp.local = mw_localized_data;
 	
 	var BaseModel = Backbone.Model.extend(
 	{
