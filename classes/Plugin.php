@@ -102,7 +102,7 @@ abstract class _Plugin extends Singleton
 				$install = $this->data( 'install-meta' );
 				if ( ! is_array( $install ) or version_compare( $install[ 'version' ], $plugin_meta[ 'version' ] ) == -1 )
 				{
-					update_site_option( 'mwp_cache_latest', time() );
+					update_site_option( 'mwp_fw_cache_latest', time() );
 					$this->versionUpdated();
 				}
 			}

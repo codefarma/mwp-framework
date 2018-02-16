@@ -27,17 +27,14 @@ use MWP\Framework\Framework;
 $notices = array();
 $framework = Framework::instance();
 
-if ( isset( $_POST['mwp_clear_caches'] ) and $_POST['mwp_clear_caches'] ) 
-{
-	update_site_option( 'mwp_cache_latest', time() );
-	$framework->clearAnnotationsCache();
+if ( isset( $_POST['mwp_fw_clear_caches'] ) and $_POST['mwp_fw_clear_caches'] ) {
+	update_site_option( 'mwp_fw_cache_latest', time() );
+	$framework->clearCaches();
 	$notices[] = __( "Temporary caches have been cleared.", 'mwp-framework' );
 }
 
-if ( isset( $_POST['mwp_update_schema'] ) and $_POST['mwp_update_schema'] )
-{
-	foreach( apply_filters( 'mwp_framework_plugins', array() ) as $plugin )
-	{
+if ( isset( $_POST['mwp_fw_update_schema'] ) and $_POST['mwp_fw_update_schema'] ) {
+	foreach( apply_filters( 'mwp_framework_plugins', array() ) as $plugin ) {
 		$plugin->updateSchema();
 	}
 	$notices[] = __( "Database table schemas have been brought up to date.", 'mwp-framework' );
@@ -54,22 +51,22 @@ $failed_task_count = Task::countTasks( null, null, 'failed' );
 	<?php endforeach; ?>
 
 	<form method="post" style="margin-bottom: 10px">
-		<input name="mwp_clear_caches" type="hidden" value="1" />
+		<input name="mwp_fw_clear_caches" type="hidden" value="1" />
 		<input class="button" value="Clear Caches" type="submit" style="width: 100%;"/>
 	</form>
 
 	<?php if ( ! $framework->isDev() ) : ?>
 	<form method="post">
-		<input name="mwp_update_schema" type="hidden" value="1" />
+		<input name="mwp_fw_update_schema" type="hidden" value="1" />
 		<input class="button" value="Update DB Schema" type="submit" style="width: 100%;" />
 	</form>
 	<?php endif; ?>
 
 </div>
 
-<a href="<?php echo admin_url( 'tools.php?page=mwp-tasks' ) ?>">Tasks Pending</a>: <?php echo Task::countTasks() ?>
+<a href="<?php echo admin_url( 'tools.php?page=mwp-fw-tasks' ) ?>">Tasks Pending</a>: <?php echo Task::countTasks() ?>
 <?php if ( $failed_task_count ) : ?>
-  <br><a style="color: red" href="<?php echo admin_url( 'tools.php?page=mwp-tasks&status=failed' ) ?>">Tasks Failed</a>: <?php echo Task::countTasks( null, null, 'failed' ) ?>
+  <br><a style="color: red" href="<?php echo admin_url( 'tools.php?page=mwp-fw-tasks&status=failed' ) ?>">Tasks Failed</a>: <?php echo Task::countTasks( null, null, 'failed' ) ?>
 <?php endif ?>
 
 <div style="clear:both; padding-top: 10px;">

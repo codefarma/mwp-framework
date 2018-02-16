@@ -25,5 +25,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<strong style="font-size: 1.2em;"><a href="<?php echo add_query_arg( array( 'page' => 'mwp-tasks', 'do' => 'viewtask', 'task_id' => $task->id ), admin_url( 'tools.php' ) ) ?>"><?php echo $task->getTitle() ?></a></strong>
+<strong style="font-size: 1.2em;"><a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks', 'do' => 'viewtask', 'task_id' => $task->id ), admin_url( 'tools.php' ) ) ?>"><?php echo $task->getTitle() ?></a></strong>
 <?php if ( $task->tag ) : ?><br>Tag: <?php echo $task->tag ?><?php endif; ?>

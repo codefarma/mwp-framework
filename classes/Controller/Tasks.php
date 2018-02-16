@@ -19,7 +19,7 @@ use MWP\Framework\Task;
 /**
  * Tasks Controller
  *
- * @MWP\WordPress\AdminPage( title="Tasks Management", menu="MWP Task Runner", slug="mwp-tasks", type="management" )
+ * @MWP\WordPress\AdminPage( title="Tasks Management", menu="MWP Task Runner", slug="mwp-fw-tasks", type="management" )
  */
 class _Tasks extends \MWP\Framework\Pattern\Singleton
 {
