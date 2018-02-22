@@ -530,8 +530,7 @@ abstract class _Plugin extends Singleton
 	 */
 	public function getTemplate( $template )
 	{
-		if ( $overridden_template = locate_template( $this->pluginSlug() . '/templates/' . $template . '.php' ) ) 
-		{
+		if ( $overridden_template = locate_template( $this->pluginSlug() . '/templates/' . $template . '.php' ) ) {
 			// locate_template() returns path to file
 			// if either the child theme or the parent theme have overridden the template
 			return $overridden_template;
@@ -543,8 +542,7 @@ abstract class _Plugin extends Singleton
 			// or alternatively fall back to the mwp application framework template
 			$templateFile = $this->pluginFile( 'templates/' . $template, 'php' );
 			
-			if ( file_exists( $templateFile ) )
-			{			
+			if ( file_exists( $templateFile ) ) {			
 				return $templateFile;
 			}
 			
@@ -565,13 +563,11 @@ abstract class _Plugin extends Singleton
 	{
 		$templateFile = $this->getTemplate( $template );
 		
-		if ( ! file_exists( $templateFile ) )
-		{
+		if ( ! file_exists( $templateFile ) ) {
 			return "[missing template file: {$this->pluginSlug()}/templates/{$template}]";
 		}
 		
-		if ( is_array( $vars ) )
-		{
+		if ( is_array( $vars ) ) {
 			extract( $vars, EXTR_SKIP );
 		}
 

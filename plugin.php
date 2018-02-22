@@ -150,21 +150,24 @@ call_user_func( function() {
 						if ( substr( $classname, 0, 1 ) != '_' ) {
 							if ( class_exists( $namespace . '\\_' . $classname ) ) {
 								$reflectionClass = new \ReflectionClass( $namespace . '\\_' . $classname );
-								$classType = $reflectionClass->isAbstract() ? 'abstract' : '';
-								$bunchedClassname = str_replace( '\\', '', $class );
-								$latestClassname = $namespace . '\\_' . $classname;
-								if ( isset( $extensions[ $bunchedClassname ] ) and is_array( $extensions[ $bunchedClassname ] ) ) {
-									foreach( $extensions[ $bunchedClassname ] as $extension ) {
-										if ( isset( $extension['namespace'] ) and isset( $extension['file'] ) and file_exists( $extension['file'] ) ) {
-											eval( "namespace {$extension['namespace']}; {$classType} class _{$bunchedClassname} extends \\{$latestClassname} {}" );
-											include_once $extension['file'];
-											if ( class_exists( $extension['namespace'] . '\\' . $bunchedClassname ) ) {
-												$latestClassname = $extension['namespace'] . '\\' . $bunchedClassname;
+								if ( ! $reflectionClass->isFinal() and ! $reflectionClass->isTrait() ) {
+									$classOrInterface = $reflectionClass->isInterface() ? 'interface' : 'class';
+									$classType = $reflectionClass->isAbstract() ? 'abstract' : '';
+									$bunchedClassname = str_replace( '\\', '', $class );
+									$latestClassname = $namespace . '\\_' . $classname;
+									if ( isset( $extensions[ $bunchedClassname ] ) and is_array( $extensions[ $bunchedClassname ] ) ) {
+										foreach( $extensions[ $bunchedClassname ] as $extension ) {
+											if ( isset( $extension['namespace'] ) and isset( $extension['file'] ) and file_exists( $extension['file'] ) ) {
+												eval( "namespace {$extension['namespace']}; {$classType} {$classOrInterface} _{$bunchedClassname} extends \\{$latestClassname} {}" );
+												include_once $extension['file'];
+												if ( class_exists( $extension['namespace'] . '\\' . $bunchedClassname ) ) {
+													$latestClassname = $extension['namespace'] . '\\' . $bunchedClassname;
+												}
 											}
 										}
 									}
+									eval( "namespace {$namespace}; {$classType} {$classOrInterface} {$classname} extends \\{$latestClassname} {}" );
 								}
-								eval( "namespace {$namespace}; {$classType} class {$classname} extends \\{$latestClassname} {}" );
 							}
 						}
 					});
