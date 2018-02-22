@@ -22,16 +22,15 @@ abstract class Singleton
 	protected static $_instance;
 	
 	/**
-     * Protected constructor to prevent creating a new instance of the
-     * *Singleton* via the `new` operator from outside of this class.
+     * Protected constructor to prevent creating a new instance
+     * from outside of this class.
      */
     protected function __construct() 
 	{
 	}
 	
 	/**
-     * Private clone method to prevent cloning of the instance of the
-     * *Singleton* instance.
+     * Private clone method to prevent cloning
      *
      * @return void
      */
@@ -39,6 +38,16 @@ abstract class Singleton
     {
     }
 	
+	/**
+	 * Initialize
+	 *
+	 * @return    void
+	 */
+	protected function constructed()
+	{
+		// initialization routine when the instance is first created
+	}
+		
 	/**
 	 * Create Instance
 	 *
@@ -50,6 +59,7 @@ abstract class Singleton
 		{
 			$classname = get_called_class();
 			static::$_instance = new $classname;
+			static::$_instance->constructed();
 		}
 		
 		return static::$_instance;
