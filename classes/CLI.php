@@ -182,7 +182,7 @@ class _CLI extends \WP_CLI_Command {
 		}
 		
 		$framework = \MWP\Framework\Framework::instance();
-		$download_url = $args[0] ?: 'https://github.com/Miller-Media/wp-plugin-boilerplate/archive/master-2.x.zip';
+		$download_url = isset( $args[0] ) ? $args[0] : 'https://github.com/Miller-Media/wp-plugin-boilerplate/archive/master-2.x.zip';
 		$upgrader = new \WP_Upgrader( new \MWP\Framework\CLI\WPUpgraderSkin );
 
 		\WP_CLI::line( 'Downloading package...' );
