@@ -615,6 +615,7 @@ class _Framework extends Plugin
 				$task->running = 0;
 				$task->setData( 'status', 'Failed' );
 				$task->save();
+				$task->shutdown();
 			}
 		});
 		
@@ -701,13 +702,16 @@ class _Framework extends Plugin
 					$task->log( 'Runtime exception encountered: ' . $e->getMessage() );
 					$task->save();
 				}
+				
+				// Allow the task to shutdown if needed
+				$task->shutdown();
 			}
 			else
 			{
 				$task->setData( 'status', 'Unavailable' );
 				$task->running = 0;
 				$task->fails = 3;
-				$task->log( 'Action not available for this task: ' . $task->action );
+				$task->log( 'Action callback not available for this task: ' . $task->action );
 				$task->save();
 			}
 		}

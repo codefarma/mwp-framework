@@ -105,6 +105,16 @@ class _Task extends ActiveRecord
 	}
 	
 	/**
+	 * Execute a shutdown action
+	 * 
+	 * @return	void
+	 */
+	public function shutdown()
+	{
+		do_action( $this->action . '_shutdown', $this );
+	}
+	
+	/**
 	 * Save a log message
 	 *
 	 * @param	string			$message			The message to log

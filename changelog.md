@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - (added) changelog.md
 - (added) New class extensibility pattern that allows any class prefixed with underscore to be internally decorated
 - (added) CLI builds using both 1.x and 2.x versions of MWP depending on the target plugin
+- (added) New shutdown method on MWP\Framework\Task and ability to specify a shutdown callback action for tasks
 
 ### Breaking Changes
 - (changed) all class namespacing has been changed from "Modern\Wordpress" to "MWP\Framework"
