@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use MWP\Framework\Framework;
-use MWP\Framework\Helpers\ActiveRecordTable;
+use MWP\Framework\Helpers\ActiveRecordController;
 
 /**
  * An active record design pattern
@@ -31,33 +31,43 @@ abstract class ActiveRecord
 	/**
 	 * @var	string		Table name
 	 */
-	public static $table;
+	protected static $table;
 	
 	/**
 	 * @var	array		Table columns
 	 */
-	public static $columns = array();
+	protected static $columns = array();
 	
 	/**
 	 * @var	string		Table primary key
 	 */
-	public static $key;
+	protected static $key;
 	
 	/**
 	 * @var	string		Table column prefix
 	 */
-	public static $prefix = '';
+	protected static $prefix = '';
 	
 	/**
 	 * @var bool		Site specific table? (for multisites)
 	 */
-	public static $site_specific = FALSE;
+	protected static $site_specific = FALSE;
 	
 	/**
 	 * @var	string
 	 */
-	public static $plugin_class = 'MWP\Framework\Framework';
+	protected static $plugin_class = 'MWP\Framework\Framework';
 	
+	/**
+	 * @var	string
+	 */
+	protected static $sequence_col;
+	 
+	/**
+	 * @var	string
+	 */
+	protected static $parent_col;
+
 	/**
 	 * @var	string
 	 */
@@ -88,16 +98,6 @@ abstract class ActiveRecord
 	 */
 	public static $lang_delete = 'Delete';
 	
-	/**
-	 * @var	string
-	 */
-	public static $sequence_col;
-	 
-	/**
-	 * @var	string
-	 */
-	public static $parent_col;
-
 	/**
 	 * @var	string		WP DB Prefix of loaded record
 	 */
@@ -547,14 +547,89 @@ abstract class ActiveRecord
 	}
 	
 	/**
+	 * @var  array    Controllers cache
+	 */
+	protected static $_controllers = array();
+	
+	/**
+	 * @var string
+	 */
+	protected static $table_classes = array();
+	
+	/**
+	 * @var string
+	 */
+	protected static $controller_classes = array();
+	
+	/**
+	 * Set a custom table class for an active record
+	 *
+	 * @param   string      $class         The table class to use when creating tables
+	 * @return  void
+	 */
+	public static setTableClass( $class )
+	{
+		static::$table_classes[ get_called_class() ] = $class;
+	}
+	
+	/**
+	 * Get the table class for an active record
+	 *
+	 * @return  string
+	 */
+	public static getTableClass()
+	{
+		$record_class = get_called_class();
+		
+		if ( isset( static::$table_classes[ $record_class ] ) ) {
+			if ( is_a( static::$table_classes[ $record_class ], 'MWP\Framework\Helpers\ActiveRecordTable' ) ) {
+				return static::$table_classes[ $record_class ];
+			}
+		}
+		
+		return 'MWP\Framework\Helpers\ActiveRecordTable';
+	}
+	
+	/**
+	 * Set a custom controller class for an active record
+	 *
+	 * @param   string      $class         The controller class to use when creating controllers
+	 * @return  void
+	 */
+	public static setControllerClass( $class )
+	{
+		static::$controller_classes[ get_called_class() ] = $class;
+	}
+	
+	/**
+	 * Get the controller class for an active record
+	 *
+	 * @return  string
+	 */
+	public static getControllerClass()
+	{
+		$record_class = get_called_class();
+		
+		if ( isset( static::$controller_classes[ $record_class ] ) ) {
+			if ( is_a( static::$controller_classes[ $record_class ], 'MWP\Framework\Helpers\ActiveRecordController' ) ) {
+				return static::$controller_classes[ $record_class ];
+			}
+		}
+		
+		return 'MWP\Framework\Helpers\ActiveRecordController';
+	}
+	
+	/**
 	 * Create a table for viewing active records
 	 *
 	 * @param	array				$args			Table construct arguments
-	 * @return	ActiveRecordTable
+	 * @return	MWP\Framework\Helpers\ActiveRecordTable
 	 */
 	public static function createDisplayTable( $args=array() )
 	{
-		$table = new ActiveRecordTable( array_merge( array( 
+		$tableClass = static::getTableClass();
+		
+		$table = new $tableClass( array_merge( array( 
 			'recordClass' => get_called_class(),
 			'singular' => strtolower( static::$lang_singular ),
 			'plural' => strtolower( static::$lang_plural ),
@@ -564,12 +639,57 @@ abstract class ActiveRecord
 	}
 	
 	/**
+	 * Create a controller which can be used to interface with this active record class
+	 *
+	 * @param   string      $key          The controller key used to access this controller
+	 * @param   array       $options      Optional configuration options passed to controller
+	 * @return  ActiveRecordController
+	 */
+	public static function createController( $key, $options=array() )
+	{
+		$controllerClass = static::getControllerClass();
+		$controller = new $controllerClass( get_called_class(), $options );
+		static::setController( $key, $controller );
+		
+		return $controller;
+	}
+	
+	/**
+	 * Set the cached controller for a class
+	 *
+	 * @param   string                    $key              The controller key
+	 * @param   ActiveRecordController    $controller       The controller to cache
+	 * @return	ActiveRecordController
+	 */
+	public static function setController( $key, ActiveRecordController $controller )
+	{
+		return static::$_controllers[ get_called_class() ][ $key ] = $controller;
+	}
+	
+	/**
+	 * Get a created controller by key
+	 *
+	 * @param   string      $key             The controller key to get
+	 * @return  ActiveRecordController|NULL
+	 */
+	public static function getController( $key )
+	{
+		$record_class = get_called_class();
+		
+		if ( isset( static::$_controllers[ $record_class ][ $key ] ) ) {
+			return static::$_controllers[ $record_class ][ $key ];
+		}
+		
+		return NULL;
+	}
+	
+	/**
 	 * Build an editing form
 	 *
-	 * @param	ActiveRecord		$record					The record to edit
-	 * @return	MWP\Framework\Helpers\Form
+	 * @param   ActiveRecord|NULL           $record	    The record to edit, or NULL if creating
+	 * @return  MWP\Framework\Helpers\Form
 	 */
-	public static function getForm( $record=null )
+	public static function getForm( $record=NULL )
 	{
 		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . '_form';
 		$pluginClass = static::$plugin_class;
@@ -585,10 +705,10 @@ abstract class ActiveRecord
 	 *
 	 * @return	MWP\Framework\Helpers\Form
 	 */
-	public function getDeleteForm()
+	public function createDeleteForm()
 	{
 		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . '_delete_form';
-		$form = Framework::instance()->createForm( $name );
+		$form = $this->getPlugin()->createForm( $name );
 		
 		$form->addField( 'cancel', 'submit', array( 
 			'label' => __( 'Cancel', 'mwp-framework' ), 
@@ -638,20 +758,16 @@ abstract class ActiveRecord
 	public static function loadFromRowData( $row_data )
 	{
 		/* Look for cached record in multiton store */
-		if ( isset( $row_data[ static::$prefix . static::$key ] ) and $row_data[ static::$prefix . static::$key ] )
-		{
-			if ( isset( static::$multitons[ $row_data[ static::$prefix . static::$key ] ] ) )
-			{
+		if ( isset( $row_data[ static::$prefix . static::$key ] ) and $row_data[ static::$prefix . static::$key ] ) {
+			if ( isset( static::$multitons[ $row_data[ static::$prefix . static::$key ] ] ) ) {
 				return static::$multitons[ $row_data[ static::$prefix . static::$key ] ];
 			}
 		}
 		
 		/* Build the record */
 		$record = new static;
-		foreach( $row_data as $column => $value )
-		{
-			if ( static::$prefix and substr( $column, 0, strlen( static::$prefix ) ) == static::$prefix )
-			{
+		foreach( $row_data as $column => $value ) {
+			if ( static::$prefix and substr( $column, 0, strlen( static::$prefix ) ) == static::$prefix ) {
 				$column = substr( $column, strlen( static::$prefix ) );
 			}
 			
@@ -659,8 +775,7 @@ abstract class ActiveRecord
 		}
 		
 		/* Cache the record in the multiton store */
-		if ( isset( $row_data[ static::$prefix . static::$key ] ) and $row_data[ static::$prefix . static::$key ] )
-		{
+		if ( isset( $row_data[ static::$prefix . static::$key ] ) and $row_data[ static::$prefix . static::$key ] ) {
 			static::$multitons[ $row_data[ static::$prefix . static::$key ] ] = $record;
 		}
 		
@@ -782,7 +897,7 @@ abstract class ActiveRecord
 	}
 	
 	/**
-	 * Get data array
+	 * Get an array of the internal record data
 	 *
 	 * @return	array
 	 */
