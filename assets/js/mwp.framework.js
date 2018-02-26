@@ -135,7 +135,7 @@
 	};
 	
 	/**
-	 * Controller Registration
+	 * Controller Manager
 	 */
 	mwp.controller = _.extend( function( name, properties, classProperties ) 
 	{
@@ -144,7 +144,12 @@
 	},
 	{
 		/**
-		 * Controller Models Getter/Setter
+		 * Controller Factory
+		 *
+		 * @param   string    name              The controller name
+		 * @param   object    properties        Methods and properties of model instances
+		 * @param   object    classProperties   Methods and properties of the model itself
+		 * @return  Backbone.Model
 		 */
 		model: _.extend( function( name, properties, classProperties ) 
 		{
@@ -169,7 +174,7 @@
 		}, 
 		{
 			/**
-			 * Get a controller
+			 * Get a controller model
 			 *
 			 * @param	string				name		The name of a registered controller
 			 * @return	Backbone.Model
@@ -184,7 +189,7 @@
 			},
 			
 			/**
-			 * Set a controller
+			 * Set a controller model
 			 *
 			 * @param	string				name			The registered name
 			 * @param	object				controller		The controller instance
@@ -229,7 +234,12 @@
 	});
 	
 	/**
-	 * Model Registration
+	 * Model Factory
+	 *
+	 * @param   string    name              The controller name
+	 * @param   object    properties        Methods and properties of model instances
+	 * @param   object    classProperties   Methods and properties of the model itself
+	 * @return  Backbone.Model
 	 */
 	mwp.model = _.extend( function( name, properties, classProperties )
 	{
@@ -267,7 +277,12 @@
 	});
 	
 	/**
-	 * Collection Registration
+	 * Collection Factory
+	 *
+	 * @param   string    name              The controller name
+	 * @param   object    properties        Methods and properties of model instances
+	 * @param   object    classProperties   Methods and properties of the model itself
+	 * @return  Backbone.Collection
 	 */
 	mwp.collection = _.extend( function( name, properties, classProperties )
 	{
