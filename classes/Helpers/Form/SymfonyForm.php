@@ -107,11 +107,11 @@ class _SymfonyForm extends Form
 	 *
 	 * @param	string						$name			The name of the form
 	 * @param	MWP\Framework\Plugin		$plugin			The plugin to associate this class with, or NULL to auto-associate
-	 * @param	object|array				$data			The initial form data state
 	 * @param	array						$options		Set options for the form
+	 * @param	object|array				$data			The initial form data state
 	 * @return	void
 	 */
-	public function __construct( $name, \MWP\Framework\Plugin $plugin=NULL, $data=null, $options=array() )
+	public function __construct( $name, \MWP\Framework\Plugin $plugin=NULL, $options=array(), $data=null )
 	{
 		$this->name = $name;
 		$this->plugin = $plugin ?: Framework::instance();
@@ -557,6 +557,12 @@ class _SymfonyForm extends Form
 			return static::$formFieldClasses[ $type ];
 		}
 		
+		/**
+		 * Get the class to use for an unrecognized form field $type
+		 *
+		 * @param   string   $type    The form field type
+		 * @return  string
+		 */
 		return apply_filters( 'mwp_form_field_class', $type );
 	}
 	
