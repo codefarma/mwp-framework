@@ -567,7 +567,7 @@ abstract class ActiveRecord
 	 * @param   string      $class         The table class to use when creating tables
 	 * @return  void
 	 */
-	public static setTableClass( $class )
+	public static function setTableClass( $class )
 	{
 		static::$table_classes[ get_called_class() ] = $class;
 	}
@@ -577,7 +577,7 @@ abstract class ActiveRecord
 	 *
 	 * @return  string
 	 */
-	public static getTableClass()
+	public static function getTableClass()
 	{
 		$record_class = get_called_class();
 		
@@ -596,7 +596,7 @@ abstract class ActiveRecord
 	 * @param   string      $class         The controller class to use when creating controllers
 	 * @return  void
 	 */
-	public static setControllerClass( $class )
+	public static function setControllerClass( $class )
 	{
 		static::$controller_classes[ get_called_class() ] = $class;
 	}
@@ -606,7 +606,7 @@ abstract class ActiveRecord
 	 *
 	 * @return  string
 	 */
-	public static getControllerClass()
+	public static function getControllerClass()
 	{
 		$record_class = get_called_class();
 		
