@@ -95,49 +95,80 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $activeRecordClass;
 	
 	/**
-	 * @var	array			Keyed array of bulk actions to allow
+	 * @var	array  {
+	 *     An associative array of the columns to display in the table.
+	 *     $columns = [
+	 *         'column_name' => 'Name of Column',
+	 *     ];
+	 * }
+	 */
+	public $columns = array();
+	
+	/**
+	 * @var array {
+	 *     Custom display handler callbacks for column data.
+	 *     $handlers = [
+	 *         'column_name' => function( $row ) {
+	 *             return '<strong>' . $row['column_name'] . '</strong>';
+	 *         }
+	 *     ];
+	 * }			
+	 */
+	public $handlers = array();
+	
+	/**
+	 * @var	array  {
+	 *     An associative array of available bulk actions.
+	 *     $bulkActions = [
+	 *         'delete' => 'Delete',
+	 *     ];
+	 * }
 	 */
 	public $bulkActions = array();
 	
+    /**
+	 * @var array {
+	 *     A list of columns that can be used for sorting.
+	 *     $sortableColumns = [
+	 *         'column_one' => 'column_one',         // Initially ascending
+	 *         'column_two' => ['column_two', true], // Initially descending
+	 *     ];
+	 * }
+     */
+	public $sortableColumns = array();
+	
+    /**
+	 * @var array {
+	 *     A list of columns that are searchable.
+	 *     $searchableColumns = [
+	 *         'column_name' => [
+	 *             'type' => 'contains' or 'equals' // Search method
+	 *             'combine_words' => 'and' or 'or' // Used with 'contains' search
+	 *         ]
+	 *     ];
+	 * }
+     */
+	public $searchableColumns = array();
+	
 	/**
-	 * @var	int				Number of records to show per page
+	 * @var	int  Number of records to show per page
 	 */
 	public $perPage = 50;
 	
 	/**
-	 * @var	string			Column to sort by
+	 * @var	string  Default column to sort by
 	 */
 	public $sortBy;
 	
 	/**
-	 * @var string			Sort order
+	 * @var string	Default sort order
 	 */
 	public $sortOrder = 'DESC';
 	
 	/**
-	 * @var	array			Columns to display
-	 */
-	public $columns;
-	
-	/**
-	 * @var	array			Sortable columns
-	 */
-	public $sortableColumns = array();
-	
-	/**
-	 * @var	array			Searchable columns
-	 */
-	public $searchableColumns = array();
-	
-	/**
-	 * @var	string			Hard filters (ActiveRecord where clauses)
+	 * @var	string	Where clauses to use as hard filters for table results
 	 */
 	public $hardFilters = array();
-	
-	/**
-	 * @var array			Optional display handlers for columns
-	 */
-	public $handlers = array();
 	
 	/**
 	 * @var	bool
@@ -157,7 +188,7 @@ class _ActiveRecordTable extends \WP_List_Table
 	/**
 	 * @var	bool
 	 */
-	public $displayBottomHeaders = false;	
+	public $displayBottomHeaders = false;
 	
 	/**
 	 * @var	MWP\Framework\Plugin
@@ -497,7 +528,7 @@ class _ActiveRecordTable extends \WP_List_Table
 			$columns[ 'cb' ] = '<input type="checkbox" />';
 		}
 		
-		if ( isset( $this->columns ) )
+		if ( ! empty( $this->columns ) )
 		{
 			$columns = array_merge( $columns, $this->columns );
 			return $columns;
@@ -713,19 +744,36 @@ class _ActiveRecordTable extends \WP_List_Table
 	{
 		$action = $this->current_action();
 		
-		if ( $action and array_key_exists( $action, $this->bulkActions ) )
-		{
-			$class = $this->activeRecordClass;
-			foreach( $_POST[ $this->_args['singular'] ] as $item_id )
-			{
-				try
-				{
-					$item = $class::load( $item_id );
-					if ( is_callable( array( $item, $action ) ) ) {
-						call_user_func( array( $item, $action ) );
+		if ( isset( $_POST[ $this->_args['singular'] ] ) ) {		
+			if ( $action and array_key_exists( $action, $this->bulkActions ) ) {
+				$class = $this->activeRecordClass;
+				$records = array_filter( 
+					array_map( 
+						function( $item_id ) use ( $class ) {
+							try { return $class::load( $item_id ); }
+							catch( \OutOfRangeException $e ) {}
+						}, 
+						(array) $_POST[ $this->_args['singular'] ] 
+					)
+				);
+				
+				/**
+				 * Filter the records that are receiving the bulk action
+				 *
+				 * @param   array    $records       An array of active records from the bulk request
+				 * @param   string   $action        The requested bulk action
+				 * @param   string   $class         The name of the active record class
+				 * @return  array
+				 */
+				$records = apply_filters( 'mwp_fw_activerecord_bulk', $records, $action, $class );
+				
+				if ( ! empty( $records ) ) {
+					foreach( $records as $record ) {
+						if ( is_callable( array( $record, $action ) ) ) {
+							call_user_func( array( $record, $action ) );
+						}
 					}
-				}
-				catch( \Exception $e ) { }
+				} 
 			}
 		}
 	}
