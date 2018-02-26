@@ -9,14 +9,7 @@ include_once 'class-tgm-plugin-activation.php';
 add_action( 'tgmpa_register', function() 
 {
 	$base_dir = dirname( dirname( __FILE__ ) );
-	$dependencies = array(
-		array( 
-			'name'             => 'Piklist',
-			'slug'             => 'piklist',
-			'required'         => true,
-			'force_activation' => true,
-		),
-	);
+	$dependencies = array();
 	
 	$config = array(
 		'id'           => basename( $base_dir ),

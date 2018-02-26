@@ -224,7 +224,6 @@ class _Framework extends Plugin
 		switch( $implementation ) 
 		{
 			case 'symfony':	return 'MWP\Framework\Helpers\Form\SymfonyForm';
-			case 'piklist': return 'MWP\Framework\Helpers\Form\PiklistForm';
 		}
 		
 		return $form_class;
@@ -406,19 +405,6 @@ class _Framework extends Plugin
 			$instance_meta[ 'cache_timestamp' ] = time();
 			$this->setData( 'instance-meta', $instance_meta );
 		}
-	}
-	
-	/**
-	 * Initialize other resources before the wordpress init action
-	 * 
-	 * @MWP\WordPress\Action( for="mwp_framework_init" )
-	 * 
-	 * @return	void
-	 */
-	public function loadOtherResources()
-	{
-		$form_validators = new \MWP\Framework\Helpers\Form\PiklistValidators;
-		$this->attach( $form_validators );		
 	}
 	
 	/**
