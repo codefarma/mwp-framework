@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
+use MWP\WordPress\AdminPage;
+
 /**
  * Active Record Controller
  */
@@ -92,7 +94,7 @@ class ActiveRecordController
 	}
 	
 	/**
-	 * @var	Wordpress\AdminPage
+	 * @var	MWP\WordPress\AdminPage
 	 */
 	public $adminPage;
 	
@@ -104,8 +106,7 @@ class ActiveRecordController
 	public function registerAdminPage( $options=array() )
 	{
 		$recordClass = $this->recordClass;
-		
-		$adminPage = new \Wordpress\AdminPage;
+		$adminPage = new AdminPage;
 		
 		$adminPage->title = isset( $options['title'] ) ? $options['title'] : ( isset( $recordClass::$lang_plural ) ? __( $recordClass::$lang_plural ) : array_pop( explode( '\\', $this->recordClass ) ) . ' Management' );
 		$adminPage->menu  = isset( $options['menu'] ) ? $options['menu'] : $adminPage->title;
