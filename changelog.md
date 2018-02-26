@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - (added) New class extensibility pattern that allows any class prefixed with underscore to be internally decorated
 - (added) CLI builds using both 1.x and 2.x versions of MWP depending on the target plugin
 - (added) New shutdown method on MWP\Framework\Task and ability to specify a shutdown callback action for tasks
+- (added) New methods on active record class to set table/controller classes and create/get controllers by name
+- (changed) Certain public static properties on the ActiveRecord class have been redesignated as protected
 
 ### Breaking Changes
 - (changed) all class namespacing has been changed from "Modern\Wordpress" to "MWP\Framework"
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - (changed) removed the automatic init() method call on singleton instances
 - (changed) moved the framework init back to the 'after_setup_theme' hook to allow themes to extend plugins
 - (changed) relocated the plugin templates overrides to the 'templates' subfolder of the plugin slug directory in the theme
+- (changed) ActiveRecord::getDeleteForm() changed to ActiveRecord::createDeleteForm()
 
 ## [1.4.0] - 2018-01-29
 - 1.4.0 release
