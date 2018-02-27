@@ -1,85 +1,186 @@
-MWP Application Framework
+MWP Application Framework for WordPress
 ==================================
 
-This "plugin" provides a foundation of object oriented design patterns, bootstrap classes, and api abstractions for wordpress that enable very rapid development of new wordpress plugins. It also provides several utilities to auto generate new plugin resources and automatically manage new plugin builds/releases.
+The [MWP Application Framework][7] allows WordPress plugins to be developed using modern development patterns such as MVC and MVVM. Any plugin created with it can be distributed standalone as the framework classes are bundled in when it is built.
 
-## Documentation
+It provides simple solutions for [modeling data][2], [building forms][5], [running tasks][6], [creating interfaces][4], [templating][3], [testing][9], [packaging][10], and writing [generally extensible][11] code.
 
-- [Annotations](https://github.com/Miller-Media/modern-wordpress/wiki/@Annotations)
-- [Framework Classes](https://github.com/Miller-Media/modern-wordpress/wiki)
-- [WP CLI](https://github.com/Miller-Media/modern-wordpress/wiki/WP-CLI)
-- [Boilerplate](https://github.com/Miller-Media/wp-plugin-boilerplate)
+Get started with the [Installation & Setup][8] guide.
 
-## Main features
+**Here are a few highlights:**
 
-* Simply document your functions using [@annotations](https://github.com/Miller-Media/modern-wordpress/wiki/@Annotations) and let the framework automatically hook them into core.
-* Develop rapidly by [extending base classes](https://github.com/Miller-Media/wp-plugin-boilerplate) that bootstrap your plugin, settings pages, widgets, post types, and more.
-* Use [the command line](https://github.com/Miller-Media/modern-wordpress/wiki/WP-CLI) to create new plugin stylesheets, scripts, templates, and php classes.
-* Safely add dependencies on php libraries or other wordpress plugins and they will be managed automatically.
-* Easily keep all your html in individual re-usable templates that maintain theme override capabilities.
-* Leverage a built in task runner to easily send routine tasks off to a managed queue to be ran by cron.
-* Create tables for your plugin and let the framework automatically track and update their changes on new releases.
-* Build new release packages with a single command and all your plugin files are versioned automatically.
+* * *
 
-## How to get started:
+### @ Annotations
 
-1) **Install the packaged plugin and any dependencies**
+Use annotations to interface easily with WordPress core.
 
-Once you have WP CLI installed:
-```
-$ wp plugin install https://github.com/Miller-Media/modern-wordpress/raw/master/builds/mwp-framework-stable.zip --activate
-```
-> Note: If installing to a multisite wordpress, use --activate-network instead of --activate to activate the plugin from the command line.
-
-2) Enable developer mode 
-
-> To enable developer mode: Create or edit the **dev_config.php** file in the *wp-content/plugins/mwp-framework/* directory and add:
 ```php
-<?php
-define( 'MWP_FRAMEWORK_DEV', TRUE );
+/**
+ * Register a script located in plugin-dir/assets/js folder
+ *
+ * @MWP\WordPress\Script( handle="my_custom_js" )
+ */
+public $jsModule = 'assets/js/my_js_module.js';   
+
+
+/**
+ * Use your custom script and pass it the current user id
+ *
+ * @MWP\WordPress\Action( for="wp_enqueue_scripts" )
+ */
+public function enqueueScripts() {
+	MyPlugin::instance()->useScript( $this->jsModule );
+}  
+
+/**
+ * Wrap all post content with some html
+ * 
+ * @MWP\WordPress\Filter( for="the_content" )
+ */
+public function addContent( $the_content ) {
+	return "<div>" . $the_content . "</div>";
+}    
+```   
+
+View the [Annotations Reference][1] documentation.
+
+* * *
+
+### @ Models
+
+Use active records to model your data and attach behaviors to it. Quickly create, read, update, and delete database records.
+
+```php
+use VendorName\VendorPackage\RecordClass;
+
+$record = new RecordClass;
+$record->message = "A developer is a device for turning coffee into code.";
+$record->save();
+```    
+
+View the [Active Record][2] documentation.
+
+* * *
+
+### @ Views
+
+Use views (templates) to separate your presentation (html) from your business logic (code). This allows easy refactoring of output, and allows themes to easily override them.
+
+```html
+<!-- File: plugin-dir/templates/views/component/quote.php -->
+<blockquote>
+  <?php echo $quote ?>
+</blockquote>
 ```
 
-### Create A New Plugin
-Bootstrap the creation of your own new plugin by cloning and customizing the [boilerplate plugin](https://github.com/Miller-Media/wp-plugin-boilerplate) using [WP CLI](https://wp-cli.org/):
-```
-$ wp mwp update-boilerplate
-$ wp mwp create-plugin "Awesome New Plugin" --vendor="My Company" --author="My Name"
-```
-**Note**: By using the WP CLI to create your plugin, the boilerplate is automatically customized with your plugin details!
+```php
+/* Get some html to output */
+use VendorName\VendorPackage\RecordClass;
 
-### Make It Do Something
-To begin programming the functionality of your new plugin, just start adding methods to the *`./your-plugin-dir/classes/Plugin.php`* file, which can be hooked into wordpress [using @annotations](https://github.com/Miller-Media/modern-wordpress/wiki/@Annotations). At some point, you will likely want to separate your code out into separate files to keep things logically organized.
+$record = current(RecordClass::loadWhere('TRUE'));
+$html = MyPlugin::instance()->getTemplateContent( 'views/component/quote', [
+  'quote' => $record ? $record->message : 'Silence is bliss.',
+]);
 
-You can easily create new javascript modules, css stylesheets, html templates, and php classes all from the WP CLI.
-```
-$ wp mwp add-js myplugin-slug script-name
-$ wp mwp add-css myplugin-slug stylesheet-name
-$ wp mwp add-template myplugin-slug views/template-name
-$ wp mwp add-class myplugin-slug New\Class
-```
+echo $html;
+```    
 
-Visit the [boilerplate repository](https://github.com/Miller-Media/wp-plugin-boilerplate) to get a quick rundown of the development tools available to you through mwp application framework.
+View the [Templating][3] documentation.
 
-### Distribute It
-When you are ready to build a new release of your plugin, that's easy too:
+* * *
 
-```
-$ wp mwp build-plugin myplugin-slug --version-update=minor
-```
-A packaged .zip file that contains your new version will be created in the `/builds` subdirectory of your plugin. That zip file can be used to install the plugin on any other wordpress site.
+### @ Controllers
 
-Thats it. Have fun!
+Deploy a management interface to the WP Admin to view, create, update, and delete custom database records.
 
-## Further Reading
+```php
+use VendorName\PackageName\RecordClass;
 
-* [Creating PHP Classes](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#php-classes)
-* [Using templates](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#html-templating)
-* [Using settings](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#plugin-settings)
-* [Using widgets](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#widgets)
-* [Using stylesheets and scripts](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#stylesheets-and-scripts)
-* [Using javascript modules](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#javascript-module-programming)
-* [Using active records](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#database-records)
-* [Using display tables](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#active-record-display-tables)
-* [Using the form helper](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#form-helper)
-* [Using task queues](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#task-queues)
-* [Unit testing your plugin](https://github.com/Miller-Media/wp-plugin-boilerplate/blob/master/README.md#testing-your-plugin)
+add_action( 'init', function() {
+	$controller = RecordClass::createController('admin');
+	$controller->registerAdminPage([
+		'title' => __( 'Record Management' ),
+		'type' => 'menu', 
+		'slug' => 'vendor-slug', 
+		'menu' => __( 'Acme' ), 
+		'icon' => $plugin->fileUrl( 'assets/img/icon.png' ), 
+		'position' => 76,
+	]);
+});
+```    
+
+View the [Active Record Controller][4] documentation.
+
+* * *
+
+### @ Forms
+
+Build forms and check their submission values in a few lines of code.
+
+```php
+/* Create a form and add some fields */
+$form = MyPlugin::instance()->createForm('user_questions');
+$form->addField('name', 'text', ['label' => 'Enter Your Name', 'required' => true]);
+$form->addField('age', 'number', ['label' => 'Age', 'attr' => ['min' => 5]);
+
+/* Process form if it was just submitted */
+if ( $form->isValidSubmission() ) {
+	$values = $form->getValues();
+	update_user_meta( get_current_user_id(), 'name', $values['name'] );
+	update_user_meta( get_current_user_id(), 'age', $values['age'] );
+	$form->processComplete( function() {
+		wp_redirect( home_url() );
+		exit;
+	});
+}
+
+/* Output the form, indicating errors if form was incorrectly submitted */
+echo $form->render();
+```    
+
+View the [Forms][5] documentation.
+
+* * *
+
+### @ Tasks
+
+Send data to a task queue to be processed by a job runner asynchronously.
+
+```php
+/* Queue a task */
+$user_ids = get_users([ 'fields' => 'ID' ]);
+Task::queueTask([ 'action' => 'callback_hook_name' ], [ 'user_ids' => $user_ids ]);
+
+/**
+ * @MWP\WordPress\Action( for="callback_hook_name" )
+ */
+public function processUsers( $task ) {
+	$data = $task->getData('user_ids');
+	if ( empty( $data ) ) {
+	   return $task->complete();
+	}    
+	$user_id = array_shift($data);
+
+	// process user ...
+
+	$task->setData($data);
+}
+```    
+
+View the [Tasks][6] documentation.
+
+
+
+ [1]: https://www.codefarma.com/docs/mwp-framework/annotations
+ [2]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/models
+ [3]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/templating
+ [4]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/record-controller
+ [5]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/forms
+ [6]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/tasks
+ [7]: https://www.codefarma.com/docs/mwp-framework
+ [8]: https://www.codefarma.com/docs/mwp-framework/setup
+ [9]: https://www.codefarma.com/docs/mwp-framework/guide/testing
+ [10]: https://www.codefarma.com/docs/mwp-framework/guide/distribute
+ [11]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/extensibility
+ 
