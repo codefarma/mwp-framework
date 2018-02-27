@@ -576,6 +576,14 @@ abstract class _Plugin extends Singleton
 		$templateContent = ob_get_clean();
 		
 		/**
+		 * Custom template filters
+		 *
+		 * @param   string       $templateContent        The rendered template content
+		 * @parma   array        $vars                   The variables provided to the template
+		 */
+		$templateContent = apply_filters( $this->pluginSlug() . '/templates/' . $template, $templateContent, $vars );
+		
+		/**
 		 * Filter the loaded template content
 		 *
 		 * @param   string       $templateContent        The rendered template content
@@ -585,6 +593,21 @@ abstract class _Plugin extends Singleton
 		 * @return  string 
 		 */
 		return apply_filters( 'mwp_fw_tmpl', $templateContent, $this->pluginSlug(), $template, $vars );
+	}
+	
+	/**
+	 * Add a custom template filter
+	 *
+	 *
+	 * @param   string	     $template 			Plugin template to filter (without file extension)
+	 * @param   callable     $callback          The callback which will filter the template
+	 * @param   int          $priority          The priority to use when adding the filter
+	 * @return  void
+	 *
+	 */
+	public function addTemplateFilter( $template, $callback, $priority=10 )
+	{
+		add_filter( $this->pluginSlug() . '/templates/' . $template, $callback, $priority, 2 );
 	}
 	
 	/**
