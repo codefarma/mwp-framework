@@ -109,8 +109,8 @@ class _Framework extends Plugin
 	public function isDev()
 	{
 		// Respect a hard setting
-		if ( defined( 'MWP_FRAMEWORK_DEBUG' ) ) {
-			return \MWP_FRAMEWORK_DEBUG === TRUE;
+		if ( defined( 'MWP_FRAMEWORK_DEV' ) ) {
+			return \MWP_FRAMEWORK_DEV === TRUE;
 		}
 		
 		// Fallback to soft setting

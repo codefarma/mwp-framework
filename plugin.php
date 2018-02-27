@@ -68,7 +68,7 @@ call_user_func( function() {
 	add_action( 'after_setup_theme', function() use ( $plugin_meta, &$_mwp_fw_latest )
 	{
 		// Let's always skip including bundled frameworks if we are in development
-		$in_development = ( defined( 'MWP_FRAMEWORK_DEBUG' ) and \MWP_FRAMEWORK_DEBUG );
+		$in_development = ( defined( 'MWP_FRAMEWORK_DEV' ) and \MWP_FRAMEWORK_DEV );
 		if ( $in_development and basename( __DIR__ ) != 'mwp-framework' ) {
 			return;
 		}

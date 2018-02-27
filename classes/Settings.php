@@ -77,8 +77,8 @@ class _Settings extends \MWP\Framework\Plugin\Settings
 	 */
 	public function developerDescription()
 	{
-		if ( defined( 'MWP_FRAMEWORK_DEBUG' ) ) {
-			return "Developer mode currently has an override set to <span style='color:red'>" . ( \MWP_FRAMEWORK_DEBUG ? 'ON' : 'OFF' ) . "</span> due to global MWP_FRAMEWORK_DEBUG constant being set in dev_config.php";
+		if ( defined( 'MWP_FRAMEWORK_DEV' ) ) {
+			return "Developer mode currently has an override set to <span style='color:red'>" . ( \MWP_FRAMEWORK_DEV ? 'ON' : 'OFF' ) . "</span> due to global MWP_FRAMEWORK_DEV constant being set in dev_config.php";
 		}
 	}
 }

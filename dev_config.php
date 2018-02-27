@@ -1,3 +1,3 @@
 <?php
 
-define( 'MWP_FRAMEWORK_DEBUG', TRUE );
+define( 'MWP_FRAMEWORK_DEV', TRUE );
