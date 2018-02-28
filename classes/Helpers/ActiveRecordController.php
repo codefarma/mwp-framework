@@ -381,7 +381,7 @@ class ActiveRecordController
 			}
 		}
 		
-		$form = $record->getDeleteForm();
+		$form = $record->createDeleteForm();
 		
 		if ( $form->isValidSubmission() )
 		{
