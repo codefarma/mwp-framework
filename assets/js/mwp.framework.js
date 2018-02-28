@@ -77,11 +77,6 @@
 		Controller: BaseModel.extend({
 		
 			/**
-			 * @var	object		Controller view model
-			 */
-			viewModel: {},
-			
-			/**
 			 * Constructor
 			 *
 			 * @return	void
@@ -89,6 +84,8 @@
 			initialize: function()
 			{
 				var self = this;
+				this.viewModel = {};
+				mwp.trigger( self.get( 'name' ) + '.instance', self );
 				
 				$(document).ready( function() {
 					mwp.trigger( self.get( 'name' ) + '.ready', self );
@@ -154,7 +151,7 @@
 		model: _.extend( function( name, properties, classProperties ) 
 		{
 			if ( name in controllers ) {
-				throw new Error( 'Controller already exists. Use mwp.controller.get( name ) to get a controller' );
+				throw new Error( 'Controller already exists. Use mwp.controller.model.get(\'' + name + '\') to get the controller model' );
 			}
 			
 			properties = properties || {};
@@ -165,6 +162,9 @@
 
 			var controller = mwp.classes.Controller.extend( properties, classProperties );
 			controllers[name] = controller;
+			
+			mwp.trigger( 'controller.model', controller, name );
+			mwp.trigger( name + '.controller.model', controller );
 			
 			mwp.on( 'init.controllers', function() {
 				controller.instance();
@@ -243,8 +243,10 @@
 	 */
 	mwp.model = _.extend( function( name, properties, classProperties )
 	{
-		models[ name ] = mwp.classes.Model.extend( properties, classProperties );
-		return models[ name ];
+		models[name] = mwp.classes.Model.extend( properties, classProperties );
+		mwp.trigger( 'model', models[name], name );
+		mwp.trigger( name + '.model', models[name] );
+		return models[name];
 	},
 	{
 		/**
