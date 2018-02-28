@@ -7,6 +7,8 @@ It provides simple solutions for [modeling data][2], [building forms][5], [runni
 
 Get started with the [Installation & Setup][8] guide.
 
+View the [changelog][12].
+
 **Here are a few highlights:**
 
 * * *
@@ -183,4 +185,5 @@ View the [Tasks][6] documentation.
  [9]: https://www.codefarma.com/docs/mwp-framework/guide/testing
  [10]: https://www.codefarma.com/docs/mwp-framework/guide/distribute
  [11]: https://www.codefarma.com/docs/mwp-framework/classes-patterns/extensibility
+ [12]: https://github.com/codefarma/mwp-framework/blob/master-2.x/changelog.md
  
