@@ -31,42 +31,42 @@ abstract class ActiveRecord
 	/**
 	 * @var	string		Table name
 	 */
-	protected static $table;
+	public static $table;
 	
 	/**
 	 * @var	array		Table columns
 	 */
-	protected static $columns = array();
+	public static $columns = array();
 	
 	/**
 	 * @var	string		Table primary key
 	 */
-	protected static $key;
+	public static $key;
 	
 	/**
 	 * @var	string		Table column prefix
 	 */
-	protected static $prefix = '';
+	public static $prefix = '';
 	
 	/**
 	 * @var bool		Site specific table? (for multisites)
 	 */
-	protected static $site_specific = FALSE;
+	public static $site_specific = FALSE;
 	
 	/**
 	 * @var	string
 	 */
-	protected static $plugin_class = 'MWP\Framework\Framework';
+	public static $plugin_class = 'MWP\Framework\Framework';
 	
 	/**
 	 * @var	string
 	 */
-	protected static $sequence_col;
+	public static $sequence_col;
 	 
 	/**
 	 * @var	string
 	 */
-	protected static $parent_col;
+	public static $parent_col;
 
 	/**
 	 * @var	string

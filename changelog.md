@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - (added) New methods for `ActiveRecord` to [set table/controller][3] classes and [create/get controllers][4] by name
 - (added) New [template filter assignment][5] via plugin method named `addTemplateFilter()`
 - (added) New [javascript framework events][6]
+- (added) Annotations on overridden parent methods are also read and attached unless `@MWP\Annotations\Override` is used
 - (changed) Default support for [form building][7] using the Symfony Forms implementation
-- (changed) Certain static properties on the `ActiveRecord` class have been redesignated as protected
 
 ### Breaking Changes
 - (changed) all class namespacing has been changed from `Modern\Wordpress` to `MWP\Framework`
