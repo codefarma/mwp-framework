@@ -186,6 +186,8 @@ class ActiveRecordController
 					$table->columns[ $recordClass::$prefix . $opts ] = ucwords( str_replace( '_', ' ', $opts ) );
 				}
 			}
+			$table->columns['_row_actions'] = __( 'Actions', 'mwp-framework' );
+			$table->actionsColumn = '_row_actions';
 		}
 		
 		if ( isset( $options['sortable'] ) ) {
@@ -306,19 +308,24 @@ class ActiveRecordController
 		$record = $record ?: new $class;
 		
 		$form = $class::getForm( $record );
+		$save_error = NULL;
 		
 		if ( $form->isValidSubmission() ) 
 		{
 			$record->processForm( $form->getValues() );			
-			$record->save();
+			$result = $record->save();
 			
-			$form->processComplete( function() use ( $controller, $record ) {
-				wp_redirect( $controller->getUrl() );
-				exit;
-			});
+			if ( ! is_wp_error( $result ) ) {
+				$form->processComplete( function() use ( $controller, $record ) {
+					wp_redirect( $controller->getUrl() );
+					exit;
+				});
+			} else {
+				$save_error = $result;
+			}
 		}
 		
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/create', array( 'title' => $class::createTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this ) );
+		echo $this->getPlugin()->getTemplateContent( 'views/management/records/create', array( 'title' => $class::createTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'error' => $save_error ) );
 	}
 	
 	/**
@@ -344,19 +351,24 @@ class ActiveRecordController
 		}
 		
 		$form = $class::getForm( $record );
+		$save_error = NULL;
 		
 		if ( $form->isValidSubmission() ) 
 		{
 			$record->processForm( $form->getValues() );			
-			$record->save();
+			$result = $record->save();
 			
-			$form->processComplete( function() use ( $controller ) {
-				wp_redirect( $controller->getUrl() );
-				exit;
-			});
+			if ( ! is_wp_error( $result ) ) {
+				$form->processComplete( function() use ( $controller ) {
+					wp_redirect( $controller->getUrl() );
+					exit;
+				});	
+			} else {
+				$save_error = $result;
+			}
 		}
-		
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->editTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
+
+		echo $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->editTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record, 'error' => $save_error ) );
 	}
 
 	/**

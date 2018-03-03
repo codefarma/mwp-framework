@@ -448,23 +448,41 @@ class _SymfonyForm extends Form
 		 * Automatically wrap certain fields with bootstrap classes for display purposes unless asked not to
 		 */
 		$wrap_bootstrap = isset( $field['options']['wrap_bootstrap'] ) ? $field['options']['wrap_bootstrap'] : in_array( $field['type'], array(
-			'text', 'textarea', 'email', 'integer', 'money', 'number', 'password', 'url', 'choice', 'date', 'checkbox', 'radio', 'file', 'date', 'time', 'datetime', 'birthday'
+			'text', 'textarea', 'email', 'integer', 'money', 'number', 'password', 'url', 'choice', 'date', 'checkbox', 'radio', 'file', 'date', 'time', 'datetime', 'birthday',
+			'submit', 'button', 'reset'
 		) );
 		
 		unset( $field['options']['wrap_bootstrap'] );
 		
 		if ( $wrap_bootstrap ) {
-			$field['options']['row_attr']['class'] = ( isset( $field['options']['row_attr']['class'] ) ? $field['options']['row_attr']['class'] . ' ' : '' ) . 'form-group';
-			$field['options']['label_attr']['class'] = ( isset( $field['options']['label_attr']['class'] ) ? $field['options']['label_attr']['class'] . ' ' : '' ) . 'col-lg-2 col-md-3 col-sm-4 form-label';
-			$field['options']['row_attr']['class'] = ( isset( $field['options']['row_attr']['class'] ) ? $field['options']['row_attr']['class'] . ' ' : '' ) . 'form-group';
-			$field['options']['field_prefix'] = '<div class="col-lg-6 col-md-7 col-sm-8">' . ( isset( $field['options']['field_prefix'] ) ? $field['options']['field_prefix'] : '' );
-			$field['options']['field_suffix'] = ( isset( $field['options']['field_suffix'] ) ? $field['options']['field_suffix'] : '' ) . '</div>';
-
+			
+			if ( ! in_array( $field['type'], array( 'submit', 'reset', 'button' ) ) ) {
+				$field['options']['row_attr']['class'] = ( isset( $field['options']['row_attr']['class'] ) ? $field['options']['row_attr']['class'] . ' ' : '' ) . 'form-group row';
+				$field['options']['row_attr']['class'] = ( isset( $field['options']['row_attr']['class'] ) ? $field['options']['row_attr']['class'] . ' ' : '' ) . 'form-group';
+				$field['options']['label_attr']['class'] = ( isset( $field['options']['label_attr']['class'] ) ? $field['options']['label_attr']['class'] . ' ' : '' ) . 'col-lg-2 col-md-3 col-sm-4 form-label';
+				$field['options']['field_prefix'] = '<div class="col-lg-6 col-md-7 col-sm-8">' . ( isset( $field['options']['field_prefix'] ) ? $field['options']['field_prefix'] : '' );
+				$field['options']['field_suffix'] = ( isset( $field['options']['field_suffix'] ) ? $field['options']['field_suffix'] : '' ) . '</div>';
+			} else {
+				if ( ! isset( $field['options']['attr']['class'] ) ) {
+					switch( $field['type'] ) {
+						case 'submit':
+							$field['options']['attr']['class'] = 'btn btn-success';
+							break;
+						case 'reset':
+							$field['options']['attr']['class'] = 'btn btn-danger';
+							break;
+						case 'button':
+							$field['options']['attr']['class'] = 'btn btn-primary';
+							break;
+					}
+				}				
+			}
+			
 			if ( $field['type'] == 'choice' and isset( $field['options']['expanded'] ) and $field['options']['expanded'] == true ) {
 				$field['options']['choice_prefix'] = ( isset( $field['options']['choice_prefix'] ) ? $field['options']['choice_prefix'] : '' ) . (( isset( $field['options']['multiple'] ) and $field['options']['multiple'] == true ) ? '<div class="checkbox">' : '<div class="radio">');
 				$field['options']['choice_suffix'] = '</div>' . ( isset( $field['options']['choice_suffix'] ) ? $field['options']['choice_suffix'] : '' );
 			} else {
-				if ( ! in_array( $field['type'], array( 'checkbox', 'radio', 'date', 'time', 'datetime', 'birthday' ) ) ) {
+				if ( ! in_array( $field['type'], array( 'checkbox', 'radio', 'date', 'time', 'datetime', 'birthday', 'submit', 'button', 'reset' ) ) ) {
 					$field['options']['attr']['class'] = ( isset( $field['options']['attr']['class'] ) ? $field['options']['attr']['class'] . ' ' : '' ) . 'form-control';
 				}
 			}

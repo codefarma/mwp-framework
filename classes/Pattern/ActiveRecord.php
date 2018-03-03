@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use MWP\Framework\Framework;
 use MWP\Framework\Helpers\ActiveRecordController;
+use MWP\Framework\Helpers\ActiveRecordTable;
 
 /**
  * An active record design pattern
@@ -247,13 +248,13 @@ abstract class ActiveRecord
 							
 							if ( is_object( $value ) )
 							{
-								if ( $value instanceof \MWP\Framework\Pattern\ActiveRecord and is_a( $value, $class ) )
+								if ( $value instanceof ActiveRecord and is_a( $value, $class ) )
 								{
 									$value = $value->id();
 								}
 								else
 								{
-									if ( ! $value instanceof \MWP\Framework\Pattern\ActiveRecord )
+									if ( ! $value instanceof ActiveRecord )
 									{
 										throw new \InvalidArgumentException( 'Object is not a subclass of MWP\Framework\Pattern\ActiveRecord' );
 									}
@@ -511,10 +512,11 @@ abstract class ActiveRecord
 	{
 		return array(
 			'edit' => array(
-				'title' => __( static::$lang_edit ),
+				'title' => '',
 				'icon' => 'glyphicon glyphicon-pencil',
 				'attr' => array( 
 					'title' => __( static::$lang_edit . ' ' . static::$lang_singular ),
+					'class' => 'btn btn-xs btn-default',
 				),
 				'params' => array(
 					'do' => 'edit',
@@ -522,10 +524,11 @@ abstract class ActiveRecord
 				),
 			),
 			'view' => array(
-				'title' => __( static::$lang_view ),
+				'title' => '',
 				'icon' => 'glyphicon glyphicon-eye-open',
 				'attr' => array( 
 					'title' => __( static::$lang_view . ' ' . static::$lang_singular ),
+					'class' => 'btn btn-xs btn-default',
 				),
 				'params' => array(
 					'do' => 'view',
@@ -533,10 +536,11 @@ abstract class ActiveRecord
 				),
 			),
 			'delete' => array(
-				'title' => __( static::$lang_delete ),
+				'title' => '',
 				'icon' => 'glyphicon glyphicon-trash',
 				'attr' => array( 
-					'title' => __( static::$lang_edit . ' ' . static::$lang_singular ),
+					'title' => __( static::$lang_delete . ' ' . static::$lang_singular ),
+					'class' => 'btn btn-xs btn-default',
 				),
 				'params' => array(
 					'do' => 'delete',
@@ -582,12 +586,12 @@ abstract class ActiveRecord
 		$record_class = get_called_class();
 		
 		if ( isset( static::$table_classes[ $record_class ] ) ) {
-			if ( is_a( static::$table_classes[ $record_class ], 'MWP\Framework\Helpers\ActiveRecordTable' ) ) {
+			if ( is_subclass_of( static::$table_classes[ $record_class ], ActiveRecordTable::class ) ) {
 				return static::$table_classes[ $record_class ];
 			}
 		}
 		
-		return 'MWP\Framework\Helpers\ActiveRecordTable';
+		return ActiveRecordTable::class;
 	}
 	
 	/**
@@ -611,12 +615,12 @@ abstract class ActiveRecord
 		$record_class = get_called_class();
 		
 		if ( isset( static::$controller_classes[ $record_class ] ) ) {
-			if ( is_a( static::$controller_classes[ $record_class ], 'MWP\Framework\Helpers\ActiveRecordController' ) ) {
+			if ( is_subclass_of( static::$controller_classes[ $record_class ], ActiveRecordController::class ) ) {
 				return static::$controller_classes[ $record_class ];
 			}
 		}
 		
-		return 'MWP\Framework\Helpers\ActiveRecordController';
+		return ActiveRecordController::class;
 	}
 	
 	/**
@@ -684,12 +688,39 @@ abstract class ActiveRecord
 	}
 	
 	/**
-	 * Build an editing form
+	 * Build the editing form
 	 *
 	 * @param   ActiveRecord|NULL           $record	    The record to edit, or NULL if creating
 	 * @return  MWP\Framework\Helpers\Form
 	 */
 	public static function getForm( $record=NULL )
+	{
+		$form = static::createForm();
+		
+		foreach( static::$columns as $k => $v ) {
+			if ( is_numeric( $k ) ) {
+				$k = $v;
+			}
+			
+			if ( $k !== static::$key ) {
+				$form->addField( $k, 'text', [
+					'label' => ucwords( str_replace( '_', ' ', $k ) ),
+					'data' => $record ? $record->$k : '',
+				]);
+			}
+		}
+		
+		$form->addField( 'submit', 'submit', [ 'label' => 'Save', 'row_attr' => [ 'class' => 'text-center' ] ] );
+		
+		return $form;
+	}
+	
+	/**
+	 * Create a new form
+	 *
+	 * @return  MWP\Framework\Helpers\Form
+	 */
+	public static function createForm()
 	{
 		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . '_form';
 		$pluginClass = static::$plugin_class;
