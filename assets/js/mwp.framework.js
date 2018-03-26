@@ -317,7 +317,7 @@
 		set: function( name, collection )
 		{
 			collections[ name ] = collection;
-			return collection
+			return collection;
 		}
 	});
 	
@@ -348,7 +348,7 @@
 				}
 			});
 		}
-	}
+	};
 	
 	if ( typeof ko !== 'undefined' )
 	{
