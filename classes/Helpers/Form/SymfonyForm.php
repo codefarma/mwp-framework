@@ -397,14 +397,14 @@ class _SymfonyForm extends Form
 		);
 		
 		/* Automatically add a NonBlank constraint to required fields */
-		if ( ! isset( $options['constraints'] ) and isset( $options['required'] ) and $options['required'] ) {
-			$options['constraints'] = array( 'NotBlank' );
+		if ( ! isset( $field['options']['constraints'] ) and isset( $field['options']['required'] ) and $field['options']['required'] ) {
+			$field['options']['constraints'] = array( 'NotBlank' );
 		}
 		
 		if ( $type == 'codemirror' ) {
 			$type = 'textarea';
-			$options['row_attr'] = ( isset( $options['row_attr'] ) ? $options['row_attr'] : array() ) + array( 'data-view-model' => 'mwp-rules' );
-			$options['attr'] = ( isset( $options['attr'] ) ? $options['attr'] : array() ) + array( 'data-bind' => 'codemirror: { lineNumbers: true, mode: \'application/x-httpd-php\' }' );
+			$field['options']['row_attr'] = ( isset( $field['options']['row_attr'] ) ? $field['options']['row_attr'] : array() ) + array( 'data-view-model' => 'mwp-rules' );
+			$field['options']['attr'] = ( isset( $field['options']['attr'] ) ? $field['options']['attr'] : array() ) + array( 'data-bind' => 'codemirror: { lineNumbers: true, mode: \'application/x-httpd-php\' }' );
 		}
 		
 		/* Prepare any provided constraints */
@@ -438,8 +438,8 @@ class _SymfonyForm extends Form
 		/**
 		 * Translate toggles 
 		 */
-		if ( isset( $options['toggles'] ) ) {
-			$field['options']['attr']['form-toggles'] = $options['toggles'];
+		if ( isset( $field['options']['toggles'] ) ) {
+			$field['options']['attr']['form-toggles'] = $field['options']['toggles'];
 			$field['options']['attr']['form-type'] = $field['type'];
 		}
 		
