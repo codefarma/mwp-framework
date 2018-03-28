@@ -64,6 +64,7 @@ class _Symfony extends Singleton
 			$formTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\FormTypeExtension();
 			$choiceTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\ChoiceTypeExtension();
 			$buttonTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\ButtonTypeExtension();
+			$collectionTypeExtension = new \MWP\Framework\Helpers\Form\SymfonyForm\CollectionTypeExtension();
 
 			$formFactory = \Symfony\Component\Form\Forms::createFormFactoryBuilder()
 				->addExtension( $csrfExtension )
@@ -72,6 +73,7 @@ class _Symfony extends Singleton
 				->addTypeExtension( $formTypeExtension )
 				->addTypeExtension( $choiceTypeExtension )
 				->addTypeExtension( $buttonTypeExtension )
+				->addTypeExtension( $collectionTypeExtension )
 				->getFormFactory();
 				
 			$this->setFormFactory( $formFactory );

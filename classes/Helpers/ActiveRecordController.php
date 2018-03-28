@@ -307,12 +307,12 @@ class ActiveRecordController
 		$class = $this->recordClass;
 		$record = $record ?: new $class;
 		
-		$form = $class::getForm( $record );
+		$form = $record->getForm( 'edit' );
 		$save_error = NULL;
 		
 		if ( $form->isValidSubmission() ) 
 		{
-			$record->processForm( $form->getValues() );			
+			$record->processForm( $form->getValues(), 'edit' );
 			$result = $record->save();
 			
 			if ( ! is_wp_error( $result ) ) {
@@ -350,12 +350,12 @@ class ActiveRecordController
 			}
 		}
 		
-		$form = $class::getForm( $record );
+		$form = $record->getForm( 'edit' );
 		$save_error = NULL;
 		
 		if ( $form->isValidSubmission() ) 
 		{
-			$record->processForm( $form->getValues() );			
+			$record->processForm( $form->getValues(), 'edit' );			
 			$result = $record->save();
 			
 			if ( ! is_wp_error( $result ) ) {
@@ -393,7 +393,7 @@ class ActiveRecordController
 			}
 		}
 		
-		$form = $record->createDeleteForm();
+		$form = $record->getForm( 'delete' );
 		
 		if ( $form->isValidSubmission() )
 		{

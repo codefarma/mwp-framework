@@ -381,20 +381,20 @@ class _SymfonyForm extends Form
 	}
 	
 	/**
-	 * Add a field to the form
+	 * Prepare a field to be added to the form
 	 *
 	 * @param	string			$name				The field name
 	 * @param	string			$type				The field type (registered shorthand or a class name)
 	 * @param	array			$options			The field options
-	 * @param	string|NULL		$parent_name		The parent field name to add this field to
-	 * @param	string|NULL		$insert_name		The name of a field around which this field should be inserted
-	 * @param	string			$insert_position	The position at which to insert this field if using $insert_name 
-	 * @return	object 								The added form element
+	 * @return	array 								The prepared field associative array
 	 */
-	public function addField( $name, $type='text', $options=array(), $parent_name=NULL, $insert_name=NULL, $insert_position='after' )
-	{
-		$builder = $this->getFormBuilder();	
-		$options = array_merge( array( 'translation_domain' => $this->getPlugin()->pluginSlug() ), $options );	
+	public static function prepareField( $name, $type, $options )
+	{	
+		$field = array( 
+			'name' => $name, 
+			'type' => $type, 
+			'options' => $options, 
+		);
 		
 		/* Automatically add a NonBlank constraint to required fields */
 		if ( ! isset( $options['constraints'] ) and isset( $options['required'] ) and $options['required'] ) {
@@ -407,41 +407,40 @@ class _SymfonyForm extends Form
 			$options['attr'] = ( isset( $options['attr'] ) ? $options['attr'] : array() ) + array( 'data-bind' => 'codemirror: { lineNumbers: true, mode: \'application/x-httpd-php\' }' );
 		}
 		
-		$field = $this->applyFilters( 'field', array( 
-			'name' => $name, 
-			'type' => $type, 
-			'options' => $options, 
-			'parent_name' => $parent_name, 
-			'insert_name' => $insert_name, 
-			'insert_position' => $insert_position,
-		));
-		
 		/* Prepare any provided constraints */
-		if ( isset( $field['options']['constraints'] ) ) {
+		if ( isset( $field['options']['constraints'] ) and is_array( $field['options']['constraints'] ) ) {
 			$processed_constraints = array();
 			foreach( $field['options']['constraints'] as $class => $config ) {
-				if ( is_object( $config ) ) {
-					$processed_constraints[] = $config;
-				}
-				else 
+				if ( is_string( $config ) ) 
 				{
-					if ( is_string( $config ) ) 
-					{
-						$_class = class_exists( $config ) ? $config : 'Symfony\Component\Validator\Constraints\\' . $config;
-						if ( class_exists( $_class ) ) {
-							$processed_constraints[] = new $_class;
-						}
-					} 
-					else if ( is_array( $config ) ) 
-					{
-						$_class = class_exists( $class ) ? $class : 'Symfony\Component\Validator\Constraints\\' . $class;
-						if ( class_exists( $_class ) ) {
-							$processed_constraints[] = new $_class( $config );
-						}
+					$_class = class_exists( $config ) ? $config : 'Symfony\Component\Validator\Constraints\\' . $config;
+					if ( class_exists( $_class ) ) {
+						$processed_constraints[] = new $_class;
 					}
+				} 
+				else if ( is_callable( $config ) ) {
+					$processed_constraints[] = new \Symfony\Component\Validator\Constraints\Callback( $config );					
+				}
+				else if ( is_array( $config ) ) 
+				{
+					$_class = class_exists( $class ) ? $class : 'Symfony\Component\Validator\Constraints\\' . $class;
+					if ( class_exists( $_class ) ) {
+						$processed_constraints[] = new $_class( $config );
+					}
+				}
+				else {
+					$processed_constraints[] = $config;
 				}
 			}
 			$field['options']['constraints'] = $processed_constraints;
+		}
+		
+		/**
+		 * Translate toggles 
+		 */
+		if ( isset( $options['toggles'] ) ) {
+			$field['options']['attr']['form-toggles'] = $options['toggles'];
+			$field['options']['attr']['form-type'] = $field['type'];
 		}
 		
 		/**
@@ -487,14 +486,31 @@ class _SymfonyForm extends Form
 				}
 			}
 		}
+
+		return $field;
+	}
+	
+	/**
+	 * Add a field to the form
+	 *
+	 * @param	string			$name				The field name
+	 * @param	string			$type				The field type (registered shorthand or a class name)
+	 * @param	array			$options			The field options
+	 * @param	string|NULL		$parent_name		The parent field name to add this field to
+	 * @param	string|NULL		$insert_name		The name of a field around which this field should be inserted
+	 * @param	string			$insert_position	The position at which to insert this field if using $insert_name 
+	 * @return	object 								The added form element
+	 */
+	public function addField( $name, $type='text', $options=array(), $parent_name=NULL, $insert_name=NULL, $insert_position='after' )
+	{
+		$builder = $this->getFormBuilder();	
+		$options = array_merge( array( 'translation_domain' => $this->getPlugin()->pluginSlug() ), $options );
 		
-		/**
-		 * Translate toggles 
-		 */
-		if ( isset( $options['toggles'] ) ) {
-			$field['options']['attr']['form-toggles'] = $options['toggles'];
-			$field['options']['attr']['form-type'] = $field['type'];
-		}
+		$field = $this->applyFilters( 'field', array_merge( static::prepareField( $name, $type, $options ), array( 
+			'parent_name' => $parent_name, 
+			'insert_name' => $insert_name, 
+			'insert_position' => $insert_position,
+		)));
 		
 		/* Adding a child element requires us to get the reference to the parent element */
 		if ( $field['parent_name'] ) {
@@ -519,7 +535,7 @@ class _SymfonyForm extends Form
 			}			
 		}
 		
-		$field['type'] = static::getFieldClass( $field['type'] );
+		$field_type = static::getFieldClass( $field['type'] );
 		
 		/* Are we attempting to insert the field in a specific position? */
 		if( $field['insert_name'] ) 
@@ -533,11 +549,11 @@ class _SymfonyForm extends Form
 				if( $formField->getName() == $field['insert_name'] ) 
 				{
 					if ( $field['insert_position'] == 'before' ) {
-						$builder->add( $field['name'], $field['type'], $field['options'] );
+						$builder->add( $field['name'], $field_type, $field['options'] );
 						$builder->add( $formField );
 					} else {
 						$builder->add( $formField );
-						$builder->add( $field['name'], $field['type'], $field['options'] );						
+						$builder->add( $field['name'], $field_type, $field['options'] );						
 					}
 					$inserted = true;
 				} 
@@ -548,11 +564,11 @@ class _SymfonyForm extends Form
 			
 			// If the insert point wasn't found, just add it to the end
 			if ( ! $inserted ) {
-				$builder->add( $field['name'], $field['type'], $field['options'] );
+				$builder->add( $field['name'], $field_type, $field['options'] );
 			}
 		} 
 		else {
-			$builder->add( $field['name'], $field['type'], $field['options'] );
+			$builder->add( $field['name'], $field_type, $field['options'] );
 		}
 		
 		/* Cache field references */

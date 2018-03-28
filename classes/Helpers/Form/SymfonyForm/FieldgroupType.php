@@ -35,9 +35,12 @@ class _FieldgroupType extends AbstractType
             ->setDefaults([
 				'type' => '',
                 'title' => '',
-                'inherit_data' => true,
+				'data' => NULL,
+                'inherit_data' => false,
                 'options' => array(),
                 'label' => false,
+				'fields' => array(),
+				'error_bubbling' => true,
             ]);
     }
 	
@@ -47,7 +50,17 @@ class _FieldgroupType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
+		if (!empty($options['fields'])) {
+			if ( is_callable( $options['fields'] ) ) {
+				call_user_func( $options['fields'], $builder );
+			} elseif ( is_array( $options['fields'] ) ) {
+				foreach ( $options['fields'] as $field ) {
+					$field = SymfonyForm::prepareField( $field['name'], $field['type'], $field['options'] );
+					$field_type = SymfonyForm::getFieldClass( $field['type'] );
+					$builder->add( $field['name'], $field_type, $field['options'] );
+				}
+			}
+        }
     }
 	
     /**
@@ -59,6 +72,7 @@ class _FieldgroupType extends AbstractType
     {
 		$view->vars['title'] = $options['title'];
 		$view->vars['type'] = $options['type'];
+		$view->vars['has_errors'] = count( $form->getErrors(true) ) > 0;
     }
 	
     /**

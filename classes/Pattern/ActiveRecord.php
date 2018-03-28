@@ -688,14 +688,50 @@ abstract class ActiveRecord
 	}
 	
 	/**
-	 * Build the editing form
+	 * Create a new form
 	 *
-	 * @param   ActiveRecord|NULL           $record	    The record to edit, or NULL if creating
+	 * @param   string        $type         An arbitrary value used to help identify the purpose of the form
+	 * @param   array         $options      Options to pass to the created form
 	 * @return  MWP\Framework\Helpers\Form
 	 */
-	public static function getForm( $record=NULL )
+	public static function createForm( $type='', $options=[] )
 	{
-		$form = static::createForm();
+		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . ( $type ? '_' . $type : '' ) . '_form';
+		$pluginClass = static::$plugin_class;
+		$plugin = $pluginClass::instance();
+		
+		$form = $plugin->createForm( $name, $options );
+		
+		return $form;
+	}
+	
+	/**
+	 * Get a specific type of form
+	 *
+	 * @param   string       $type           The type of form to get
+	 * @return	MWP\Framework\Helpers\Form
+	 */
+	public function getForm( $type='edit' )
+	{
+		if ( $type ) {
+			$buildFormMethod = 'build' . ucfirst( $type ) . 'Form';
+			
+			if ( is_callable( array( $this, $buildFormMethod ) ) ) {
+				return call_user_func( array( $this, $buildFormMethod ) );
+			}
+		}
+		
+		return static::createForm( $type );
+	}
+	
+	/**
+	 * Get editing form
+	 *
+	 * @return	MWP\Framework\Helpers\Form
+	 */
+	protected function buildEditForm()
+	{
+		$form = static::createForm( 'edit' );
 		
 		foreach( static::$columns as $k => $v ) {
 			if ( is_numeric( $k ) ) {
@@ -705,30 +741,14 @@ abstract class ActiveRecord
 			if ( $k !== static::$key ) {
 				$form->addField( $k, 'text', [
 					'label' => ucwords( str_replace( '_', ' ', $k ) ),
-					'data' => $record ? $record->$k : '',
+					'data' => $this->$k,
 				]);
 			}
 		}
 		
 		$form->addField( 'submit', 'submit', [ 'label' => 'Save', 'row_attr' => [ 'class' => 'text-center' ] ] );
 		
-		return $form;
-	}
-	
-	/**
-	 * Create a new form
-	 *
-	 * @return  MWP\Framework\Helpers\Form
-	 */
-	public static function createForm()
-	{
-		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . '_form';
-		$pluginClass = static::$plugin_class;
-		$plugin = $pluginClass::instance();
-		
-		$form = $plugin->createForm( $name );
-		
-		return $form;
+		return $form;		
 	}
 	
 	/**
@@ -736,19 +756,20 @@ abstract class ActiveRecord
 	 *
 	 * @return	MWP\Framework\Helpers\Form
 	 */
-	public function createDeleteForm()
+	protected function buildDeleteForm()
 	{
-		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . '_delete_form';
-		$form = $this->getPlugin()->createForm( $name );
+		$form = static::createForm( 'delete', array( 'attr' => array( 'class' => 'container' ) ) );
 		
 		$form->addField( 'cancel', 'submit', array( 
 			'label' => __( 'Cancel', 'mwp-framework' ), 
-			'attr' => array( 'class' => 'btn btn-default' ) 
+			'attr' => array( 'class' => 'btn btn-warning' ),
+			'row_attr' => array( 'class' => 'col-xs-6 text-right' ),
 		));
 		
 		$form->addField( 'confirm', 'submit', array( 
 			'label' => __( 'Confirm Delete', 'mwp-framework' ), 
-			'attr' => array( 'class' => 'btn btn-danger' ) 
+			'attr' => array( 'class' => 'btn btn-danger' ),
+			'row_attr' => array( 'class' => 'col-xs-6 text-left' ),
 		));
 		
 		return $form;
@@ -758,16 +779,32 @@ abstract class ActiveRecord
 	 * Process submitted form values 
 	 *
 	 * @param	array			$values				Submitted form values
+	 * @param   string          $type               The type of the form values being processed
 	 * @return	void
 	 */
-	public function processForm( $values )
+	public function processForm( $values, $type='edit' )
+	{
+		if ( $type ) {
+			$processFormMethod = 'process' . ucfirst( $type ) . 'Form';
+			
+			if ( is_callable( array( $this, $processFormMethod ) ) ) {
+				call_user_func( array( $this, $processFormMethod ), $values );
+			}
+		}
+	}
+	
+	/**
+	 * Process submitted form values 
+	 *
+	 * @param	array			$values				Submitted form values
+	 * @return	void
+	 */
+	protected function processEditForm( $values )
 	{
 		$record_properties = array();
 		
-		foreach( static::$columns as $col => $opts ) 
-		{
+		foreach( static::$columns as $col => $opts ) {
 			$col_key = is_array( $opts ) ? $col : $opts;
-			
 			if ( $col_key !== static::$key ) {
 				$record_properties[] = $col_key;
 			}
