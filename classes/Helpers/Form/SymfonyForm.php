@@ -401,12 +401,27 @@ class _SymfonyForm extends Form
 			$field['options']['constraints'] = array( 'NotBlank' );
 		}
 		
-		if ( $type == 'codemirror' ) {
-			$type = 'textarea';
-			$field['options']['row_attr'] = ( isset( $field['options']['row_attr'] ) ? $field['options']['row_attr'] : array() ) + array( 'data-view-model' => 'mwp-rules' );
-			$field['options']['attr'] = ( isset( $field['options']['attr'] ) ? $field['options']['attr'] : array() ) + array( 'data-bind' => 'codemirror: { lineNumbers: true, mode: \'application/x-httpd-php\' }' );
+		/* Collection field enhancement */
+		if ( $field['type'] == 'collection' ) {
+			$field['options']['entry_options']['row_attr']['data-role'] = "collection-entry";
+			if ( isset( $field['options']['allow_add'] ) and $field['options']['allow_add'] ) {
+				$add_label = isset( $field['options']['add_label'] ) ? $field['options']['add_label'] : 'Add Entry';
+				$field['options']['field_suffix'] .= '<div class="row"><button data-role="add-entry" type="button" class="btn btn-default">' . $add_label . '</button></div>';
+			}
+			if ( isset( $field['options']['allow_delete'] ) and $field['options']['allow_delete'] ) {
+				$delete_label = isset( $field['options']['delete_label'] ) ? $field['options']['delete_label'] : 'Delete Entry';
+				$field['options']['entry_options']['field_prefix'] .= '<div class="row"><div class="col-sm-10">';
+				$field['options']['entry_options']['field_suffix'] .= '</div><div class="col-sm-2 text-right">
+					<button type="button" data-role="delete-entry" class="btn btn-danger">
+						<i class="glyphicon glyphicon-trash"></i> ' . $delete_label . '
+					</button>
+				</div></div>';
+			}
+			if ( isset( $field['options']['allow_reorder'] ) and $field['options']['allow_reorder'] ) {
+				$field['options']['entry_options']['row_attr']['class'] .= ' orderable';
+			}
 		}
-		
+
 		/* Prepare any provided constraints */
 		if ( isset( $field['options']['constraints'] ) and is_array( $field['options']['constraints'] ) ) {
 			$processed_constraints = array();

@@ -18,3 +18,4 @@ if ( ! defined( 'ABSPATH' ) ) {
     <?php $attr['data-prototype'] = $view->escape($view['form']->row($prototype)) ?>
 <?php endif ?>
 <?php echo $view['form']->widget($form, array('attr' => $attr)) ?>
+

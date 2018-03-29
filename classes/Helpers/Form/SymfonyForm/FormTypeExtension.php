@@ -69,6 +69,7 @@ class _FormTypeExtension extends AbstractTypeExtension
      */
     public function buildView( FormView $view, FormInterface $form, array $options )
     {
+		$view->vars['all_errors']   = $form->getErrors(true);
 		$view->vars['description']  = $options['description'];
         $view->vars['row_attr']     = $options['row_attr'];
 		$view->vars['prefix']       = $options['prefix'];

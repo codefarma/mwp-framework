@@ -87,3 +87,34 @@
       transparent 10px);
 	min-height: 65px;
 }
+
+.mwp-bootstrap-form button[data-role="add-entry"] {
+	margin: 20px;
+}
+
+.mwp-bootstrap-form [data-role="collection-entry"] {
+	padding: 10px;
+	margin: 5px;
+	border-bottom: 2px dashed #ddd;
+	position: relative;
+}
+
+.mwp-bootstrap-form [data-role="collection-entry"].orderable {
+	cursor: grab;
+}
+
+.mwp-bootstrap-form [data-role="collection-entry"].orderable:before {
+	position: absolute;
+	top: 50%;
+	color: #ddd;
+	display: inline-block;
+	font-family: 'Glyphicons Halflings';
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1;
+	font-size: 15px;
+	margin-top:-8px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	content: "\e236";
+}

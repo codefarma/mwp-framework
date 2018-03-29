@@ -39,6 +39,50 @@
 			
 			mwp.on( 'views.ready', function() {
 				self.applyToggles();
+				self.setupCollections();
+			});
+		},
+		
+		/**
+		 * Setup collection elements
+		 *
+		 * @return	void
+		 */
+		setupCollections: function()
+		{
+			var collections = $('[data-collection-config]');
+			
+			collections.each( function() {
+				var container = $(this);
+				var config = container.data('collection-config');
+				var collection = container.find('[data-role="collection"]').first();
+				
+				if ( config.allow_reorder ) {
+					collection.sortable( config.sort_options );
+				}
+				
+				if ( config.allow_add ) {
+					container.on( 'click', '[data-role="add-entry"]', function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						var counter = collection.data('entry-counter') || collection.children().length;
+						var newEntry = collection.attr('data-prototype').replace(/__name__/g, counter);
+						collection.data('entry-counter', ++counter);
+						collection.append( newEntry );
+					});
+				}
+				
+				if ( config.allow_delete ) {
+					container.on( 'click', '[data-role="delete-entry"]', function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						var entry = $(this).closest('[data-role="collection-entry"]');
+						if ( confirm('Are you sure?') ) {
+							entry.remove();
+						}
+					});
+				}
+				
 			});
 		},
 		
