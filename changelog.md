@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - (added) New [javascript framework events][6]
 - (added) Annotations on overridden parent methods are also read and attached unless `@MWP\Annotations\Override` is used
 - (changed) Default support for [form building][7] using the Symfony Forms implementation
+- (added) New methods to get/set/clear plugin cache data
 
 ### Breaking Changes
 - (changed) all class namespacing has been changed from `Modern\Wordpress` to `MWP\Framework`
