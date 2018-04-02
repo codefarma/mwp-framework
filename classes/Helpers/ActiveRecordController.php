@@ -90,7 +90,10 @@ class ActiveRecordController
 		$this->recordClass = $recordClass;
 		$pluginClass = $recordClass::$plugin_class;
 		$this->setPlugin( $pluginClass::instance() );
-		$this->options = array_merge( apply_filters( 'mwp_controller_default_config', $this->getDefaultConfig(), $recordClass ), $options );		
+		$this->options = array_merge( apply_filters( 'mwp_controller_default_config', $this->getDefaultConfig(), $recordClass ), $options );
+		if ( isset( $this->options['adminPage'] ) ) {
+			$this->registerAdminPage( $this->options['adminPage'] );
+		}
 	}
 	
 	/**
@@ -176,6 +179,12 @@ class ActiveRecordController
 		
 		if ( isset( $options['columns'] ) ) {
 			$table->columns = $options['columns'];
+			if ( isset( $options['actionsColumn'] ) ) {
+				$table->actionsColumn = $options['actionsColumn'];
+			} else {
+				$table->columns['_row_actions'] = __( 'Actions', 'mwp-framework' );
+				$table->actionsColumn = '_row_actions';				
+			}
 		}
 		else
 		{
