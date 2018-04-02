@@ -138,8 +138,7 @@ class _Framework extends Plugin
 			$mwp_cache_latest = get_site_option( 'mwp_fw_cache_latest' ) ?: 0;
 			
 			// Clear caches for this instance if we know they are out of date
-			if ( ! isset( $instance_meta[ 'cache_timestamp' ] ) or $instance_meta[ 'cache_timestamp' ] < $mwp_cache_latest ) 
-			{
+			if ( ! isset( $instance_meta[ 'cache_timestamp' ] ) or $instance_meta[ 'cache_timestamp' ] < $mwp_cache_latest ) {
 				$this->clearCaches();
 			}
 		}
@@ -399,6 +398,8 @@ class _Framework extends Plugin
 	{
 		// Delete files in cache folder
 		array_map( 'unlink', glob( dirname( __DIR__ ) . "/annotations/cache/*.cache.php" ) );
+		
+		do_action( 'mwp_framework_clear_caches' );
 		
 		if ( ! $this->isDev() ) {
 			$instance_meta = $this->data( 'instance-meta' ) ?: array();		
