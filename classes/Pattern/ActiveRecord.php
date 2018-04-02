@@ -63,7 +63,7 @@ abstract class ActiveRecord
 	 * @var	string
 	 */
 	public static $sequence_col;
-	 
+	
 	/**
 	 * @var	string
 	 */
@@ -351,8 +351,7 @@ abstract class ActiveRecord
 	 */
 	public static function loadWhere( $where, $order=NULL, $limit=NULL )
 	{
-		if ( is_string( $where ) )
-		{
+		if ( is_string( $where ) ) {
 			$where = array( $where );
 		}
 		
@@ -365,19 +364,14 @@ abstract class ActiveRecord
 		/* Get results of the prepared query */
 		$query = "SELECT * FROM " . $prefix . static::$table . " WHERE " . $compiled[ 'where' ];
 		
-		if ( $order !== NULL )
-		{
+		if ( $order !== NULL ) {
 			$query .= " ORDER BY " . $order;
 		}
 		
-		if ( $limit !== NULL )
-		{
-			if ( is_array( $limit ) )
-			{
+		if ( $limit !== NULL ) {
+			if ( is_array( $limit ) ) {
 				$query .= " LIMIT " . $limit[0] . ", " . $limit[1];
-			}
-			else
-			{
+			} else {
 				$query .= " LIMIT " . $limit;
 			}
 		}
@@ -652,6 +646,11 @@ abstract class ActiveRecord
 	public static function createController( $key, $options=array() )
 	{
 		$controllerClass = static::getControllerClass();
+		
+		if ( static::$sequence_col ) {
+			$options = array_replace_recursive( array( 'tableConfig' => array( 'sequencingColumn' => static::$prefix . static::$sequence_col ) ), $options );
+		}
+		
 		$controller = new $controllerClass( get_called_class(), $options );
 		static::setController( $key, $controller );
 		
