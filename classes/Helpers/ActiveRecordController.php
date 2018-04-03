@@ -90,7 +90,7 @@ class ActiveRecordController
 		$this->recordClass = $recordClass;
 		$pluginClass = $recordClass::$plugin_class;
 		$this->setPlugin( $pluginClass::instance() );
-		$this->options = array_merge( apply_filters( 'mwp_controller_default_config', $this->getDefaultConfig(), $recordClass ), $options );
+		$this->options = array_replace_recursive( apply_filters( 'mwp_controller_default_config', $this->getDefaultConfig(), $recordClass ), $options );
 		if ( isset( $this->options['adminPage'] ) ) {
 			$this->registerAdminPage( $this->options['adminPage'] );
 		}
@@ -164,8 +164,8 @@ class ActiveRecordController
 	 */
 	public function createDisplayTable( $table_options=array() )
 	{
-		$options     = array_merge( ( isset( $this->options['tableConfig'] ) ? $this->options['tableConfig'] : array() ), $table_options );
-		$table_args  = array_merge( array( 'ajax' => true ), ( isset( $options['constructor'] ) ? $options['constructor'] : array() ) );
+		$options     = array_replace( ( isset( $this->options['tableConfig'] ) ? $this->options['tableConfig'] : array() ), $table_options );
+		$table_args  = array_replace( array( 'ajax' => true ), ( isset( $options['constructor'] ) ? $options['constructor'] : array() ) );
 		$recordClass = $this->recordClass;
 		$table       = $recordClass::createDisplayTable( $table_args );
 		$plugin      = $this->getPlugin();
@@ -249,6 +249,12 @@ class ActiveRecordController
 			$table->rowActionsTemplate = $options['rowActionsTemplate'];
 		}
 		
+		if ( isset( $options['hardFilters'] ) and is_array( $options['hardFilters'] ) ) {
+			foreach( $options['hardFilters'] as $hardFilter ) {
+				$table->hardFilters[] = $hardFilter;
+			}
+		}
+		
 		return $table;
 	}
 	
@@ -271,7 +277,7 @@ class ActiveRecordController
 	public function do_index()
 	{
 		$table = $this->createDisplayTable();
-		$where = isset( $this->options['tableConfig']['where'] ) ? $this->options['tableConfig']['where'] : array('1=1');
+		$where = isset( $this->options['tableConfig']['default_where'] ) ? $this->options['tableConfig']['default_where'] : array('1=1');
 		
 		$table->read_inputs();
 		$table->prepare_items( $where );

@@ -646,11 +646,6 @@ abstract class ActiveRecord
 	public static function createController( $key, $options=array() )
 	{
 		$controllerClass = static::getControllerClass();
-		
-		if ( static::$sequence_col ) {
-			$options = array_replace_recursive( array( 'tableConfig' => array( 'sequencingColumn' => static::$prefix . static::$sequence_col ) ), $options );
-		}
-		
 		$controller = new $controllerClass( get_called_class(), $options );
 		static::setController( $key, $controller );
 		
