@@ -44,7 +44,7 @@ class Plugin extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToMethod( $instance, $method, $vars )
+	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		if ( $instance instanceof \MWP\Framework\Plugin or is_callable( array( $instance, 'getPlugin' ) ) )
 		{

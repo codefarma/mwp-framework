@@ -65,7 +65,7 @@ class MetaBox extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToMethod( $instance, $method, $vars )
+	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		$annotation = $this;
 		mwp_add_action( 'add_meta_boxes', function() use ( $annotation, $instance, $method )

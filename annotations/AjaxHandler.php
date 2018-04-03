@@ -43,7 +43,7 @@ class AjaxHandler extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToMethod( $instance, $method, $vars )
+	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		if ( in_array( 'users', $this->for ) )
 		{

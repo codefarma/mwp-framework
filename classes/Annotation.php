@@ -21,6 +21,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 abstract class _Annotation
 {
 	/**
+	 * Construct with optional default parameters
+	 *
+	 * @return	void
+	 */
+	public function __construct( $parameters=[] )
+	{
+		foreach( $parameters as $name => $value ) {
+			$this->$name = $value;
+		}
+	}
+	
+	/**
 	 * Apply to Object
 	 *
 	 * @param	object		$instance		The object which is documented with this annotation

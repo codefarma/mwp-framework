@@ -47,7 +47,7 @@ class Options extends \MWP\Framework\Annotation
 	 * @param	array		$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToObject( $instance, $vars )
+	public function applyToObject( $instance, $vars=[] )
 	{
 		if ( $instance instanceof \MWP\Framework\Plugin\Settings )
 		{

@@ -76,7 +76,7 @@ class AdminPage extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToMethod( $instance, $method, $vars )
+	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		$annotation = $this;
 		mwp_add_action( 'admin_menu', function() use ( $annotation, $instance, $method )
@@ -103,7 +103,7 @@ class AdminPage extends \MWP\Framework\Annotation
 	 * @param	array		$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToObject( $instance, $vars )
+	public function applyToObject( $instance, $vars=[] )
 	{
 		$annotation = $this;
 		mwp_add_action( 'admin_menu', function() use ( $annotation, $instance )

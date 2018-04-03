@@ -38,7 +38,7 @@ class Shortcode extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToMethod( $instance, $method, $vars )
+	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		add_shortcode( $this->name, array( $instance, $method->name ) );		
 	}	

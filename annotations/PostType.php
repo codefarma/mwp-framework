@@ -38,7 +38,7 @@ class PostType extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToProperty( $instance, $property, $vars )
+	public function applyToProperty( $instance, $property, $vars=[] )
 	{	
 		$annotation = $this;
 		add_action( 'init', function() use ( $annotation, $instance, $property )
@@ -56,7 +56,7 @@ class PostType extends \MWP\Framework\Annotation
 	 * @param	array					$vars			Persisted variables returned by previous annotations
 	 * @return	array|NULL
 	 */
-	public function applyToMethod( $instance, $method, $vars )
+	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		$annotation = $this;
 		add_action( 'init', function() use ( $annotation, $instance, $method )
