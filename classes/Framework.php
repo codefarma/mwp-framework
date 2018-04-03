@@ -177,14 +177,15 @@ class _Framework extends Plugin
 	 */
 	public function addDashboardWidget()
 	{
-		if ( $plugin_meta = $this->getData( 'plugin-meta' ) )
-		{
+		if ( $plugin_meta = $this->getData( 'plugin-meta' ) ) {
 			$version = isset( $plugin_meta['version'] ) ? " ({$plugin_meta['version']})" : '';
 		}
-		wp_add_dashboard_widget( 'mwp-fw-console', __( "MWP Application Framework Console", 'mwp-framework' ) . $version, function() 
-		{
-			echo $this->getTemplateContent( 'widget/dashboard' );
-		});
+		
+		if ( user_can('administrator') ) {
+			wp_add_dashboard_widget( 'mwp-fw-console', __( "MWP Application Framework Console", 'mwp-framework' ) . $version, function() {
+				echo $this->getTemplateContent( 'widget/dashboard' );
+			});
+		}
 	}
 	
 	/**
