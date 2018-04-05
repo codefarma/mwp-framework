@@ -181,7 +181,7 @@ class _Framework extends Plugin
 			$version = isset( $plugin_meta['version'] ) ? " ({$plugin_meta['version']})" : '';
 		}
 		
-		if ( user_can('administrator') ) {
+		if ( current_user_can('administrator') ) {
 			wp_add_dashboard_widget( 'mwp-fw-console', __( "MWP Application Framework Console", 'mwp-framework' ) . $version, function() {
 				echo $this->getTemplateContent( 'widget/dashboard' );
 			});

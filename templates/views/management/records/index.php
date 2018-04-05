@@ -12,7 +12,7 @@
  *
  * @param	MWP\Framework\Plugin								$plugin			The plugin that created the controller
  * @param	MWP\Framework\Helpers\ActiveRecordController		$controller		The active record controller
- * @param	MWP\Framework\Helpers\ActiveRecordTable			$table			The active record display table
+ * @param	MWP\Framework\Helpers\ActiveRecordTable				$table			The active record display table
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,14 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<div class="wrap">
+<?php echo $controller->getActionsHtml() ?>
 
-	<h1><?php echo $controller->adminPage->title ?></h1>
-
-	<?php echo $controller->getActionsHtml() ?>
+<form method="POST">
+	<?php echo $table->getDisplay() ?>
+</form>
 	
-	<form method="POST">
-		<?php echo $table->getDisplay() ?>
-	</form>
-	
-</div>

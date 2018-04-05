@@ -110,11 +110,16 @@ abstract class ActiveRecord
 	protected $_data = array();
 	
 	/**
+	 * @var array		Changed data
+	 */
+	protected $_changed = array();
+	
+	/**
 	 * Get the 'create record' page title
 	 * 
 	 * @return	string
 	 */
-	public static function createTitle()
+	public static function _getCreateTitle()
 	{
 		return __( static::$lang_create . ' ' . static::$lang_singular );
 	}
@@ -124,7 +129,7 @@ abstract class ActiveRecord
 	 * 
 	 * @return	string
 	 */
-	public function viewTitle()
+	public function _getViewTitle()
 	{
 		return __( static::$lang_view . ' ' . static::$lang_singular );
 	}
@@ -134,7 +139,7 @@ abstract class ActiveRecord
 	 * 
 	 * @return	string
 	 */
-	public function editTitle()
+	public function _getEditTitle()
 	{
 		return __( static::$lang_edit . ' ' . static::$lang_singular );
 	}
@@ -144,7 +149,7 @@ abstract class ActiveRecord
 	 * 
 	 * @return	string
 	 */
-	public function deleteTitle()
+	public function _getDeleteTitle()
 	{
 		return __( static::$lang_delete . ' ' . static::$lang_singular );
 	}
@@ -267,8 +272,33 @@ abstract class ActiveRecord
 			}
 			
 			/* Set the value */
-			$this->_data[ static::$prefix . $property ] = $value;
+			$prop_key = static::$prefix . $property;
+			if ( ! array_key_exists( $prop_key, $this->_data ) or $this->_data[ $prop_key ] !== $value ) {
+				
+				/* Save original persisted value for reference later */
+				if ( ! array_key_exists( $prop_key, $this->_changed ) ) {
+					$this->_changed[ $prop_key ] = array_key_exists( $prop_key, $this->_data ) ? $this->_data[ $prop_key ] : NULL;
+				}
+				
+				/* Update the object property */
+				$this->_data[ $prop_key ] = $value;
+				
+				/* Indicate that this property is not changed if it returns to the original persisted value */
+				if ( $this->_changed[ $prop_key ] === $this->_data[ $prop_key ] ) {
+					unset( $this->_changed[ $prop_key ] );
+				}
+			}
 		}
+	}
+	
+	/**
+	 * Get any changed values
+	 *
+	 * 
+	 */
+	public function _getChanged()
+	{
+		return $this->_changed;
 	}
 	
 	/**
@@ -366,6 +396,10 @@ abstract class ActiveRecord
 		
 		if ( $order !== NULL ) {
 			$query .= " ORDER BY " . $order;
+		} else {
+			if ( isset( static::$sequence_col ) ) {
+				$query .= " ORDER BY `" . static::$prefix . static::$sequence_col . "` ASC";
+			}
 		}
 		
 		if ( $limit !== NULL ) {
@@ -509,36 +543,36 @@ abstract class ActiveRecord
 				'title' => '',
 				'icon' => 'glyphicon glyphicon-pencil',
 				'attr' => array( 
-					'title' => __( static::$lang_edit . ' ' . static::$lang_singular ),
+					'title' => $this->_getEditTitle(),
 					'class' => 'btn btn-xs btn-default',
 				),
 				'params' => array(
 					'do' => 'edit',
-					'id' => $this->id,
+					'id' => $this->id(),
 				),
 			),
 			'view' => array(
 				'title' => '',
 				'icon' => 'glyphicon glyphicon-eye-open',
 				'attr' => array( 
-					'title' => __( static::$lang_view . ' ' . static::$lang_singular ),
+					'title' => $this->_getViewTitle(),
 					'class' => 'btn btn-xs btn-default',
 				),
 				'params' => array(
 					'do' => 'view',
-					'id' => $this->id,
+					'id' => $this->id(),
 				),
 			),
 			'delete' => array(
 				'title' => '',
 				'icon' => 'glyphicon glyphicon-trash',
 				'attr' => array( 
-					'title' => __( static::$lang_delete . ' ' . static::$lang_singular ),
+					'title' => $this->_getDeleteTitle(),
 					'class' => 'btn btn-xs btn-default',
 				),
 				'params' => array(
 					'do' => 'delete',
-					'id' => $this->id,
+					'id' => $this->id(),
 				),
 			)
 		);
@@ -833,7 +867,7 @@ abstract class ActiveRecord
 				$column = substr( $column, strlen( static::$prefix ) );
 			}
 			
-			$record->setDirectly( $column, $value );
+			$record->_setDirectly( $column, $value );
 		}
 		
 		/* Cache the record in the multiton store */
@@ -851,11 +885,10 @@ abstract class ActiveRecord
 	 * @param	mixed		$value			The value to set
 	 * @return	void
 	 */
-	public function setDirectly( $property, $value )
+	public function _setDirectly( $property, $value )
 	{
 		/* Ensure we are setting a defined property */
-		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) )
-		{
+		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) ) {
 			$this->_data[ static::$prefix . $property ] = $value;
 		}
 	}
@@ -866,13 +899,11 @@ abstract class ActiveRecord
 	 * @param	string		$property		The property to set
 	 * @return	void
 	 */
-	public function getDirectly( $property )
+	public function _getDirectly( $property )
 	{
 		/* Ensure we are setting a defined property */
-		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) )
-		{
-			if ( array_key_exists( static::$prefix . $property, $this->_data ) )
-			{
+		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) ) {
+			if ( array_key_exists( static::$prefix . $property, $this->_data ) ) {
 				return $this->_data[ static::$prefix . $property ];
 			}
 		}
@@ -891,31 +922,28 @@ abstract class ActiveRecord
 		$self = get_called_class();
 		$row_key = static::$prefix . static::$key;
 		
-		if ( ! isset( $this->_data[ $row_key ] ) or ! $this->_data[ $row_key ] )
-		{
+		if ( ! isset( $this->_data[ $row_key ] ) or ! $this->_data[ $row_key ] ) {
 			$format = array_map( function( $value ) use ( $self ) { return $self::dbFormat( $value ); }, $this->_data );
 			
-			if ( $db->insert( $this->get_db_prefix() . static::$table, $this->_data, $format ) === FALSE )
-			{
+			if ( $db->insert( $this->get_db_prefix() . static::$table, $this->_data, $format ) === FALSE ) {
 				return new \WP_Error( 'sql_error', $db->last_error );
 			}
-			else
-			{
-				$this->_data[ $row_key ] = $db->insert_id;
-				static::$multitons[ $this->_data[ $row_key ] ] = $this;
-				return TRUE;
-			}
+
+			$this->_data[ $row_key ] = $db->insert_id;
+			static::$multitons[ $this->_data[ $row_key ] ] = $this;
+			$this->_changed = [];
+			return TRUE;
 		}
 		else
 		{
 			$format = array_map( function( $value ) use ( $self ) { return $self::dbFormat( $value ); }, $this->_data );
 			$where_format = static::dbFormat( $this->_data[ $row_key ] );
 			
-			if ( $db->update( $this->get_db_prefix() . static::$table, $this->_data, array( $row_key => $this->_data[ $row_key ] ), $format, $where_format ) === FALSE )
-			{
+			if ( $db->update( $this->get_db_prefix() . static::$table, $this->_data, array( $row_key => $this->_data[ $row_key ] ), $format, $where_format ) === FALSE ) {
 				return new \WP_Error( 'sql_error', $db->last_error );
 			}
 			
+			$this->_changed = [];
 			return TRUE;
 		}
 	}

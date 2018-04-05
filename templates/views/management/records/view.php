@@ -20,8 +20,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-
-<div class="wrap">
-	<h1><?php echo $title ?></h1>
-	<?php echo $content ?>
-</div>
+<pre><?php echo json_encode( $record->dataArray(), JSON_PRETTY_PRINT ); ?></pre>

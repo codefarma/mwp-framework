@@ -132,3 +132,27 @@
 .wp-list-table .column-_row_actions {
 	text-align: right;
 }
+
+/* Wrapped Output */
+
+.wrap.management.records {
+	border-top: 1px solid #ddd;
+	margin-top: 40px;
+}
+
+.wrap.management.records > h1 {
+	margin: -27px 0 15px 20px;
+	font-size: 2em;
+}
+
+.wrap.management.records > h1 > span {
+	background-color: #f1f1f1;
+	padding: 3px 8px;
+}
+
+.wrap.management.records.edit > h1,
+.wrap.management.records.create > h1,
+.wrap.management.records.delete > h1 {
+	/*margin: 15px 10px;*/
+	font-size: 2em;
+}

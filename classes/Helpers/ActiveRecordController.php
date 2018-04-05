@@ -38,6 +38,31 @@ class ActiveRecordController
 	public $options = array();
 	
 	/**
+	 * @var string
+	 */
+	protected $output_wrapper = 'views/management/records/output_wrapper';
+	
+	/**
+	 * Set Output
+	 *
+	 * @return	void
+	 */
+	public function setOutputWrapper( $template )
+	{
+		$this->output_wrapper = $template;
+	}
+	
+	/**
+	 * Get Output
+	 *
+	 * @return	string
+	 */
+	public function getOutputWrapper()
+	{
+		return $this->output_wrapper;
+	}
+	
+	/**
  	 * Get plugin
 	 *
 	 * @return	\MWP\Framework\Plugin
@@ -282,7 +307,9 @@ class ActiveRecordController
 		$table->read_inputs();
 		$table->prepare_items( $where );
 		
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/table_wrapper', array( 'plugin' => $this->getPlugin(), 'controller' => $this, 'table' => $table ) );
+		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/index', array( 'plugin' => $this->getPlugin(), 'controller' => $this, 'table' => $table ) );
+		
+		echo $this->wrap( $this->adminPage->title, $output, 'index' );
 	}
 	
 	/**
@@ -307,7 +334,9 @@ class ActiveRecordController
 			}
 		}
 		
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/view', array( 'title' => $record->viewTitle(), 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
+		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/view', array( 'title' => $record->_getViewTitle(), 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
+		
+		echo $this->wrap( $record->_getViewTitle(), $output, 'view' );
 	}
 
 	/**
@@ -340,7 +369,9 @@ class ActiveRecordController
 			}
 		}
 		
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/create', array( 'title' => $class::createTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'error' => $save_error ) );
+		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/create', array( 'title' => $class::_getCreateTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'error' => $save_error ) );
+		
+		echo $this->wrap( $class::_getCreateTitle(), $output, 'create' );
 	}
 	
 	/**
@@ -383,7 +414,9 @@ class ActiveRecordController
 			}
 		}
 
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->editTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record, 'error' => $save_error ) );
+		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->_getEditTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record, 'error' => $save_error ) );
+		
+		echo $this->wrap( $record->_getEditTitle(), $output, 'edit' );
 	}
 
 	/**
@@ -422,7 +455,24 @@ class ActiveRecordController
 			});
 		}
 	
-		echo $this->getPlugin()->getTemplateContent( 'views/management/records/delete', array( 'title' => $record->deleteTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
-	}	
+		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/delete', array( 'title' => $record->_getDeleteTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
+		
+		echo $this->wrap( $record->_getDeleteTitle(), $output, 'delete' );
+	}
+	
+	/**
+	 * Send wrapped output
+	 *
+	 * @param	string			$output			The output to wrap
+	 * @return	void
+	 */
+	public function wrap( $title, $output, $classes='' ) {
+		return $this->getPlugin()->getTemplateContent( $this->getOutputWrapper(), array(
+			'title' => $title,
+			'output' => $output,
+			'classes' => $classes,
+			'controller' => $this,
+		));
+	}
 	
 }
