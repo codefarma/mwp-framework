@@ -68,6 +68,43 @@ class _SymfonyForm extends Form
 	);
 	
 	/**
+	 * @var	array
+	 */
+	protected $container_chain = array();
+	
+	/**
+	 * Set the latest parent in the chain
+	 *
+	 * @param	string			$parent_name				The latest parent name
+	 * @return	void
+	 */
+	public function addCurrentContainer( $parent_name )
+	{
+		$this->container_chain[] = $parent_name;
+	}
+	
+	/**
+	 * Get the latest parent in the chain
+	 *
+	 * @return	void
+	 */
+	public function getCurrentContainer()
+	{
+		return end( $this->container_chain );
+	}
+	
+	/**
+	 * Remove the latest parent in the chain and return new current container
+	 *
+	 * @return	string|NULL
+	 */
+	public function endCurrentContainer()
+	{
+		array_pop( $this->container_chain );
+		return $this->getCurrentContainer();
+	}
+	
+	/**
 	 * Set template
 	 *
 	 * @param	string|array		$themes		The form themes (or themes) to pick templates from
@@ -347,7 +384,14 @@ class _SymfonyForm extends Form
 	public function addTab( $name, $options, $parent_name=NULL, $insert_name=NULL, $insert_position='after' )
 	{
 		$options['type'] = 'tab';
-		return $this->addField( $name, 'fieldgroup', $options, $parent_name, $insert_name, $insert_position );
+		
+		if ( $parent_name === NULL ) {
+			$parent_name = $this->endCurrentContainer();
+		}
+		
+		$field = $this->addField( $name, 'fieldgroup', $options, $parent_name, $insert_name, $insert_position );
+		$this->addCurrentContainer( $field->getName() );
+		return $field;
 	}
 	
 	/**
@@ -520,6 +564,7 @@ class _SymfonyForm extends Form
 	{
 		$builder = $this->getFormBuilder();	
 		$options = array_merge( array( 'translation_domain' => $this->getPlugin()->pluginSlug() ), $options );
+		$parent_name = $parent_name !== NULL ? $parent_name : $this->getCurrentContainer(); 
 		
 		$field = $this->applyFilters( 'field', array_merge( static::prepareField( $name, $type, $options ), array( 
 			'parent_name' => $parent_name, 
