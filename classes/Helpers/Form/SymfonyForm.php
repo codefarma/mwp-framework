@@ -78,7 +78,7 @@ class _SymfonyForm extends Form
 	 * @param	string			$parent_name				The latest parent name
 	 * @return	void
 	 */
-	public function addCurrentContainer( $parent_name )
+	public function setCurrentContainer( $parent_name )
 	{
 		$this->container_chain[] = $parent_name;
 	}
@@ -98,7 +98,7 @@ class _SymfonyForm extends Form
 	 *
 	 * @return	string|NULL
 	 */
-	public function endCurrentContainer()
+	public function endLastContainer()
 	{
 		array_pop( $this->container_chain );
 		return $this->getCurrentContainer();
@@ -386,11 +386,11 @@ class _SymfonyForm extends Form
 		$options['type'] = 'tab';
 		
 		if ( $parent_name === NULL ) {
-			$parent_name = $this->endCurrentContainer();
+			$parent_name = $this->endLastContainer();
 		}
 		
 		$field = $this->addField( $name, 'fieldgroup', $options, $parent_name, $insert_name, $insert_position );
-		$this->addCurrentContainer( $field->getName() );
+		$this->setCurrentContainer( $field->getName() );
 		return $field;
 	}
 	
