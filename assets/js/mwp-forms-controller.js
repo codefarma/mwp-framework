@@ -153,10 +153,10 @@
 			});
 
 			/* Do the toggles */
-			_.each( toggles.other.show, function( selector ) { $(selector).hide(); } );
-			_.each( toggles.other.hide, function( selector ) { $(selector).show(); } );
-			_.each( toggles.selected.show, function( selector ) { $(selector).show(); } );
-			_.each( toggles.selected.hide, function( selector ) { $(selector).hide(); } );
+			_.each( toggles.other.show, function( selector ) { $(selector).hide(); mwp.trigger('forms.toggle.hidden', selector); } );
+			_.each( toggles.other.hide, function( selector ) { $(selector).show(); mwp.trigger('forms.toggle.shown', selector); } );
+			_.each( toggles.selected.show, function( selector ) { $(selector).show(); mwp.trigger('forms.toggle.shown', selector); } );
+			_.each( toggles.selected.hide, function( selector ) { $(selector).hide(); mwp.trigger('forms.toggle.hidden', selector); } );
 			
 		},
 		
