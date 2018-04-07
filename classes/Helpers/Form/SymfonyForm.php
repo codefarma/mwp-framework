@@ -631,6 +631,14 @@ class _SymfonyForm extends Form
 			$builder->add( $field['name'], $field_type, $field['options'] );
 		}
 		
+		try {
+			$builder->get( $field['name'] );
+		}
+		catch( \Exception $e ) {
+			$builder->remove( $field['name'] );
+			return $this->addHtml( $name, "<div class=\"alert alert-danger\">Error adding widget for: " . esc_html( $field['name'] ) . "</p><p>" . $e->getMessage() . "</p></div>" );
+		}
+		
 		/* Cache field references */
 		$this->fields[ $field['name'] ] = $field;
 		$this->fieldRefs[ $field['name'] ] = $builder->get( $field['name'] );
