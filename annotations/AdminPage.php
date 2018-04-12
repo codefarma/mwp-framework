@@ -39,6 +39,11 @@ class AdminPage extends \MWP\Framework\Annotation
 	
 	/**
 	 * @var string
+	 */
+	public $menu_submenu;
+	
+	/**
+	 * @var string
 	 * @Required
 	 */
 	public $slug;
@@ -84,13 +89,14 @@ class AdminPage extends \MWP\Framework\Annotation
 			$add_page_func = 'add_' . $annotation->type . '_page';
 			if ( is_callable( $add_page_func ) )
 			{
-				if ( $annotation->type == 'submenu' )
-				{
+				if ( $annotation->type == 'submenu' ) {
 					call_user_func( $add_page_func, $annotation->parent, $annotation->title, $annotation->menu, $annotation->capability, $annotation->slug, array( $instance, $method->name ), $annotation->icon, $annotation->position );
 				}
-				else
-				{
+				else {
 					call_user_func( $add_page_func, $annotation->title, $annotation->menu, $annotation->capability, $annotation->slug, array( $instance, $method->name ), $annotation->icon, $annotation->position );
+					if ( $annotation->type == 'menu' and $annotation->menu_submenu ) {
+						add_submenu_page( $annotation->title, $annotation->menu_submenu, $annotation->capability, $annotation->slug, function(){} );
+					} 
 				}
 			}
 		});
@@ -118,13 +124,14 @@ class AdminPage extends \MWP\Framework\Annotation
 					echo $output;
 				};
 				
-				if ( $annotation->type == 'submenu' )
-				{
+				if ( $annotation->type == 'submenu' ) {
 					$page_hook = call_user_func( $add_page_func, $annotation->parent, $annotation->title, $annotation->menu, $annotation->capability, $annotation->slug, $router_callback, $annotation->icon, $annotation->position );
 				}
-				else
-				{
+				else {
 					$page_hook = call_user_func( $add_page_func, $annotation->title, $annotation->menu, $annotation->capability, $annotation->slug, $router_callback, $annotation->icon, $annotation->position );
+					if ( $annotation->type == 'menu' and $annotation->menu_submenu ) {
+						add_submenu_page( $annotation->slug, $annotation->title, $annotation->menu_submenu, $annotation->capability, $annotation->slug, function(){} );
+					} 
 				}
 				
 				/* Run Controller */
