@@ -901,7 +901,7 @@ abstract class ActiveRecord
 	 */
 	public function _getDirectly( $property )
 	{
-		/* Ensure we are setting a defined property */
+		/* Ensure we are getting a defined property */
 		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) ) {
 			if ( array_key_exists( static::$prefix . $property, $this->_data ) ) {
 				return $this->_data[ static::$prefix . $property ];
@@ -1031,6 +1031,21 @@ abstract class ActiveRecord
 		$this->_wpdb_prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
 		
 		return $this->_wpdb_prefix;
+	}
+	
+	/**
+	 * Perform a bulk action on records
+	 *
+	 * @param	string			$action					The action to perform
+	 * @param	array			$records				The records to perform the bulk action on
+	 */
+	public static function processBulkAction( $action, array $records )
+	{
+		foreach( $records as $record ) {
+			if ( is_callable( array( $record, $action ) ) ) {
+				call_user_func( array( $record, $action ) );
+			}
+		}
 	}
 	
 }

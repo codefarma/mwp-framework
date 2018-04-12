@@ -232,8 +232,8 @@ class ActiveRecordController
 			$table->searchableColumns = $options['searchable'];
 		}
 		
-		if ( isset( $options['bulk_actions'] ) ) {
-			$table->bulkActions = $options['bulk_actions'];
+		if ( isset( $options['bulkActions'] ) ) {
+			$table->bulkActions = $options['bulkActions'];
 		} else {
 			$table->bulkActions = array(
 				'delete' => 'Delete'

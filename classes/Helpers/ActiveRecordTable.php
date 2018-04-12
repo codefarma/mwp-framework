@@ -758,7 +758,7 @@ class _ActiveRecordTable extends \WP_List_Table
 				);
 				
 				/**
-				 * Filter the records that are receiving the bulk action
+				 * Filter the records that are receiving the bulk action and process them
 				 *
 				 * @param   array    $records       An array of active records from the bulk request
 				 * @param   string   $action        The requested bulk action
@@ -766,14 +766,7 @@ class _ActiveRecordTable extends \WP_List_Table
 				 * @return  array
 				 */
 				$records = apply_filters( 'mwp_fw_activerecord_bulk', $records, $action, $class );
-				
-				if ( ! empty( $records ) ) {
-					foreach( $records as $record ) {
-						if ( is_callable( array( $record, $action ) ) ) {
-							call_user_func( array( $record, $action ) );
-						}
-					}
-				} 
+				$class::processBulkAction( $action, $records );
 			}
 		}
 	}

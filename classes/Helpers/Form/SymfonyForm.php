@@ -632,7 +632,7 @@ class _SymfonyForm extends Form
 		}
 		
 		try {
-			$builder->get( $field['name'] );
+			$fieldRef = $builder->get( $field['name'] );
 		}
 		catch( \Exception $e ) {
 			$builder->remove( $field['name'] );
@@ -641,7 +641,7 @@ class _SymfonyForm extends Form
 		
 		/* Cache field references */
 		$this->fields[ $field['name'] ] = $field;
-		$this->fieldRefs[ $field['name'] ] = $builder->get( $field['name'] );
+		$this->fieldRefs[ $field['name'] ] = $fieldRef;
 		$this->parentRefs[ $field['name'] ] = $builder;
 		
 		return $this->fieldRefs[ $field['name'] ];
