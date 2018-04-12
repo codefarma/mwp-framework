@@ -86,6 +86,21 @@ abstract class _Plugin extends Singleton
 	}
 	
 	/**
+	 * Get plugin version
+	 *
+	 * @return	string
+	 */
+	public function getVersion()
+	{
+		$plugin_meta = $this->data( 'plugin-meta' );
+		if ( is_array( $plugin_meta ) and isset( $plugin_meta[ 'version' ] ) and $plugin_meta[ 'version' ] ) {
+			return $plugin_meta['version'];
+		}
+
+		return '';
+	}
+	
+	/**
 	 * Check if plugin version has been updated
 	 *
 	 * @MWP\WordPress\Action( for="init" )
@@ -97,11 +112,9 @@ abstract class _Plugin extends Singleton
 		if ( ! defined('DIR_TESTDATA') and ! Framework::instance()->isDev() )
 		{
 			$plugin_meta = $this->data( 'plugin-meta' );
-			if ( is_array( $plugin_meta ) and isset( $plugin_meta[ 'version' ] ) and $plugin_meta[ 'version' ] )
-			{
+			if ( is_array( $plugin_meta ) and isset( $plugin_meta[ 'version' ] ) and $plugin_meta[ 'version' ] ) {
 				$install = $this->data( 'install-meta' );
-				if ( ! is_array( $install ) or version_compare( $install[ 'version' ], $plugin_meta[ 'version' ] ) == -1 )
-				{
+				if ( ! is_array( $install ) or version_compare( $install[ 'version' ], $plugin_meta[ 'version' ] ) == -1 ) {
 					update_site_option( 'mwp_fw_cache_latest', time() );
 					$this->versionUpdated();
 				}
