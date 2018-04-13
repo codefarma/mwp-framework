@@ -144,6 +144,7 @@ class ActiveRecordController
 		$adminPage->position = isset( $options['position'] ) ? $options['position'] : NULL;
 		$adminPage->type = isset( $options['type'] ) ? $options['type'] : $adminPage->type;
 		$adminPage->parent = isset( $options['parent'] ) ? $options['parent'] : $adminPage->parent;
+		$adminPage->menu_submenu = isset( $options['menu_submenu'] ) ? $options['menu_submenu'] : null;
 		
 		$adminPage->applyToObject( $this, array() );
 		
@@ -291,7 +292,11 @@ class ActiveRecordController
 	 */
 	public function getUrl( $args=array() )
 	{
-		return add_query_arg( $args, menu_page_url( $this->adminPage->slug, false ) );
+		if ( isset( $this->adminPage ) ) {
+			return add_query_arg( $args, menu_page_url( $this->adminPage->slug, false ) );
+		}
+		
+		return '';
 	}
 	
 	/**
@@ -315,21 +320,19 @@ class ActiveRecordController
 	/**
 	 * View an active record
 	 * 
-	 * @param	ActiveRecord			$record				The active record
+	 * @param	ActiveRecord			$record				The active record, or NULL to load by request param
 	 * @return	void
 	 */
 	public function do_view( $record=NULL )
 	{
 		$class = $this->recordClass;
 		
-		if ( ! $record )
-		{
-			try
-			{
-				$record = $class::load( $_REQUEST[ 'id' ] );
+		if ( ! $record ) {
+			try {
+				$record = $class::load( isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : 0 );
 			}
 			catch( \OutOfRangeException $e ) {
- 				echo $this->getPlugin()->getTemplateContent( 'component/error', array( 'message' => __( 'The record could not be loaded. Class: ' . $this->recordClass . ' ' . ', ID: ' . ( (int) $_REQUEST['id'] ), 'mwp-framework' ) ) );
+ 				echo $this->error( __( 'The record could not be loaded.', 'mwp-framework' ) . ' Class: ' . $this->recordClass . ' ' . ', ID: ' . ( (int) $_REQUEST['id'] ) );
 				return;
 			}
 		}
@@ -342,7 +345,7 @@ class ActiveRecordController
 	/**
 	 * Create a new active record
 	 * 
-	 * @param	ActiveRecord			$record				The active record id
+	 * @param	ActiveRecord			$record				The new active record, or NULL to auto create
 	 * @return	void
 	 */
 	public function do_new( $record=NULL )
@@ -377,31 +380,35 @@ class ActiveRecordController
 	/**
 	 * Edit an active record
 	 * 
-	 * @param	ActiveRecord|NULL			$record				The active record
+	 * @param	ActiveRecord			$record				The active record, or NULL to load by request param
+	 * @param	string					$type				The type of edit to build and perform
 	 * @return	void
 	 */
-	public function do_edit( $record=NULL )
+	public function do_edit( $record=NULL, $type=NULL )
 	{
 		$controller = $this;
 		$class = $this->recordClass;
 		
+		if ( ! $type ) {
+			$type = isset( $_REQUEST['edit'] ) ? $_REQUEST['edit'] : 'edit';
+		}
+		
 		if ( ! $record ) {
-			try
-			{
-				$record = $class::load( $_REQUEST['id'] );
+			try	{
+				$record = $class::load( isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : 0 );
 			}
 			catch( \OutOfRangeException $e ) { 
- 				echo $this->getPlugin()->getTemplateContent( 'component/error', array( 'message' => __( 'The record could not be loaded. Class: ' . $this->recordClass . ' ' . ', ID: ' . ( (int) $_REQUEST['id'] ), 'mwp-framework' ) ) );
+ 				echo $this->error( __( 'The record could not be loaded.', 'mwp-framework' ) . ' Class: ' . $this->recordClass . ' ' . ', ID: ' . ( (int) $_REQUEST['id'] ) );
 				return;
 			}
 		}
 		
-		$form = $record->getForm( 'edit' );
+		$form = $record->getForm( $type );
 		$save_error = NULL;
 		
 		if ( $form->isValidSubmission() ) 
 		{
-			$record->processForm( $form->getValues(), 'edit' );			
+			$record->processForm( $form->getValues(), $type );			
 			$result = $record->save();
 			
 			if ( ! is_wp_error( $result ) ) {
@@ -414,15 +421,15 @@ class ActiveRecordController
 			}
 		}
 
-		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->_getEditTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record, 'error' => $save_error ) );
+		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->_getEditTitle( $type ), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record, 'error' => $save_error ) );
 		
-		echo $this->wrap( $record->_getEditTitle(), $output, 'edit' );
+		echo $this->wrap( $record->_getEditTitle( $type ), $output, $type );
 	}
 
 	/**
 	 * Delete an active record
 	 * 
-	 * @param	ActiveRecord|NULL			$record				The active record
+	 * @param	ActiveRecord			$record				The active record, or NULL to load by request param
 	 * @return	void
 	 */
 	public function do_delete( $record=NULL )
@@ -431,12 +438,11 @@ class ActiveRecordController
 		$class = $this->recordClass;
 		
 		if ( ! $record ) {
-			try
-			{
-				$record = $class::load( $_REQUEST['id'] );
+			try	{
+				$record = $class::load( isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : 0 );
 			}
 			catch( \OutOfRangeException $e ) { 
- 				echo $this->getPlugin()->getTemplateContent( 'component/error', array( 'message' => __( 'The record could not be loaded. Class: ' . $this->recordClass . ' ' . ', ID: ' . ( (int) $_REQUEST['id'] ), 'mwp-framework' ) ) );
+ 				echo $this->error( __( 'The record could not be loaded.', 'mwp-framework' ) . ' Class: ' . $this->recordClass . ' ' . ', ID: ' . ( (int) $_REQUEST['id'] ) );
 				return;
 			}
 		}
@@ -472,6 +478,21 @@ class ActiveRecordController
 			'output' => $output,
 			'classes' => $classes,
 			'controller' => $this,
+		));
+	}
+	
+	/**
+	 * Send error output
+	 *
+	 * @param	string				$message					The error message
+	 * @param	string				$code						The error code
+	 * @return	string
+	 */
+	public function error( $message, $code='' )
+	{
+ 		return $this->getPlugin()->getTemplateContent( 'component/error', array( 
+			'message' => $message,
+			'code' => $code,
 		));
 	}
 	
