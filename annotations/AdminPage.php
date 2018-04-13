@@ -143,6 +143,8 @@ class AdminPage extends \MWP\Framework\Annotation
 					$action = isset( $_REQUEST[ 'do' ] ) ? $_REQUEST[ 'do' ] : 'index';
 					if( is_callable( array( $instance, 'do_' . $action ) ) ) {
 						$output .= call_user_func( array( $instance, 'do_' . $action ) );
+					} else {
+						$output .= '<div class="notice notice-error"><p><strong>Controller Error:</strong><br><br>Implement a "do_' . $action . '()" method on this controller to generate the output of this page.</p></div>';
 					}
 					$buffered_output = ob_get_clean();
 					$output = $buffered_output . $output;
