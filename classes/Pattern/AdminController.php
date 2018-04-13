@@ -6,7 +6,7 @@
  *
  * @package:  MWP Application Framework for WordPress
  * @author:   Kevin Carwile
- * @since:    {build_version}
+ * @since:    2.0.0
  */
 namespace MWP\Framework\Pattern;
 
