@@ -19,7 +19,7 @@ abstract class Singleton
 	/**
 	 * @var	Instance Cache
 	 */
-	protected static $_instance;
+	protected static $_instance = [];
 	
 	/**
      * Protected constructor to prevent creating a new instance
@@ -55,10 +55,19 @@ abstract class Singleton
 	 */
 	public static function instance()
 	{
-		if ( static::$_instance === NULL )
-		{
-			$classname = get_called_class();
-			static::$_instance = new $classname;
+		/* Allow this pattern to be extended without overriding the $_instance property */
+		if ( is_array( static::$_instance ) ) {
+			if ( isset( static::$_instance[ get_called_class() ] ) ) {
+				return static::$_instance[ get_called_class() ];
+			} else {
+				static::$_instance[ get_called_class() ] = new static;
+				static::$_instance[ get_called_class() ]->constructed();
+				return static::$_instance[ get_called_class() ];
+			}
+		}
+		
+		if ( static::$_instance === NULL ) {
+			static::$_instance = new static;
 			static::$_instance->constructed();
 		}
 		
