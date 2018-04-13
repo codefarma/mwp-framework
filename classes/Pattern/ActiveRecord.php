@@ -137,9 +137,10 @@ abstract class ActiveRecord
 	/**
 	 * Get the 'edit record' page title
 	 * 
+	 * @param	string			$type			The type of edit being performed
 	 * @return	string
 	 */
-	public function _getEditTitle()
+	public function _getEditTitle( $type=NULL )
 	{
 		return __( static::$lang_edit . ' ' . static::$lang_singular );
 	}
@@ -152,6 +153,26 @@ abstract class ActiveRecord
 	public function _getDeleteTitle()
 	{
 		return __( static::$lang_delete . ' ' . static::$lang_singular );
+	}
+	
+	/**
+	 * Get the singular name
+	 * 
+	 * @return	string
+	 */
+	public function _getSingularName()
+	{
+		return __( static::$lang_singular );
+	}
+	
+	/**
+	 * Get the plural name
+	 * 
+	 * @return	string
+	 */
+	public function _getPluralName()
+	{
+		return __( static::$lang_plural );
 	}
 	
 	/**
