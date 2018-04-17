@@ -540,7 +540,7 @@ class _SymfonyForm extends Form
 				$field['options']['choice_prefix'] = ( isset( $field['options']['choice_prefix'] ) ? $field['options']['choice_prefix'] : '' ) . (( isset( $field['options']['multiple'] ) and $field['options']['multiple'] == true ) ? '<div class="checkbox">' : '<div class="radio">');
 				$field['options']['choice_suffix'] = '</div>' . ( isset( $field['options']['choice_suffix'] ) ? $field['options']['choice_suffix'] : '' );
 			} else {
-				if ( ! in_array( $field['type'], array( 'checkbox', 'radio', 'date', 'time', 'datetime', 'birthday', 'submit', 'button', 'reset' ) ) ) {
+				if ( ! in_array( $field['type'], array( 'checkbox', 'radio', 'date', 'time', 'datetime', 'birthday', 'submit', 'button', 'reset', 'file' ) ) ) {
 					$field['options']['attr']['class'] = ( isset( $field['options']['attr']['class'] ) ? $field['options']['attr']['class'] . ' ' : '' ) . 'form-control';
 				}
 			}
