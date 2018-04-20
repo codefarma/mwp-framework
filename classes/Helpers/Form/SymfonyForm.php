@@ -467,11 +467,13 @@ class _SymfonyForm extends Form
 		}
 
 		/* Prepare any provided constraints */
-		if ( isset( $field['options']['constraints'] ) and is_array( $field['options']['constraints'] ) ) {
+		if ( isset( $field['options']['constraints'] ) ) {
+			if ( ! is_array( $field['options']['constraints'] ) ) {
+				$field['options']['constraints'] = array( $field['options']['constraints'] );
+			}
 			$processed_constraints = array();
 			foreach( $field['options']['constraints'] as $class => $config ) {
-				if ( is_string( $config ) ) 
-				{
+				if ( is_string( $config ) ) {
 					$_class = class_exists( $config ) ? $config : 'Symfony\Component\Validator\Constraints\\' . $config;
 					if ( class_exists( $_class ) ) {
 						$processed_constraints[] = new $_class;
@@ -480,8 +482,7 @@ class _SymfonyForm extends Form
 				else if ( is_callable( $config ) ) {
 					$processed_constraints[] = new \Symfony\Component\Validator\Constraints\Callback( $config );					
 				}
-				else if ( is_array( $config ) ) 
-				{
+				else if ( is_array( $config ) ) {
 					$_class = class_exists( $class ) ? $class : 'Symfony\Component\Validator\Constraints\\' . $class;
 					if ( class_exists( $_class ) ) {
 						$processed_constraints[] = new $_class( $config );
