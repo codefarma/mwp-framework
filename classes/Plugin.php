@@ -157,7 +157,6 @@ abstract class _Plugin extends Singleton
 		global $wpdb;
 		$build_meta = $this->data( 'build-meta' );
 		
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		$dbHelper = \MWP\Framework\DbHelper::instance();
 		
 		$delta_updates = array();

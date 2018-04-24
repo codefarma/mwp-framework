@@ -37,6 +37,7 @@ class _DbHelper extends Singleton
 	 */
 	protected function __construct()
 	{
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		$this->db = Framework::instance()->db();
 	}
 
@@ -397,6 +398,56 @@ class _DbHelper extends Singleton
 	public function tableExists( $table, $ms_context=FALSE )
 	{
 		$prefix = $ms_context ? $this->db->prefix : $this->db->base_prefix;
-		return ( count( $this->db->get_results( "SHOW TABLES LIKE '". esc_sql( "{$prefix}{$table}" ) . "'" ) ) > 0 );
+		return ( count( $this->db->get_results( "SHOW TABLES LIKE '". esc_sql( $prefix . $table ) . "'" ) ) > 0 );
 	}
+	
+	/**
+	 * Check if a column exists
+	 *
+	 * @param	string		$table			Table name
+	 * @param	string		$column			Column name
+	 * @param	bool		$ms_context		Whether the table should be created in the context of the primary site or the current multisite
+	 * @return	bool
+	 */
+	public function columnExists( $table, $column, $ms_context=FALSE )
+	{
+		$prefix = $ms_context ? $this->db->prefix : $this->db->base_prefix;
+		if ( $this->tableExists( $table, $ms_context ) ) {
+			return ( count( $this->db->get_results( "SHOW COLUMNS FROM ". esc_sql( $prefix . $table ) . " LIKE '" . esc_sql( $column ) . "'" ) ) > 0 );
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Drop a table
+	 *
+	 * @param	string		$table			Table name
+	 * @param	bool		$ms_context		Whether the table should be created in the context of the primary site or the current multisite
+	 * @return	void
+	 */
+	public function dropTable( $table, $ms_context=FALSE )
+	{
+		$prefix = $ms_context ? $this->db->prefix : $this->db->base_prefix;
+		if ( $this->tableExists( $table, $ms_context ) ) {
+			$this->db->query( "DROP TABLE " . esc_sql( $prefix . $table ) );
+		}
+	}
+	
+	/**
+	 * Drop a column
+	 *
+	 * @param	string		$table			Table name
+	 * @param	string		$column			Column name
+	 * @param	bool		$ms_context		Whether the table should be created in the context of the primary site or the current multisite
+	 * @return	void
+	 */
+	public function dropColumn( $table, $column, $ms_context=FALSE )
+	{
+		$prefix = $ms_context ? $this->db->prefix : $this->db->base_prefix;
+		if ( $this->columnExists( $table, $column, $ms_context ) ) {
+			$this->db->query( "ALTER TABLE " . esc_sql( $prefix . $table ) . " DROP COLUMN `" . esc_sql( $column ) . "`" );
+		}		
+	}
+	
 }
