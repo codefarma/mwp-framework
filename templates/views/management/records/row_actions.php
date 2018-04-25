@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
 			}
 		}
-	?> href="<?php echo $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
+	?> href="<?php echo ( isset( $action['url'] ) and $action['url'] ) ? $action['url'] : $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
 		<?php if ( isset( $action['icon'] ) ) : ?>
 			<i class="<?php echo $action['icon'] ?>"></i>
 		<?php endif ?>

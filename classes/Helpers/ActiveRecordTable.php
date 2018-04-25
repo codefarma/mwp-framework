@@ -236,6 +236,11 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $actionsColumn;
 	
 	/**
+	 * @var	array
+	 */
+	public $_args_raw = array();
+	
+	/**
 	 * Set the controller
 	 */
 	public function setController( $controller )
@@ -285,6 +290,8 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->activeRecordClass = $args['recordClass'];
 			unset( $args['recordClass'] );
 		}
+		
+		$this->_args_raw = $args;
 		
 		//Set parent defaults
 		parent::__construct( $args );		
@@ -338,7 +345,7 @@ class _ActiveRecordTable extends \WP_List_Table
 	 * @access public
 	 */
 	public function no_items() {
-		_e( 'No ' . ( $this->_args['plural'] ?: 'items' ) . ' found.' );
+		_e( 'No ' . ( isset( $this->_args_raw['plural'] ) ? strtolower( $this->_args_raw['plural'] ) : 'items' ) . ' found.' );
 	}
 	
 	/**
@@ -614,7 +621,7 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->screen->render_screen_reader_content( 'heading_pagination' );
 		}
 
-		$output = '<span class="displaying-num">' . sprintf( _n( '%s ' . ( $this->_args['singular'] ?: 'item' ), '%s ' . ( $this->_args['plural'] ?: 'items' ), $total_items ), number_format_i18n( $total_items ) ) . '</span>';
+		$output = '<span class="displaying-num">' . sprintf( _n( '%s ' . ( strtolower( $this->_args_raw['singular'] ?: 'item' ) ), '%s ' . ( strtolower( $this->_args_raw['plural'] ?: 'items' ) ), $total_items ), number_format_i18n( $total_items ) ) . '</span>';
 
 		$current = $this->get_pagenum();
 		$removable_query_args = wp_removable_query_args();

@@ -249,6 +249,18 @@ class ActiveRecordController
 			$table->sortOrder = $options['sort_order'];
 		}
 		
+		if ( isset( $options['sortBy'] ) ) {
+			$table->sortBy = $options['sortBy'];
+		}
+		
+		if ( isset( $options['sortOrder'] ) ) {
+			$table->sortOrder = $options['sortOrder'];
+		}
+		
+		if ( isset( $options['perPage'] ) ) {
+			$table->perPage = $options['perPage'];
+		}
+		
 		if ( isset( $options['sequencingColumn'] ) ) {
 			$table->sequencingColumn = $options['sequencingColumn'];
 			if ( isset( $options['parentColumn'] ) ) {
@@ -280,6 +292,23 @@ class ActiveRecordController
 				$table->hardFilters[] = $hardFilter;
 			}
 		}
+		
+		if ( isset( $options['displayTopNavigation'] ) ) {
+			$table->displayTopNavigation = $options['displayTopNavigation'];
+		}
+		
+		if ( isset( $options['displayBottomNavigation'] ) ) {
+			$table->displayBottomNavigation = $options['displayBottomNavigation'];
+		}
+		
+		if ( isset( $options['displayTopHeaders'] ) ) {
+			$table->displayTopNavigation = $options['displayTopHeaders'];
+		}
+		
+		if ( isset( $options['displayBottomHeaders'] ) ) {
+			$table->displayBottomHeaders = $options['displayBottomHeaders'];
+		}
+		
 		
 		return $table;
 	}
