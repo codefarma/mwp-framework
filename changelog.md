@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]  
 
+## [2.0.1] - 2018-05-03
+
+- (fixed) Fixed bug with media upload field
 
 ## [2.0.0] - 2018-04-26
 
