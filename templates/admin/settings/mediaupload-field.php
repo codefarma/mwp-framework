@@ -17,7 +17,7 @@ $multiple = ( isset( $field->options['multiple'] ) and $field->options['multiple
 
 ?>
 
-<div class="mwp-media-setting" data-view-model="mwp-settings">
+<div class="mwp-media-setting" data-view-model="mwp-framework-settings">
   <div data-bind="wpMedia: { frame: { title: '<?php echo esc_attr( $field->title ) ?>', button: { text: 'Select Image' }, multiple: <?php echo $multiple ?> }, attachments: <?php echo json_encode( array_map( 'intval', (array) $currentValue ) ) ?> }">
     <div data-bind="foreach: attachments">
 	  <input data-bind="value: attributes.url" type="text" style="width:300px;" readonly />
