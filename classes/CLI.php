@@ -5,7 +5,7 @@
  * Created:    Nov 20, 2016
  *
  * @package   MWP Application Framework
- * @author    Kevin Carwile
+ * @author    WPRX
  * @since     1.0.0
  */
 

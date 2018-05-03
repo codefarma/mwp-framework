@@ -13,4 +13,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-echo $view[ 'form' ]->block( $form, 'widget_attributes' ) 
+echo $view[ 'form' ]->block( $form, 'widget_attributes' );
