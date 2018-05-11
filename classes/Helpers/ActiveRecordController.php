@@ -343,7 +343,7 @@ class ActiveRecordController
 		
 		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/index', array( 'plugin' => $this->getPlugin(), 'controller' => $this, 'table' => $table ) );
 		
-		echo $this->wrap( $this->adminPage->title, $output, 'index' );
+		echo $this->wrap( $this->adminPage->title, $output, [ 'classes' => 'index', 'record' => NULL ] );
 	}
 	
 	/**
@@ -368,7 +368,7 @@ class ActiveRecordController
 		
 		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/view', array( 'title' => $record->_getViewTitle(), 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
 		
-		echo $this->wrap( $record->_getViewTitle(), $output, 'view' );
+		echo $this->wrap( $record->_getViewTitle(), $output, [ 'classes' => 'view', 'record' => $record ] );
 	}
 
 	/**
@@ -403,7 +403,7 @@ class ActiveRecordController
 		
 		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/create', array( 'title' => $class::_getCreateTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'error' => $save_error ) );
 		
-		echo $this->wrap( $class::_getCreateTitle(), $output, 'create' );
+		echo $this->wrap( $class::_getCreateTitle(), $output, [ 'classes' => 'create', 'record' => $record ] );
 	}
 	
 	/**
@@ -452,7 +452,7 @@ class ActiveRecordController
 
 		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/edit', array( 'title' => $record->_getEditTitle( $type ), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record, 'error' => $save_error ) );
 		
-		echo $this->wrap( $record->_getEditTitle( $type ), $output, $type );
+		echo $this->wrap( $record->_getEditTitle( $type ), $output, [ 'classes' => $type, 'record' => $record ] );
 	}
 
 	/**
@@ -492,22 +492,24 @@ class ActiveRecordController
 	
 		$output = $this->getPlugin()->getTemplateContent( 'views/management/records/delete', array( 'title' => $record->_getDeleteTitle(), 'form' => $form, 'plugin' => $this->getPlugin(), 'controller' => $this, 'record' => $record ) );
 		
-		echo $this->wrap( $record->_getDeleteTitle(), $output, 'delete' );
+		echo $this->wrap( $record->_getDeleteTitle(), $output, [ 'classes' => 'delete', 'record' => $record ] );
 	}
 	
 	/**
 	 * Send wrapped output
 	 *
+	 * @param	string			$title			The output title
 	 * @param	string			$output			The output to wrap
+	 * @param	array			$params			Additional params to send to template
 	 * @return	void
 	 */
-	public function wrap( $title, $output, $classes='' ) {
-		return $this->getPlugin()->getTemplateContent( $this->getOutputWrapper(), array(
+	public function wrap( $title, $output, $params=[] ) {
+		return $this->getPlugin()->getTemplateContent( $this->getOutputWrapper(), array_merge( array(
 			'title' => $title,
 			'output' => $output,
 			'classes' => $classes,
 			'controller' => $this,
-		));
+		), $params ));
 	}
 	
 	/**
