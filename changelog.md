@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]  
 
+## [2.0.2] - 2018-05-11
+
+- (fixed) Fixed return data type of active record countWhere() method
+
 ## [2.0.1] - 2018-05-03
 
 - (fixed) Fixed bug with media upload field
