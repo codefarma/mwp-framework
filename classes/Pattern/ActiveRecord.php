@@ -451,7 +451,7 @@ abstract class ActiveRecord
 	 * Count records
 	 *
 	 * @param	array|string		$where 			Where clause with associated replacement values
-	 * @return	array
+	 * @return	int
 	 */
 	public static function countWhere( $where )
 	{
@@ -470,7 +470,7 @@ abstract class ActiveRecord
 		$prepared_query = ! empty( $compiled[ 'params' ] ) ? $db->prepare( $query, $compiled[ 'params' ] ) : $query;
 		$count = $db->get_var( $prepared_query );
 		
-		return $count;
+		return (int) $count;
 	}
 	
 	/**
