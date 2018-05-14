@@ -33,7 +33,7 @@ class Script extends \MWP\Framework\Annotation
 	/**
 	 * @var mixed
 	 */
-	public $ver = false;
+	public $ver;
 	
 	/**
 	 * @var boolean
@@ -65,6 +65,10 @@ class Script extends \MWP\Framework\Annotation
 			$plugin = ( $instance instanceof \MWP\Framework\Plugin ) ? $instance : $instance->getPlugin();
 			$fileUrl = $plugin->fileUrl( $instance->{$property->name} );
 			$annotation = $this;
+			
+			if ( ! isset( $annotation->ver ) ) {
+				$annotation->ver = $plugin->getVersion();
+			}
 			
 			$register_callback = function() use ( $plugin, $fileUrl, $annotation, $instance, $property )
 			{
