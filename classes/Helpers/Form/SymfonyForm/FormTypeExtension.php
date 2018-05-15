@@ -57,6 +57,7 @@ class _FormTypeExtension extends AbstractTypeExtension
 			'choice_prefix' => '',
 			'choice_suffix' => '',
 			'toggles' => array(),
+			'form_attr' => array(),
         ));
     }
 
@@ -83,5 +84,6 @@ class _FormTypeExtension extends AbstractTypeExtension
 		$view->vars['choice_prefix'] = $options['choice_prefix'];
 		$view->vars['choice_suffix'] = $options['choice_suffix'];
 		$view->vars['toggles']      = $options['toggles'];
+		$view->vars['form_attr']    = $options['form_attr'];
     }
 }
