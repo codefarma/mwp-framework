@@ -799,7 +799,11 @@ abstract class ActiveRecord
 	 */
 	protected function buildDeleteForm()
 	{
-		$form = static::createForm( 'delete', array( 'attr' => array( 'class' => 'container' ) ) );
+		$form = static::createForm( 'delete', array( 'attr' => array( 'class' => 'container', 'style' => 'max-width: 600px; margin: 75px auto;' ) ) );
+		
+		$form->addHtml( 'delete_notice', $this->getPlugin()->getTemplateContent( 'views/management/records/notice_delete', [
+			'record' => $this,
+		]));
 		
 		$form->addField( 'cancel', 'submit', array( 
 			'label' => __( 'Cancel', 'mwp-framework' ), 
