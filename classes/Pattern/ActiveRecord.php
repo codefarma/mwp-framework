@@ -560,36 +560,28 @@ abstract class ActiveRecord
 	public function getControllerActions()
 	{
 		return array(
-			'edit' => array(
-				'title' => '',
-				'icon' => 'glyphicon glyphicon-pencil',
-				'attr' => array( 
-					'title' => $this->_getEditTitle(),
-					'class' => 'btn btn-xs btn-default',
-				),
-				'params' => array(
-					'do' => 'edit',
-					'id' => $this->id(),
-				),
-			),
 			'view' => array(
-				'title' => '',
+				'title' => $this->_getViewTitle(),
 				'icon' => 'glyphicon glyphicon-eye-open',
-				'attr' => array( 
-					'title' => $this->_getViewTitle(),
-					'class' => 'btn btn-xs btn-default',
-				),
 				'params' => array(
 					'do' => 'view',
 					'id' => $this->id(),
 				),
 			),
+			'edit' => array(
+				'title' => $this->_getEditTitle(),
+				'icon' => 'glyphicon glyphicon-pencil',
+				'params' => array(
+					'do' => 'edit',
+					'id' => $this->id(),
+				),
+			),
 			'delete' => array(
-				'title' => '',
+				'separator' => true,
+				'title' => $this->_getDeleteTitle(),
 				'icon' => 'glyphicon glyphicon-trash',
 				'attr' => array( 
-					'title' => $this->_getDeleteTitle(),
-					'class' => 'btn btn-xs btn-default',
+					'class' => 'text-danger',
 				),
 				'params' => array(
 					'do' => 'delete',
