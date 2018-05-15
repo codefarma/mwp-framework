@@ -1,7 +1,7 @@
 <?php
 return <<<'JSON'
 {
-    "framework_version": "2.0.2",
+    "framework_version": "2.0.3",
     "framework_bundled": true,
     "tables": [
         {
