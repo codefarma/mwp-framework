@@ -21,9 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="panel panel-danger">
   <div class="panel-heading">
-    <h3 class="panel-title"><?php _e( 'Alert', 'mwp-framework' ) ?></h3>
+    <h3 class="panel-title text-center"><?php _e( 'Alert', 'mwp-framework' ) ?></h3>
   </div>
   <div class="panel-body">
-    <p class="text-center"><?php _e( 'You are about to delete this record. Are you sure you want to do this?', 'mwp-framework' ) ?></p>
+    <p class="text-center"><?php echo __( 'You are about to delete this ', 'mwp-framework' ) . strtolower( $record->_getSingularName() ) . '. <br><br>' . __( 'Are you sure you want to do this?', 'mwp-framework' ) ?></p>
   </div>
 </div>
