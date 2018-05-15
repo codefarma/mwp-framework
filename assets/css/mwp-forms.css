@@ -71,6 +71,11 @@
 	-webkit-box-shadow: none;
 }
 
+.mwp-form tr.ui-sortable-helper,
+.wp-list-table tr.ui-sortable-helper {
+	display: table;
+}
+
 .mwp-form .ui-sortable-handle,
 .wp-list-table .ui-sortable-handle {
 	cursor: grab;
@@ -91,7 +96,11 @@
       rgba(0,0,0,0.1) 5px, 
       transparent 5px, 
       transparent 10px);
-	min-height: 65px;
+}
+
+.mwp-form .mwp-sortable-placeholder td,
+.wp-list-table .mwp-sortable-placeholder td {
+	padding: 20px 0 !important;
 }
 
 .mwp-bootstrap-form button[data-role="add-entry"] {
