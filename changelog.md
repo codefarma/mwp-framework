@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]  
+## [Unreleased]
+
+## [2.0.3] - 2018-05-15
+
+- (added) New default styling for viewing a record in a record controller
+- (added) Bootstrap button grouping for active record controller actions
+- (added) Added a new delete notice when deleting an active record
+
+- (changed) Script and Style annotations will default to the plugin version for cache busting
+
+- (fixed) Fixed the display of the helper for draggable/sortable records
+- (fixed) Fixed an issue where form attributes were being output twice on rendering
 
 ## [2.0.2] - 2018-05-11
 
