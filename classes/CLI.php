@@ -531,9 +531,9 @@ class _CLI extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     # Update the meta data in a plugin file
-	 *     $ wp mwp update-meta my-plugin --auto-update --namespace="MyCompany\PluginPackage"
-	 *     Success: Meta data successfully updated.
+	 *     # Update the database to match the built plugin schema
+	 *     $ wp mwp update-database my-plugin
+	 *     Success: Database schema updated.
 	 *
 	 * @subcommand update-database
 	 * @when after_wp_load
@@ -577,6 +577,126 @@ class _CLI extends \WP_CLI_Command {
 					\WP_CLI::success( 'Database schema updated.' );
 				} else {
 					\WP_CLI::success( 'Database schema is already up to date.' );
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Build database table from active record
+	 * 
+	 * @param	$args		array		Positional command line arguments
+	 * @param	$assoc		array		Named command line arguments
+	 *
+	 * ## OPTIONS
+	 *
+	 * <slug>
+	 * : The slug of the mwp application framework plugin
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Update the database according to the columns in an active record
+	 *     $ wp mwp build-table my-plugin Record\Class
+	 *     Success: Meta data successfully updated.
+	 *
+	 * @subcommand build-table
+	 * @when after_wp_load
+	 */
+	public function buildDatabaseTable( $args, $assoc )
+	{
+		$slug = $args[0];
+		
+		if ( ! is_dir( WP_PLUGIN_DIR . '/' . $slug ) )
+		{
+			\WP_CLI::error( 'Plugin directory is not valid: ' . $slug );
+		}
+		
+		$meta_data = array();
+		
+		if ( ! is_dir( WP_PLUGIN_DIR . '/' . $slug . '/data' ) )
+		{
+			\WP_CLI::error( 'Could not find plugin meta data directory: ' . WP_PLUGIN_DIR . '/' . $slug . '/data' );
+		}
+		else
+		{
+			/* Read existing metadata */
+			if ( file_exists( WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php' ) )
+			{
+				$meta_data = json_decode( include WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php', TRUE );
+				
+				if ( ! $meta_data['namespace'] ) {
+					\WP_CLI::error( 'Could not detect plugin namespace.' );
+				}
+				
+				$dbHelper = \MWP\Framework\DbHelper::instance();
+
+				if ( $args[1] == 'all' ) {
+					$dir = WP_PLUGIN_DIR . '/' . $slug . '/classes';
+					$_dir = dir( $dir );
+					
+					$buildAll = function( $dir='' ) use ( &$buildAll, $slug, $meta_data, $dbHelper ) 
+					{
+						$realdir = WP_PLUGIN_DIR . '/' . $slug . '/classes' . ( $dir ? '/' . $dir : '' );
+						$_dir = dir( $realdir );
+						while ( false !== $file = $_dir->read() ) 
+						{
+							// Skip pointers & special dirs
+							if ( in_array( $file, array( '.', '..' ) ) ) {
+								continue;
+							}
+
+							if( is_dir( $realdir . '/' . $file ) ) {
+								$buildAll( $dir . '/' . $file );
+							}
+							else {
+								if ( substr( $file, -4 ) == '.php' ) {
+									$filename = substr( $file, 0, -4 );
+									$namespace = trim( str_replace( '/', '\\', $dir ), '\\' );
+									$classname = $meta_data['namespace'] . '\\' . ( $namespace ? $namespace . '\\' : '' ) . $filename;
+									if ( class_exists( $classname ) ) {
+										if ( is_subclass_of( $classname, 'MWP\Framework\Pattern\ActiveRecord' ) ) {
+											$reflectionClass = new \ReflectionClass( $classname );
+											if ( ! $reflectionClass->isAbstract() and ! empty( $classname::$columns ) ) {
+												$tableSQL = $dbHelper->buildTableSQL( $classname::getSchema() );
+												$deltaUpdate = dbDelta( $tableSQL );
+												if ( $deltaUpdate ) {
+													foreach( (array) $deltaUpdate as $table_name => $updates ) {
+														foreach( (array) $updates as $updateDescription ) {
+															\WP_CLI::line( $updateDescription );
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							
+						}
+						$_dir->close();
+					};
+					
+					$buildAll();
+					
+				} else {
+					$recordClass = $meta_data['namespace'] . '\\' . $args[1];
+					if ( ! is_subclass_of( $recordClass, 'MWP\Framework\Pattern\ActiveRecord' ) ) {
+						\WP_CLI::error( 'That class does not appear to be a valid subclass of MWP\Framework\Pattern\ActiveRecord' );
+					}
+					
+					$tableSQL = $dbHelper->buildTableSQL( $recordClass::getSchema() );
+					$deltaUpdate = dbDelta( $tableSQL );
+					
+					if ( $deltaUpdate ) {
+						foreach( (array) $deltaUpdate as $table_name => $updates ) {
+							foreach( (array) $updates as $updateDescription ) {
+								\WP_CLI::line( $updateDescription );
+							}
+						}
+						\WP_CLI::success( 'Database table updated.' );
+					} else {
+						\WP_CLI::success( 'Database table is already up to date.' );
+					}
 				}
 			}
 		}

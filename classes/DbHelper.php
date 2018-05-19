@@ -233,7 +233,7 @@ class _DbHelper extends Singleton
 	public function buildColumnSQL( $data )
 	{
 		/* Specify name and type */
-		$definition = "{$data['name']} " . \strtolower( $data['type'] );
+		$definition = "`{$data['name']}` " . \strtolower( $data['type'] );
 		
 		/* Some types specify length */
 		if(

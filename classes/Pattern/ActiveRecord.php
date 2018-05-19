@@ -1033,6 +1033,71 @@ abstract class ActiveRecord
 	}
 	
 	/**
+	 * Get record db schema
+	 *
+	 *
+	 */
+	public static function getSchema()
+	{
+		$record_schema = [
+			'name' => static::$table,
+			'columns' => [
+				static::$prefix . static::$key => [
+					"allow_null" => false,
+					"auto_increment" => true,
+					"binary" => false,
+					"decimals" => null,
+					"default" => null,
+					"length" => 20,
+					"name" => static::$prefix . static::$key,
+					"type" => "BIGINT",
+					"unsigned" => true,
+					"values" => [],
+					"zerofill" => false
+				],
+			],
+			'indexes' => [
+				'PRIMARY' => [
+					"type" => "primary",
+					"name" => "PRIMARY",
+					"length" => [
+						null
+					],
+					"columns" => [
+						static::$prefix . static::$key,
+					],
+				]
+			],
+		];
+		
+		foreach( static::$columns as $column => $properties ) {
+			if ( is_array( $properties ) ) {
+				if ( $column !== static::$key and isset( $properties['type'] ) ) {
+					$record_schema['columns'][ static::$prefix . $column ] = array_merge( $properties, array( 'name' => static::$prefix . $column ) );
+					if ( isset( $properties['index'] ) and $properties['index'] ) {
+						$record_schema['indexes'][ static::$prefix . $column ] = array(
+							'type' => 'key',
+							'name' => static::$prefix . $column,
+							'length' => [ null ],
+							'columns' => [ static::$prefix . $column ],
+						);
+					}
+				}
+			} else {
+				if ( $properties !== static::$key ) {
+					$record_schema['columns'][ static::$prefix . $column ] = array(
+						'name' => static::$prefix . $column,
+						'type' => 'varchar',
+						'length' => 255,
+					);
+				}
+			}
+		}
+
+		return $record_schema;
+	}
+	
+	/**
 	 * Get the site db prefix for this record
 	 *
 	 * @return	string
