@@ -957,6 +957,9 @@ abstract class ActiveRecord
 					case 'year':
 						$field_type = 'number';
 						$field_options['attr'] = [ 'min' => 0, 'max' => 2155 ];
+						if ( strtotime( $field_options['data'] ) === false ) {
+							$field_options['data'] = NULL;
+						}
 						if ( isset( $timezone_string ) ) {
 							$field_options['view_timezone'] = $timezone_string;
 						}
@@ -964,6 +967,9 @@ abstract class ActiveRecord
 					case 'time':
 						$field_type = 'time';
 						$field_options['input'] = 'string';
+						if ( strtotime( $field_options['data'] ) === false ) {
+							$field_options['data'] = NULL;
+						}
 						if ( isset( $timezone_string ) ) {
 							$field_options['view_timezone'] = $timezone_string;
 						}
@@ -971,6 +977,9 @@ abstract class ActiveRecord
 					case 'date':
 						$field_type = 'date';
 						$field_options['input'] = 'string';
+						if ( strtotime( $field_options['data'] ) === false ) {
+							$field_options['data'] = NULL;
+						}
 						if ( isset( $timezone_string ) ) {
 							$field_options['view_timezone'] = $timezone_string;
 						}
@@ -978,6 +987,9 @@ abstract class ActiveRecord
 					case 'datetime':
 						$field_type = 'datetime';
 						$field_options['input'] = 'string';
+						if ( strtotime( $field_options['data'] ) === false ) {
+							$field_options['data'] = NULL;
+						}
 						if ( isset( $timezone_string ) ) {
 							$field_options['view_timezone'] = $timezone_string;
 						}
@@ -1012,7 +1024,9 @@ abstract class ActiveRecord
 						$field_options['required'] = true;
 						$field_options['choices'] = $choices;
 						$field_options['expanded'] = true;
-						$field_options['multiple'] = false;
+						$field_options['multiple'] = true;
+						$field_options['data'] = explode( ',', $field_options['data'] );
+						
 						if ( count( $choices ) >= 5 ) {
 							$field_options['expanded'] = false;
 						}
@@ -1098,6 +1112,9 @@ abstract class ActiveRecord
 		
 		foreach( $values as $key => $value ) {
 			if ( in_array( $key, $record_properties ) ) {
+				if ( isset( $columns[ $key ]['type'] ) and strtolower( $columns[ $key ]['type'] ) == 'set' and is_array( $value ) ) {
+					$value = implode( ',', $value );
+				}
 				$this->_setDirectly( $key, $value );
 			}
 		}
