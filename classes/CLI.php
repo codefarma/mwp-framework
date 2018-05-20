@@ -583,7 +583,7 @@ class _CLI extends \WP_CLI_Command {
 	}
 	
 	/**
-	 * Build database table from active record
+	 * Deploy a database table from an active record definition
 	 * 
 	 * @param	$args		array		Positional command line arguments
 	 * @param	$assoc		array		Named command line arguments
@@ -596,10 +596,10 @@ class _CLI extends \WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     # Update the database according to the columns in an active record
-	 *     $ wp mwp build-table my-plugin Record\Class
+	 *     $ wp mwp deploy-table my-plugin Record\Class
 	 *     Success: Meta data successfully updated.
 	 *
-	 * @subcommand build-table
+	 * @subcommand deploy-table
 	 * @when after_wp_load
 	 */
 	public function buildDatabaseTable( $args, $assoc )
@@ -628,6 +628,8 @@ class _CLI extends \WP_CLI_Command {
 					\WP_CLI::error( 'Could not detect plugin namespace.' );
 				}
 				
+				$pluginClass = $meta_data['namespace'] . ( $slug == 'mwp-framework' ? '\Framework' : '\Plugin' );
+				$plugin = $pluginClass::instance();
 				$dbHelper = \MWP\Framework\DbHelper::instance();
 
 				if ( $args[1] == 'all' ) {
@@ -636,6 +638,7 @@ class _CLI extends \WP_CLI_Command {
 					
 					$buildAll = function( $dir='' ) use ( &$buildAll, $slug, $meta_data, $dbHelper ) 
 					{
+						$found_tables = [ 'tables' => [], 'ms_tables' => [] ];
 						$realdir = WP_PLUGIN_DIR . '/' . $slug . '/classes' . ( $dir ? '/' . $dir : '' );
 						$_dir = dir( $realdir );
 						while ( false !== $file = $_dir->read() ) 
@@ -646,7 +649,7 @@ class _CLI extends \WP_CLI_Command {
 							}
 
 							if( is_dir( $realdir . '/' . $file ) ) {
-								$buildAll( $dir . '/' . $file );
+								$found_tables = array_merge_recursive( $found_tables, $buildAll( $dir . '/' . $file ) );
 							}
 							else {
 								if ( substr( $file, -4 ) == '.php' ) {
@@ -658,6 +661,7 @@ class _CLI extends \WP_CLI_Command {
 											$reflectionClass = new \ReflectionClass( $classname );
 											if ( ! $reflectionClass->isAbstract() and ! empty( $classname::_getColumns() ) ) {
 												$tableSQL = $dbHelper->buildTableSQL( $classname::getSchema() );
+												$found_tables[ ( $classname::_getMultisite() ? 'ms_tables' : 'tables' ) ][] = $classname::_getTable();
 												$deltaUpdate = dbDelta( $tableSQL );
 												if ( $deltaUpdate ) {
 													foreach( (array) $deltaUpdate as $table_name => $updates ) {
@@ -674,9 +678,18 @@ class _CLI extends \WP_CLI_Command {
 							
 						}
 						$_dir->close();
+						return $found_tables;
 					};
 					
-					$buildAll();
+					$found_tables = $buildAll();
+					
+					// Update meta data on plugin to track the found tables
+					$plugin_meta = $plugin->getData('plugin-meta') ?: array();
+					$plugin_tables = isset( $plugin_meta['tables'] ) ? ( is_array( $plugin_meta['tables'] ) ? $plugin_meta['tables'] : explode( ',', $plugin_meta['tables'] ) ) : array();
+					$plugin_ms_tables = isset( $plugin_meta['ms_tables'] ) ? ( is_array( $plugin_meta['ms_tables'] ) ? $plugin_meta['ms_tables'] : explode( ',', $plugin_meta['ms_tables'] ) ) : array();
+					$plugin_meta['tables'] = array_values( array_filter( array_unique( array_merge( $plugin_tables, $found_tables['tables'] ) ) ) );
+					$plugin_meta['ms_tables'] = array_values( array_filter( array_unique( array_merge( $plugin_ms_tables, $found_tables['ms_tables'] ) ) ) );
+					$plugin->setData( 'plugin-meta', $plugin_meta );
 					
 				} else {
 					$recordClass = $meta_data['namespace'] . '\\' . $args[1];

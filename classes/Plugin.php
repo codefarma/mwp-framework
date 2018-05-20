@@ -865,7 +865,7 @@ abstract class _Plugin extends Singleton
 			{
 				$build_meta['tables'] = array();
 				
-				$tables = explode( ',', $meta_data[ 'tables' ] );
+				$tables = is_array( $meta_data['tables'] ) ? $meta_data['tables'] : explode( ',', $meta_data['tables'] );
 				foreach( $tables as $table )
 				{
 					// trim spaces from table names
@@ -883,7 +883,7 @@ abstract class _Plugin extends Singleton
 			{
 				$build_meta['ms_tables'] = array();
 				
-				$tables = explode( ',', $meta_data[ 'ms_tables' ] );
+				$tables = is_array( $meta_data['ms_tables'] ) ? $meta_data['ms_tables'] : explode( ',', $meta_data['ms_tables'] );
 				foreach( $tables as $table )
 				{
 					// trim spaces from table names
