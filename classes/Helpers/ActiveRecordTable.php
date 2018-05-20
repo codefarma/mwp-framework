@@ -529,6 +529,7 @@ class _ActiveRecordTable extends \WP_List_Table
 	{
 		$columns = array();
 		$class = $this->activeRecordClass;
+		$prefix = $class::_getPrefix();
 		
 		if ( ! empty( $this->bulkActions ) )
 		{
@@ -541,26 +542,22 @@ class _ActiveRecordTable extends \WP_List_Table
 			return $columns;
 		}
 		
-		foreach( $class::$columns as $key => $column )
+		foreach( $class::_getColumns() as $key => $column )
 		{
 			$slug = NULL;
 			$title = NULL;
 			
-			if ( is_array( $column ) )
-			{
-				$slug = $class::$prefix . $key;
-				if ( isset( $column[ 'title' ] ) and is_string( $column[ 'title' ] ) )
-				{
+			if ( is_array( $column ) ) {
+				$slug = $prefix . $key;
+				if ( isset( $column[ 'title' ] ) and is_string( $column[ 'title' ] ) ) {
 					$title = $column[ 'title' ];
 				}
 			}
-			elseif ( is_string( $column ) )
-			{
-				$slug = $class::$prefix . $column;
+			elseif ( is_string( $column ) ) {
+				$slug = $prefix . $column;
 			}
 			
-			if ( ! $title )
-			{
+			if ( ! $title ) {
 				$title = str_replace( '_', ' ', $slug );
 				$title = ucwords( $title );
 			}

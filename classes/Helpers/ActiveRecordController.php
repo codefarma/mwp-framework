@@ -91,9 +91,10 @@ class ActiveRecordController
 	public function getDefaultConfig()
 	{
 		$recordClass = $this->recordClass;
+		$prefix = $recordClass::_getPrefix();
 		
-		$sequence_col = isset( $recordClass::$sequence_col ) ? $recordClass::$prefix . $recordClass::$sequence_col : NULL;
-		$parent_col = isset( $recordClass::$parent_col ) ? $recordClass::$prefix . $recordClass::$parent_col : NULL;
+		$sequence_col = isset( $recordClass::_getSequenceCol() ) ? $prefix . $recordClass::_getSequenceCol() : NULL;
+		$parent_col = isset( $recordClass::_getParentCol() ) ? $prefix . $recordClass::_getParentCol() : NULL;
 		
 		return array(
 			'tableConfig' => array(
@@ -214,11 +215,12 @@ class ActiveRecordController
 		}
 		else
 		{
-			foreach( $recordClass::$columns as $key => $opts ) {
+			$prefix = $recordClass::_getPrefix();
+			foreach( $recordClass::_getColumns() as $key => $opts ) {
 				if ( is_array( $opts ) ) {
-					$table->columns[ $recordClass::$prefix . $key ] = ucwords( str_replace( '_', ' ', $key ) );
+					$table->columns[ $prefix . $key ] = ucwords( str_replace( '_', ' ', $key ) );
 				} else {
-					$table->columns[ $recordClass::$prefix . $opts ] = ucwords( str_replace( '_', ' ', $opts ) );
+					$table->columns[ $prefix . $opts ] = ucwords( str_replace( '_', ' ', $opts ) );
 				}
 			}
 			$table->columns['_row_actions'] = __( 'Actions', 'mwp-framework' );

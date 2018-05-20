@@ -115,6 +115,76 @@ abstract class ActiveRecord
 	protected $_changed = array();
 	
 	/**
+	 * Get database table
+	 *
+	 * @return	string
+	 */
+	public static function _getTable()
+	{
+		return static::$table;
+	}	
+	
+	/**
+	 * Get database columns
+	 *
+	 * @return	array
+	 */
+	public static function _getColumns()
+	{
+		return static::$columns;
+	}	
+	
+	/**
+	 * Get column name prefix
+	 *
+	 * @return	string
+	 */
+	public static function _getPrefix()
+	{
+		return static::$prefix;
+	}
+	
+	/**
+	 * Get database row id column
+	 *
+	 * @return	string
+	 */
+	public static function _getKey()
+	{
+		return static::$key;
+	}
+	
+	/**
+	 * Get database table
+	 *
+	 * @return	string
+	 */
+	public static function _getMultisite()
+	{
+		return static::$site_specific;
+	}
+	
+	/**
+	 * Get database sequence column
+	 *
+	 * @return	string
+	 */
+	public static function _getSequenceCol()
+	{
+		return static::$sequence_col;
+	}
+	
+	/**
+	 * Get database parent column
+	 *
+	 * @return	string
+	 */
+	public static function _getParentCol()
+	{
+		return static::$parent_col;
+	}
+	
+	/**
 	 * Get the 'create record' page title
 	 * 
 	 * @return	string
@@ -194,19 +264,22 @@ abstract class ActiveRecord
 	 */
 	public function __get( $property )
 	{
+		$columns = static::_getColumns();
+		$prefix = static::_getPrefix();
+		
 		/* Ensure we are getting a defined property */
-		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) )
+		if ( in_array( $property, $columns ) or array_key_exists( $property, $columns ) )
 		{
 			/* Proceed if we have a value to return */
-			if ( array_key_exists( static::$prefix . $property, $this->_data ) )
+			if ( array_key_exists( $prefix . $property, $this->_data ) )
 			{
 				/* Retrieve the value */
-				$value = $this->_data[ static::$prefix . $property ];
+				$value = $this->_data[ $prefix . $property ];
 				
 				/* Check if there are any optional params assigned to this property */
-				if ( array_key_exists( $property, static::$columns ) )
+				if ( array_key_exists( $property, $columns ) )
 				{
-					$options = static::$columns[ $property ];
+					$options = $columns[ $property ];
 					
 					/* Special format conversion needed? */
 					if ( isset( $options[ 'format' ] ) )
@@ -250,13 +323,16 @@ abstract class ActiveRecord
 	 */
 	public function __set( $property, $value )
 	{
+		$columns = static::_getColumns();
+		$prefix = static::_getPrefix();
+		
 		/* Ensure we are setting a defined property */
-		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) )
+		if ( in_array( $property, $columns ) or array_key_exists( $property, $columns ) )
 		{
 			/* Check if there are any optional params assigned to this property */
-			if ( array_key_exists( $property, static::$columns ) )
+			if ( array_key_exists( $property, $columns ) )
 			{
-				$options = static::$columns[ $property ];
+				$options = $columns[ $property ];
 				
 				/* Special format conversion needed? */
 				if ( isset( $options[ 'format' ] ) )
@@ -274,14 +350,11 @@ abstract class ActiveRecord
 							
 							if ( is_object( $value ) )
 							{
-								if ( $value instanceof ActiveRecord and is_a( $value, $class ) )
-								{
+								if ( $value instanceof ActiveRecord and is_a( $value, $class ) ) {
 									$value = $value->id();
 								}
-								else
-								{
-									if ( ! $value instanceof ActiveRecord )
-									{
+								else {
+									if ( ! $value instanceof ActiveRecord ) {
 										throw new \InvalidArgumentException( 'Object is not a subclass of MWP\Framework\Pattern\ActiveRecord' );
 									}
 									throw new \InvalidArgumentException( 'Object expected to be an active record of type: ' . $class . ' but it is a: ' . get_class( $value ) );
@@ -293,7 +366,7 @@ abstract class ActiveRecord
 			}
 			
 			/* Set the value */
-			$prop_key = static::$prefix . $property;
+			$prop_key = $prefix . $property;
 			if ( ! array_key_exists( $prop_key, $this->_data ) or $this->_data[ $prop_key ] !== $value ) {
 				
 				/* Save original persisted value for reference later */
@@ -349,9 +422,11 @@ abstract class ActiveRecord
 	 */
 	public function id()
 	{
-		if ( isset( $this->_data[ static::$prefix . static::$key ] ) )
-		{
-			return $this->_data[ static::$prefix . static::$key ];
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
+		
+		if ( isset( $this->_data[ $prefix . $key ] ) ) {
+			return $this->_data[ $prefix . $key ];
 		}
 		
 		return NULL;
@@ -366,25 +441,22 @@ abstract class ActiveRecord
 	 */
 	public static function load( $id )
 	{
-		if ( ! $id )
-		{
+		if ( ! $id ) {
 			throw new \OutOfRangeException( 'Invalid ID' );
 		}
 		
-		if ( isset( static::$multitons[ $id ] ) )
-		{
+		if ( isset( static::$multitons[ $id ] ) ) {
 			return static::$multitons[ $id ];
 		}
 		
 		$db = Framework::instance()->db();
-		$prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
+		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 
-		$row = $db->get_row( $db->prepare( "SELECT * FROM " . $prefix . static::$table . " WHERE " . static::$prefix . static::$key . "=%d", $id ), ARRAY_A );
+		$row = $db->get_row( $db->prepare( "SELECT * FROM " . $db_prefix . static::_getTable() . " WHERE `" . static::_getPrefix() . static::_getKey() . "`=%d", $id ), ARRAY_A );
 
-		if ( $row )
-		{
+		if ( $row ) {
 			$record = static::loadFromRowData( $row );
-			$record->_wpdb_prefix = $prefix;
+			$record->_wpdb_prefix = $db_prefix;
 			return $record;
 		}
 		
@@ -406,28 +478,32 @@ abstract class ActiveRecord
 			$where = array( $where );
 		}
 		
+		$table = static::_getTable();
+		$prefix = static::_getPrefix();
+		$sequence_col = static::_getSequenceCol();
+		
 		$db = Framework::instance()->db();
-		$prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
+		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 
 		$results = array();
 		$compiled = static::compileWhereClause( $where );
 		
 		/* Get results of the prepared query */
-		$query = "SELECT * FROM " . $prefix . static::$table . " WHERE " . $compiled[ 'where' ];
+		$query = "SELECT * FROM " . $db_prefix . $table . " WHERE " . $compiled[ 'where' ];
 		
 		if ( $order !== NULL ) {
 			$query .= " ORDER BY " . $order;
 		} else {
-			if ( isset( static::$sequence_col ) ) {
-				$query .= " ORDER BY `" . static::$prefix . static::$sequence_col . "` ASC";
+			if ( isset( $sequence_col ) ) {
+				$query .= " ORDER BY `" . $prefix . $sequence_col . "` ASC";
 			}
 		}
 		
 		if ( $limit !== NULL ) {
 			if ( is_array( $limit ) ) {
-				$query .= " LIMIT " . $limit[0] . ", " . $limit[1];
+				$query .= " LIMIT " . intval( $limit[0] ) . ", " . intval( $limit[1] );
 			} else {
-				$query .= " LIMIT " . $limit;
+				$query .= " LIMIT " . intval( $limit );
 			}
 		}
 		
@@ -436,10 +512,9 @@ abstract class ActiveRecord
 		
 		if ( ! empty( $rows ) )
 		{
-			foreach( $rows as $row )
-			{
+			foreach( $rows as $row ) {
 				$record = static::loadFromRowData( $row );
-				$record->_wpdb_prefix = $prefix;
+				$record->_wpdb_prefix = $db_prefix;
 				$results[] = $record;
 			}
 		}
@@ -455,18 +530,18 @@ abstract class ActiveRecord
 	 */
 	public static function countWhere( $where )
 	{
-		if ( is_string( $where ) )
-		{
+		if ( is_string( $where ) ) {
 			$where = array( $where );
 		}
 		
+		$table = static::_getTable();
 		$db = Framework::instance()->db();
-		$prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
+		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 
 		$compiled = static::compileWhereClause( $where );
 		
 		/* Get results of the prepared query */
-		$query = "SELECT COUNT(*) FROM " . $prefix . static::$table . " WHERE " . $compiled[ 'where' ];
+		$query = "SELECT COUNT(*) FROM " . $db_prefix . $table . " WHERE " . $compiled[ 'where' ];
 		$prepared_query = ! empty( $compiled[ 'params' ] ) ? $db->prepare( $query, $compiled[ 'params' ] ) : $query;
 		$count = $db->get_var( $prepared_query );
 		
@@ -481,18 +556,18 @@ abstract class ActiveRecord
 	 */
 	public static function deleteWhere( $where )
 	{
-		if ( is_string( $where ) )
-		{
+		if ( is_string( $where ) ) {
 			$where = array( $where );
 		}
 		
+		$table = static::_getTable();
 		$db = Framework::instance()->db();
-		$prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
+		$db_prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
 
 		$compiled = static::compileWhereClause( $where );
 		
 		/* Get results of the prepared query */
-		$query = "DELETE FROM " . $prefix . static::$table . " WHERE " . $compiled[ 'where' ];
+		$query = "DELETE FROM " . $db_prefix . $table . " WHERE " . $compiled[ 'where' ];
 		$prepared_query = ! empty( $compiled[ 'params' ] ) ? $db->prepare( $query, $compiled[ 'params' ] ) : $query;
 		return $db->query( $prepared_query );
 	}
@@ -774,15 +849,18 @@ abstract class ActiveRecord
 	{
 		$form = static::createForm( 'edit' );
 		
-		foreach( static::$columns as $k => $v ) {
+		$columns = static::_getColumns();
+		$id_column = static::_getKey();
+		
+		foreach( $columns as $k => $v ) {
 			if ( is_numeric( $k ) ) {
 				$k = $v;
 			}
 			
-			if ( $k !== static::$key ) {
+			if ( $k !== $id_column ) {
 				$form->addField( $k, 'text', [
 					'label' => ucwords( str_replace( '_', ' ', $k ) ),
-					'data' => $this->$k,
+					'data' => $this->_getDirectly( $k ),
 				]);
 			}
 		}
@@ -847,17 +925,19 @@ abstract class ActiveRecord
 	protected function processEditForm( $values )
 	{
 		$record_properties = array();
+		$columns = static::_getColumns();
+		$id_column = static::_getKey();
 		
-		foreach( static::$columns as $col => $opts ) {
+		foreach( $columns as $col => $opts ) {
 			$col_key = is_array( $opts ) ? $col : $opts;
-			if ( $col_key !== static::$key ) {
+			if ( $col_key !== $id_column ) {
 				$record_properties[] = $col_key;
 			}
 		}
 		
 		foreach( $values as $key => $value ) {
 			if ( in_array( $key, $record_properties ) ) {
-				$this->$key = $value;
+				$this->_setDirectly( $key, $value );
 			}
 		}
 	}
@@ -870,26 +950,25 @@ abstract class ActiveRecord
 	 */
 	public static function loadFromRowData( $row_data )
 	{
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
+		
 		/* Look for cached record in multiton store */
-		if ( isset( $row_data[ static::$prefix . static::$key ] ) and $row_data[ static::$prefix . static::$key ] ) {
-			if ( isset( static::$multitons[ $row_data[ static::$prefix . static::$key ] ] ) ) {
-				return static::$multitons[ $row_data[ static::$prefix . static::$key ] ];
+		if ( isset( $row_data[ $prefix . $key ] ) and $row_data[ $prefix . $key ] ) {
+			if ( isset( static::$multitons[ $row_data[ $prefix . $key ] ] ) ) {
+				return static::$multitons[ $row_data[ $prefix . $key ] ];
 			}
 		}
 		
 		/* Build the record */
-		$record = new static;
+		$record = new static();
 		foreach( $row_data as $column => $value ) {
-			if ( static::$prefix and substr( $column, 0, strlen( static::$prefix ) ) == static::$prefix ) {
-				$column = substr( $column, strlen( static::$prefix ) );
-			}
-			
-			$record->_setDirectly( $column, $value );
+			$record->_data[ $column ] = $value;
 		}
 		
 		/* Cache the record in the multiton store */
-		if ( isset( $row_data[ static::$prefix . static::$key ] ) and $row_data[ static::$prefix . static::$key ] ) {
-			static::$multitons[ $row_data[ static::$prefix . static::$key ] ] = $record;
+		if ( isset( $row_data[ $prefix . $key ] ) and $row_data[ $prefix . $key ] ) {
+			static::$multitons[ $row_data[ $prefix . $key ] ] = $record;
 		}
 		
 		return $record;
@@ -898,15 +977,37 @@ abstract class ActiveRecord
 	/**
 	 * Set internal data properties directly
 	 *
-	 * @param	string		$property		The property to set
-	 * @param	mixed		$value			The value to set
+	 * @param	string		$property			The property to set
+	 * @param	mixed		$value				The value to set
+	 * @param	bool		$detect_change		Update the records changed fields if value has changed
 	 * @return	void
 	 */
 	public function _setDirectly( $property, $value )
 	{
+		$columns = static::_getColumns();
+		$prefix = static::_getPrefix();
+		
+		$prop_key = $prefix . $property;
+		$data_exists = array_key_exists( $prop_key, $this->_data );
+		$change_exists = array_key_exists( $prop_key, $this->_changed );
+		
 		/* Ensure we are setting a defined property */
-		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) ) {
-			$this->_data[ static::$prefix . $property ] = $value;
+		if ( in_array( $property, $columns ) or array_key_exists( $property, $columns ) ) {
+			// Ensure data has changed
+			if ( ! $data_exists or $this->_data[ $prop_key ] !== $value ) { 
+				// Save original value for reference later
+				if ( ! $change_exists ) {
+					$this->changed[ $prop_key ] = $this->_data[ $prop_key ];
+				}
+				
+				// Update the data
+				$this->_data[ $prop_key ] = $value;
+				
+				// Clear change if data returns to original state
+				if ( $this->_data[ $prop_key ] === $this->_changed[ $prop_key ] ) {
+					unset( $this->_changed[ $prop_key ] );
+				}
+			}
 		}
 	}
 	
@@ -918,10 +1019,13 @@ abstract class ActiveRecord
 	 */
 	public function _getDirectly( $property )
 	{
+		$columns = static::_getColumns();
+		$prefix = static::_getPrefix();
+		
 		/* Ensure we are getting a defined property */
-		if ( in_array( $property, static::$columns ) or array_key_exists( $property, static::$columns ) ) {
-			if ( array_key_exists( static::$prefix . $property, $this->_data ) ) {
-				return $this->_data[ static::$prefix . $property ];
+		if ( in_array( $property, $columns ) or array_key_exists( $property, $columns ) ) {
+			if ( array_key_exists( $prefix . $property, $this->_data ) ) {
+				return $this->_data[ $prefix . $property ];
 			}
 		}
 		
@@ -937,30 +1041,48 @@ abstract class ActiveRecord
 	{
 		$db = Framework::instance()->db();
 		$self = get_called_class();
-		$row_key = static::$prefix . static::$key;
 		
-		if ( ! isset( $this->_data[ $row_key ] ) or ! $this->_data[ $row_key ] ) {
+		$table = static::_getTable();
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
+		
+		$id_column = $prefix . $key;
+		
+		if ( ! isset( $this->_data[ $id_column ] ) or ! $this->_data[ $id_column ] ) {
 			$format = array_map( function( $value ) use ( $self ) { return $self::dbFormat( $value ); }, $this->_data );
 			
-			if ( $db->insert( $this->get_db_prefix() . static::$table, $this->_data, $format ) === FALSE ) {
+			if ( $db->insert( $this->get_db_prefix() . $table, $this->_data, $format ) === FALSE ) {
 				return new \WP_Error( 'sql_error', $db->last_error );
 			}
 
-			$this->_data[ $row_key ] = $db->insert_id;
-			static::$multitons[ $this->_data[ $row_key ] ] = $this;
+			$this->_data[ $id_column ] = $db->insert_id;
+			static::$multitons[ $this->_data[ $id_column ] ] = $this;
 			$this->_changed = [];
 			return TRUE;
 		}
 		else
 		{
-			$format = array_map( function( $value ) use ( $self ) { return $self::dbFormat( $value ); }, $this->_data );
-			$where_format = static::dbFormat( $this->_data[ $row_key ] );
+			/* Only save updated data. 
+			 * This reduces the chance of concurrent threads clobbering each 
+			 * others updates if updating the same record at the same time. 
+			 */
 			
-			if ( $db->update( $this->get_db_prefix() . static::$table, $this->_data, array( $row_key => $this->_data[ $row_key ] ), $format, $where_format ) === FALSE ) {
-				return new \WP_Error( 'sql_error', $db->last_error );
+			$updated_data = [];
+			foreach( $this->_changed as $key => $value ) {
+				$updated_data[ $key ] = $this->data[ $key ];
 			}
 			
-			$this->_changed = [];
+			if ( ! empty( $updated_data ) ) {
+				$format = array_map( function( $value ) use ( $self ) { return $self::dbFormat( $value ); }, $updated_data );
+				$where_format = static::dbFormat( $this->_data[ $id_column ] );
+				
+				if ( $db->update( $this->get_db_prefix() . $table, $updated_data, array( $id_column => $this->_data[ $id_column ] ), $format, $where_format ) === FALSE ) {
+					return new \WP_Error( 'sql_error', $db->last_error );
+				}
+				
+				$this->_changed = [];
+			}
+			
 			return TRUE;
 		}
 	}
@@ -970,8 +1092,8 @@ abstract class ActiveRecord
 	 */
 	public function flush()
 	{
-		$row_key = static::$prefix . static::$key;
-		$id = $this->_data[ $row_key ];
+		$id_column = static::_getPrefix() . static::_getKey();
+		$id = $this->_data[ $id_column ];
 		
 		unset( static::$multitons[ $id ] );
 	}
@@ -983,21 +1105,23 @@ abstract class ActiveRecord
 	 */
 	public function delete()
 	{
-		$row_key = static::$prefix . static::$key;
+		$table = static::_getTable();
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
 		
-		if ( isset( $this->_data[ $row_key ] ) and $this->_data[ $row_key ] )
+		$id_column = $prefix . $key;
+		
+		if ( isset( $this->_data[ $id_column ] ) and $this->_data[ $id_column ] )
 		{
 			$db = Framework::instance()->db();
-			$id = $this->_data[ $row_key ];
+			$id = $this->_data[ $id_column ];
 			$format = static::dbFormat( $id );
 			
-			if ( $db->delete( $this->get_db_prefix() . static::$table, array( $row_key => $id ), $format ) )
-			{
+			if ( $db->delete( $this->get_db_prefix() . $table, array( $id_column => $id ), $format ) ) {
 				unset( static::$multitons[ $id ] );
 				return TRUE;
 			}
-			else
-			{
+			else {
 				return new \WP_Error( 'sql_error', $db->last_error );
 			}
 		}
@@ -1035,21 +1159,28 @@ abstract class ActiveRecord
 	/**
 	 * Get record db schema
 	 *
-	 *
+	 * @return	array
 	 */
 	public static function getSchema()
 	{
+		$table = static::_getTable();
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
+		$columns = static::_getColumns();
+		
+		$id_column = $prefix . $key;
+		
 		$record_schema = [
-			'name' => static::$table,
+			'name' => $table,
 			'columns' => [
-				static::$prefix . static::$key => [
+				$id_column => [
 					"allow_null" => false,
 					"auto_increment" => true,
 					"binary" => false,
 					"decimals" => null,
 					"default" => null,
 					"length" => 20,
-					"name" => static::$prefix . static::$key,
+					"name" => $id_column,
 					"type" => "BIGINT",
 					"unsigned" => true,
 					"values" => [],
@@ -1064,29 +1195,29 @@ abstract class ActiveRecord
 						null
 					],
 					"columns" => [
-						static::$prefix . static::$key,
+						$id_column,
 					],
 				]
 			],
 		];
 		
-		foreach( static::$columns as $column => $properties ) {
+		foreach( $columns as $column => $properties ) {
 			if ( is_array( $properties ) ) {
-				if ( $column !== static::$key and isset( $properties['type'] ) ) {
-					$record_schema['columns'][ static::$prefix . $column ] = array_merge( $properties, array( 'name' => static::$prefix . $column ) );
+				if ( $column !== $key and isset( $properties['type'] ) ) {
+					$record_schema['columns'][ $prefix . $column ] = array_merge( $properties, array( 'name' => $prefix . $column ) );
 					if ( isset( $properties['index'] ) and $properties['index'] ) {
-						$record_schema['indexes'][ static::$prefix . $column ] = array(
+						$record_schema['indexes'][ $prefix . $column ] = array(
 							'type' => 'key',
-							'name' => static::$prefix . $column,
+							'name' => $prefix . $column,
 							'length' => [ null ],
-							'columns' => [ static::$prefix . $column ],
+							'columns' => [ $prefix . $column ],
 						);
 					}
 				}
 			} else {
-				if ( $properties !== static::$key ) {
-					$record_schema['columns'][ static::$prefix . $column ] = array(
-						'name' => static::$prefix . $column,
+				if ( $properties !== $key ) {
+					$record_schema['columns'][ $prefix . $properties ] = array(
+						'name' => $prefix . $properties,
 						'type' => 'varchar',
 						'length' => 255,
 					);
@@ -1104,13 +1235,12 @@ abstract class ActiveRecord
 	 */
 	public function get_db_prefix()
 	{
-		if ( isset( $this->_wpdb_prefix ) )
-		{
+		if ( isset( $this->_wpdb_prefix ) ) {
 			return $this->_wpdb_prefix;
 		}
 		
 		$db = Framework::instance()->db();
-		$this->_wpdb_prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
+		$this->_wpdb_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 		
 		return $this->_wpdb_prefix;
 	}

@@ -348,27 +348,25 @@ class _Task extends ActiveRecord
 	{
 		$db = Framework::instance()->db();
 		
-		if ( $action === NULL and $tag === NULL )
-		{
+		if ( $action === NULL and $tag === NULL ) {
 			return;
 		}
 		
+		$table = static::_getTable();
+		
 		/* Only action provided */
-		if ( $tag === NULL )
-		{
-			$db->query( $db->prepare( "DELETE FROM  " . $db->base_prefix . static::$table . " WHERE task_action=%s AND task_blog_id=%d AND task_completed=0 AND task_running=0", $action, get_current_blog_id() ) );
+		if ( $tag === NULL ) {
+			$db->query( $db->prepare( "DELETE FROM  " . $db->base_prefix . $table . " WHERE task_action=%s AND task_blog_id=%d AND task_completed=0 AND task_running=0", $action, get_current_blog_id() ) );
 		}
 		
 		/* Only tag provided */
-		elseif ( $action === NULL )
-		{
-			$db->query( $db->prepare( "DELETE FROM  " . $db->base_prefix . static::$table . " WHERE task_tag=%s AND task_blog_id=%d AND task_completed=0 AND task_running=0", $tag, get_current_blog_id() ) );		
+		elseif ( $action === NULL ) {
+			$db->query( $db->prepare( "DELETE FROM  " . $db->base_prefix . $table . " WHERE task_tag=%s AND task_blog_id=%d AND task_completed=0 AND task_running=0", $tag, get_current_blog_id() ) );		
 		}
 		
 		/* Both action and tag provided */
-		else
-		{
-			$db->query( $db->prepare( "DELETE FROM  " . $db->base_prefix . static::$table . " WHERE task_action=%s AND task_tag=%s AND task_blog_id=%d AND task_completed=0 AND task_running=0", $action, $tag, get_current_blog_id() ) );
+		else {
+			$db->query( $db->prepare( "DELETE FROM  " . $db->base_prefix . $table . " WHERE task_action=%s AND task_tag=%s AND task_blog_id=%d AND task_completed=0 AND task_running=0", $action, $tag, get_current_blog_id() ) );
 		}
 	}
 	
@@ -383,6 +381,7 @@ class _Task extends ActiveRecord
 	public static function countTasks( $action=NULL, $tag=NULL, $status='pending' )
 	{
 		$db = Framework::instance()->db();
+		$table = static::_getTable();
 		
 		$status_clause = "task_completed=0 AND task_fails < 3 AND task_running=0";
 		
@@ -401,27 +400,23 @@ class _Task extends ActiveRecord
 				break;
 		}
 		
-		if ( $action === NULL and $tag === NULL )
-		{
-			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . static::$table . " WHERE task_blog_id=%d AND {$status_clause}", get_current_blog_id() ) );
+		if ( $action === NULL and $tag === NULL ) {
+			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . $table . " WHERE task_blog_id=%d AND {$status_clause}", get_current_blog_id() ) );
 		}
 		
 		/* Only action provided */
-		if ( $tag === NULL )
-		{
-			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . static::$table . " WHERE task_action=%s AND task_blog_id=%d AND {$status_clause}", $action, get_current_blog_id() ) );
+		if ( $tag === NULL ) {
+			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . $table . " WHERE task_action=%s AND task_blog_id=%d AND {$status_clause}", $action, get_current_blog_id() ) );
 		}
 		
 		/* Only tag provided */
-		elseif ( $action === NULL )
-		{
-			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . static::$table . " WHERE task_tag=%s AND task_blog_id=%d AND {$status_clause}", $tag, get_current_blog_id() ) );		
+		elseif ( $action === NULL ) {
+			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . $table . " WHERE task_tag=%s AND task_blog_id=%d AND {$status_clause}", $tag, get_current_blog_id() ) );		
 		}
 		
 		/* Both action and tag provided */
-		else
-		{
-			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . static::$table . " WHERE task_action=%s AND task_tag=%s AND task_blog_id=%d AND {$status_clause}", $action, $tag, get_current_blog_id() ) );
+		else {
+			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . $table . " WHERE task_action=%s AND task_tag=%s AND task_blog_id=%d AND {$status_clause}", $action, $tag, get_current_blog_id() ) );
 		}
 	}
 
@@ -433,8 +428,8 @@ class _Task extends ActiveRecord
 	public static function popQueue()
 	{		
 		$db = Framework::instance()->db();
-		
-		$running = $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->base_prefix}" . static::$table . " WHERE task_running=1 AND task_blog_id=%d", get_current_blog_id() ) );
+		$table = static::getTable();
+		$running = $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->base_prefix}" . $table . " WHERE task_running=1 AND task_blog_id=%d", get_current_blog_id() ) );
 		
 		if ( $running >= Framework::instance()->getSetting( 'mwp_task_max_runners' ) ) {
 			return null;
@@ -442,7 +437,7 @@ class _Task extends ActiveRecord
 		
 		$row = $db->get_row( 
 			$db->prepare( "
-				SELECT * FROM {$db->base_prefix}" . static::$table . " 
+				SELECT * FROM {$db->base_prefix}" . $table . " 
 					WHERE task_completed=0 AND task_running=0 AND task_next_start <= %d AND task_fails < 3 AND task_blog_id=%d
 					ORDER BY task_priority DESC, task_last_start ASC, task_id ASC", time(), get_current_blog_id()
 			), ARRAY_A
@@ -464,17 +459,17 @@ class _Task extends ActiveRecord
 	public static function runMaintenance()
 	{
 		$db = Framework::instance()->db();
-		
+		$table = static::_getTable();
 		$max_execution_time = ini_get('max_execution_time');
 		
 		// Update failover status of tasks that appear to have ended abruptly
-		$db->query( "UPDATE " . $db->base_prefix . static::$table . " SET task_running=0, task_fails=task_fails + 1 WHERE task_running=1 AND task_last_iteration < " . ( time() - $max_execution_time ) );
+		$db->query( "UPDATE " . $db->base_prefix . $table . " SET task_running=0, task_fails=task_fails + 1 WHERE task_running=1 AND task_last_iteration < " . ( time() - $max_execution_time ) );
 		
 		$retention_period = Framework::instance()->getSetting( 'mwp_task_retainment_period' );
 		
 		if ( $retention_period !== 'paranoid' ) { // Easter!
 			// Remove completed tasks older than the retention period
-			$db->query( "DELETE FROM " . $db->base_prefix . static::$table . " WHERE task_completed > 0 AND task_completed < " . ( time() - ( 60 * 60 * ( abs( intval( $retention_period ) ) ) ) ) );
+			$db->query( "DELETE FROM " . $db->base_prefix . $table . " WHERE task_completed > 0 AND task_completed < " . ( time() - ( 60 * 60 * ( abs( intval( $retention_period ) ) ) ) ) );
 		}
 	}
 }

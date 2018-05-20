@@ -656,7 +656,7 @@ class _CLI extends \WP_CLI_Command {
 									if ( class_exists( $classname ) ) {
 										if ( is_subclass_of( $classname, 'MWP\Framework\Pattern\ActiveRecord' ) ) {
 											$reflectionClass = new \ReflectionClass( $classname );
-											if ( ! $reflectionClass->isAbstract() and ! empty( $classname::$columns ) ) {
+											if ( ! $reflectionClass->isAbstract() and ! empty( $classname::_getColumns() ) ) {
 												$tableSQL = $dbHelper->buildTableSQL( $classname::getSchema() );
 												$deltaUpdate = dbDelta( $tableSQL );
 												if ( $deltaUpdate ) {

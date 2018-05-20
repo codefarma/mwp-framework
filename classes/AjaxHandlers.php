@@ -75,11 +75,12 @@ class _AjaxHandlers extends \MWP\Framework\Pattern\Singleton
 		if ( current_user_can( 'administrator' ) ) 
 		{
 			$recordClass = wp_unslash( $_POST['class'] );
-			if ( class_exists( $recordClass ) and is_subclass_of( $recordClass, 'MWP\Framework\Pattern\ActiveRecord' ) and isset( $recordClass::$sequence_col ) ) {
-				$sequence_col = $recordClass::$sequence_col;			
+			$sequence = $recordClass::_getSequenceCol();
+			
+			if ( class_exists( $recordClass ) and is_subclass_of( $recordClass, 'MWP\Framework\Pattern\ActiveRecord' ) and isset( $sequence ) ) {
 				foreach( $_POST['sequence'] as $index => $record_id ) {
 					$record = $recordClass::load( $record_id );
-					$record->$sequence_col = $index + 1;
+					$record->$sequence = $index + 1;
 					$record->save();
 					$record->flush();
 					unset( $record );
