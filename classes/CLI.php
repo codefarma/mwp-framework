@@ -700,6 +700,16 @@ class _CLI extends \WP_CLI_Command {
 					$tableSQL = $dbHelper->buildTableSQL( $recordClass::getSchema() );
 					$deltaUpdate = dbDelta( $tableSQL );
 					
+					$found_tables = [ 'tables' => [], 'ms_tables' => [] ];
+					$found_tables[ ( $recordClass::_getMultisite() ? 'ms_tables' : 'tables' ) ][] = $recordClass::_getTable();
+					
+					$plugin_meta = $plugin->getData('plugin-meta') ?: array();
+					$plugin_tables = isset( $plugin_meta['tables'] ) ? ( is_array( $plugin_meta['tables'] ) ? $plugin_meta['tables'] : explode( ',', $plugin_meta['tables'] ) ) : array();
+					$plugin_ms_tables = isset( $plugin_meta['ms_tables'] ) ? ( is_array( $plugin_meta['ms_tables'] ) ? $plugin_meta['ms_tables'] : explode( ',', $plugin_meta['ms_tables'] ) ) : array();
+					$plugin_meta['tables'] = array_values( array_filter( array_unique( array_merge( $plugin_tables, $found_tables['tables'] ) ) ) );
+					$plugin_meta['ms_tables'] = array_values( array_filter( array_unique( array_merge( $plugin_ms_tables, $found_tables['ms_tables'] ) ) ) );
+					$plugin->setData( 'plugin-meta', $plugin_meta );
+					
 					if ( $deltaUpdate ) {
 						foreach( (array) $deltaUpdate as $table_name => $updates ) {
 							foreach( (array) $updates as $updateDescription ) {
