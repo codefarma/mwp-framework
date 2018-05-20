@@ -93,8 +93,11 @@ class ActiveRecordController
 		$recordClass = $this->recordClass;
 		$prefix = $recordClass::_getPrefix();
 		
-		$sequence_col = isset( $recordClass::_getSequenceCol() ) ? $prefix . $recordClass::_getSequenceCol() : NULL;
-		$parent_col = isset( $recordClass::_getParentCol() ) ? $prefix . $recordClass::_getParentCol() : NULL;
+		$sequence = $recordClass::_getSequenceCol();
+		$parent = $recordClass::_getParentCol();
+		
+		$sequence_col = isset( $sequence ) ? $prefix . $sequence : NULL;
+		$parent_col = isset( $parent ) ? $prefix . $parent : NULL;
 		
 		return array(
 			'tableConfig' => array(
