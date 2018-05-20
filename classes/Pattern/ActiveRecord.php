@@ -433,6 +433,38 @@ abstract class ActiveRecord
 	}
 	
 	/**
+	 * Load record from row data
+	 *
+	 * @param	array		$row_data		Row data from the database
+	 * @return	ActiveRecord
+	 */
+	public static function loadFromRowData( $row_data )
+	{
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
+		
+		/* Look for cached record in multiton store */
+		if ( isset( $row_data[ $prefix . $key ] ) and $row_data[ $prefix . $key ] ) {
+			if ( isset( static::$multitons[ $row_data[ $prefix . $key ] ] ) ) {
+				return static::$multitons[ $row_data[ $prefix . $key ] ];
+			}
+		}
+		
+		/* Build the record */
+		$record = new static();
+		foreach( $row_data as $column => $value ) {
+			$record->_data[ $column ] = $value;
+		}
+		
+		/* Cache the record in the multiton store */
+		if ( isset( $row_data[ $prefix . $key ] ) and $row_data[ $prefix . $key ] ) {
+			static::$multitons[ $row_data[ $prefix . $key ] ] = $record;
+		}
+		
+		return $record;
+	}
+	
+	/**
 	 * Load record by id
 	 *
 	 * @param	int 	$id			Record id
@@ -852,16 +884,145 @@ abstract class ActiveRecord
 		$columns = static::_getColumns();
 		$id_column = static::_getKey();
 		
+		$timezone_string = get_option( 'timezone_string' );
+		
 		foreach( $columns as $k => $v ) {
-			if ( is_numeric( $k ) ) {
+			if ( is_numeric( $k ) and ! is_array( $v ) ) {
 				$k = $v;
 			}
 			
-			if ( $k !== $id_column ) {
-				$form->addField( $k, 'text', [
-					'label' => ucwords( str_replace( '_', ' ', $k ) ),
+			if ( $k !== $id_column ) 
+			{
+				$column_props = is_array( $v ) ? $v : [ 'type' => 'varchar', 'length' => 255 ];
+				$column_props = array_combine( array_map( 'strtolower', array_keys( $column_props ) ), array_values( $column_props ) );
+				
+				if ( ! isset( $column_props['type'] ) ) {
+					$column_props['type'] = 'varchar';
+				}
+				
+				$field_type = 'text';				
+				$field_options = array(
+					'label' => isset( $column_props['title'] ) ? $column_props['title'] : ucwords( str_replace( '_', ' ', $k ) ),
 					'data' => $this->_getDirectly( $k ),
-				]);
+				);
+				
+				if ( strstr( $column_props['type'], 'blob' ) > -1 ) {
+					continue;
+				}
+				
+				if ( strstr( $column_props['type'], 'binary' ) > -1 ) {
+					continue;
+				}
+				
+				switch( $column_props['type'] ) {
+					case 'text':
+					case 'tinytext':
+					case 'mediumtext':
+					case 'longtext':
+						$field_type = 'textarea';
+					case 'varchar':
+					case 'char':
+						$field_options['empty_data'] = isset( $column_props['allow_null'] ) && $column_props['allow_null'] ? NULL : '';
+						break;
+					case 'tinyint':
+					case 'boolean':
+					case 'bit':
+						$field_type = 'checkbox';
+						$field_options['data'] = (bool) $field_options['data'];
+						break;
+					case 'smallint':
+					case 'mediumint':
+					case 'int':
+					case 'bigint':
+						$field_type = 'integer';
+						$field_options['attr']['step'] = 1;
+						if ( isset( $column_props['unsigned'] ) && $column_props['unsigned'] ) {
+							$field_options['attr']['min'] = 0;
+						}
+						break;
+					case 'decimal':
+					case 'float':
+					case 'double':
+						$field_type = 'number';
+						if ( isset( $column_props['decimals'] ) ) {
+							$field_options['scale'] = (int) $column_props['decimals'];
+							if ( intval( $column_props['decimals'] ) ) {
+								$field_options['attr']['step'] = 1 / ( intval( $column_props['decimals'] ) * 10 );
+							}
+							if ( isset( $column_props['unsigned'] ) && $column_props['unsigned'] ) {
+								$field_options['attr']['min'] = 0;
+							}
+						}
+						break;
+					case 'year':
+						$field_type = 'number';
+						$field_options['attr'] = [ 'min' => 0, 'max' => 2155 ];
+						if ( isset( $timezone_string ) ) {
+							$field_options['view_timezone'] = $timezone_string;
+						}
+						break;
+					case 'time':
+						$field_type = 'time';
+						$field_options['input'] = 'string';
+						if ( isset( $timezone_string ) ) {
+							$field_options['view_timezone'] = $timezone_string;
+						}
+						break;
+					case 'date':
+						$field_type = 'date';
+						$field_options['input'] = 'string';
+						if ( isset( $timezone_string ) ) {
+							$field_options['view_timezone'] = $timezone_string;
+						}
+						break;
+					case 'datetime':
+						$field_type = 'datetime';
+						$field_options['input'] = 'string';
+						if ( isset( $timezone_string ) ) {
+							$field_options['view_timezone'] = $timezone_string;
+						}
+						break;
+					case 'timestamp':
+						$field_type = 'datetime';
+						$field_options['input'] = 'timestamp';
+						if ( isset( $timezone_string ) ) {
+							$field_options['view_timezone'] = $timezone_string;
+						}
+						break;
+					case 'enum':
+						$choices = isset( $column_props['values'] ) && is_array( $column_props['values'] ) ? 
+							array_combine( array_values( $column_props['values'] ), array_values( $column_props['values'] ) ) :
+							array();
+					
+						$field_type = 'choice';
+						$field_options['required'] = true;
+						$field_options['choices'] = $choices;
+						$field_options['expanded'] = true;
+						$field_options['multiple'] = false;
+						if ( count( $choices ) >= 5 ) {
+							$field_options['expanded'] = false;
+						}
+						break;
+					case 'set':
+						$choices = isset( $column_props['values'] ) && is_array( $column_props['values'] ) ? 
+							array_combine( array_values( $column_props['values'] ), array_values( $column_props['values'] ) ) :
+							array();
+					
+						$field_type = 'choice';
+						$field_options['required'] = true;
+						$field_options['choices'] = $choices;
+						$field_options['expanded'] = true;
+						$field_options['multiple'] = false;
+						if ( count( $choices ) >= 5 ) {
+							$field_options['expanded'] = false;
+						}
+						break;
+						
+						
+					default:
+				}
+				
+				$form->addField( $k, $field_type, $field_options );				
 			}
 		}
 		
@@ -943,38 +1104,6 @@ abstract class ActiveRecord
 	}
 	
 	/**
-	 * Load record from row data
-	 *
-	 * @param	array		$row_data		Row data from the database
-	 * @return	ActiveRecord
-	 */
-	public static function loadFromRowData( $row_data )
-	{
-		$prefix = static::_getPrefix();
-		$key = static::_getKey();
-		
-		/* Look for cached record in multiton store */
-		if ( isset( $row_data[ $prefix . $key ] ) and $row_data[ $prefix . $key ] ) {
-			if ( isset( static::$multitons[ $row_data[ $prefix . $key ] ] ) ) {
-				return static::$multitons[ $row_data[ $prefix . $key ] ];
-			}
-		}
-		
-		/* Build the record */
-		$record = new static();
-		foreach( $row_data as $column => $value ) {
-			$record->_data[ $column ] = $value;
-		}
-		
-		/* Cache the record in the multiton store */
-		if ( isset( $row_data[ $prefix . $key ] ) and $row_data[ $prefix . $key ] ) {
-			static::$multitons[ $row_data[ $prefix . $key ] ] = $record;
-		}
-		
-		return $record;
-	}
-	
-	/**
 	 * Set internal data properties directly
 	 *
 	 * @param	string		$property			The property to set
@@ -995,9 +1124,10 @@ abstract class ActiveRecord
 		if ( in_array( $property, $columns ) or array_key_exists( $property, $columns ) ) {
 			// Ensure data has changed
 			if ( ! $data_exists or $this->_data[ $prop_key ] !== $value ) { 
+			
 				// Save original value for reference later
 				if ( ! $change_exists ) {
-					$this->changed[ $prop_key ] = $this->_data[ $prop_key ];
+					$this->_changed[ $prop_key ] = $this->_data[ $prop_key ];
 				}
 				
 				// Update the data
@@ -1006,7 +1136,7 @@ abstract class ActiveRecord
 				// Clear change if data returns to original state
 				if ( $this->_data[ $prop_key ] === $this->_changed[ $prop_key ] ) {
 					unset( $this->_changed[ $prop_key ] );
-				}
+				}				
 			}
 		}
 	}
@@ -1069,7 +1199,7 @@ abstract class ActiveRecord
 			
 			$updated_data = [];
 			foreach( $this->_changed as $key => $value ) {
-				$updated_data[ $key ] = $this->data[ $key ];
+				$updated_data[ $key ] = $this->_data[ $key ];
 			}
 			
 			if ( ! empty( $updated_data ) ) {
