@@ -542,7 +542,7 @@ class _ActiveRecordTable extends \WP_List_Table
 			return call_user_func( $this->handlers[ $column_name ], $item, $column_name );
 		}
 		
-		return $item[ $column_name ];
+		return isset( $item[ $column_name ] ) ? $item[ $column_name ] : '';
 	}
 	
 	/**
