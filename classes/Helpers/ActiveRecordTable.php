@@ -790,7 +790,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		}
 		
 		if ( isset( $_REQUEST['order'] ) and in_array( strtolower( $_REQUEST['order'] ), array( 'asc', 'desc' ) ) ) {
-			$this->order = $_REQUEST['order'];
+			$this->sortOrder = $_REQUEST['order'];
 		}
 		
 		if ( $searchable_columns = $this->get_searchable_columns() ) 
@@ -866,13 +866,27 @@ class _ActiveRecordTable extends \WP_List_Table
 		$hidden = array();
 		$sortable = $this->get_sortable_columns();
 		
+		$_sortable = array();
+		foreach ( $sortable as $id => $data ) {
+			if ( empty( $data ) ) {
+				continue;
+			}
+
+			$data = (array) $data;
+			if ( !isset( $data[1] ) ) {
+				$data[1] = false;
+			}
+
+			$_sortable[$id] = $data;
+		}
+		
 		/**
 		 * REQUIRED. Finally, we build an array to be used by the class for column 
 		 * headers. The $this->_column_headers property takes an array which contains
 		 * 3 other arrays. One for all columns, one for hidden columns, and one
 		 * for sortable columns.
 		 */
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = array( $columns, $hidden, $_sortable );
 		
 		/**
 		 * Optional. You can handle your bulk actions however you see fit. In this
