@@ -245,41 +245,50 @@ abstract class _Plugin extends Singleton
 			}
 		}
 		
-		// Remove multisite specific tables on uninstall
-		if ( isset( $build_meta[ 'ms_tables' ] ) and is_array( $build_meta[ 'ms_tables' ] ) )
+		// Run multisite cleanup
+		if ( function_exists( 'is_multisite' ) and is_multisite() )
 		{
-			if ( function_exists( 'is_multisite' ) and is_multisite() )
+			$sites_func = function_exists( 'get_sites' ) ? 'get_sites' : 'wp_get_sites';
+			if ( function_exists( $sites_func ) )
 			{
-				// Update tables in site specific contexts
-				$sites_func = function_exists( 'get_sites' ) ? 'get_sites' : 'wp_get_sites';
-				if ( function_exists( $sites_func ) )
+				$sites = call_user_func( $sites_func );
+				
+				// Cycle through every site
+				foreach( $sites as $site )
 				{
-					$sites = call_user_func( $sites_func );
+					$site_data = (array) $site;
+					switch_to_blog( (int) $site_data['blog_id'] );
 					
-					foreach( $sites as $site )
-					{
-						$site_data = (array) $site;
-						switch_to_blog( (int) $site_data['blog_id'] );
-						
-						// Drop tables
-						foreach( $build_meta[ 'ms_tables' ] as $table )
-						{
+					// Remove multisite specific tables on uninstall
+					if ( isset( $build_meta['ms_tables'] ) and is_array( $build_meta['ms_tables'] ) ) {
+						foreach( $build_meta['ms_tables'] as $table ) {
 							$db->query( "DROP TABLE IF EXISTS {$db->prefix}{$table['name']}" );
 						}
-						
-						restore_current_blog();
 					}
+					
+					// Remove settings
+					foreach( $this->getSettings() as $settings ) {
+						delete_option( $settings->getStorageId() );
+					}
+					
+					restore_current_blog();
 				}
 			}
-			else
-			{
-				// Update tables under global context
-				foreach( $build_meta[ 'ms_tables' ] as $table )
-				{
+		}
+		else
+		{
+			// Update multisite tables under global context
+			if ( isset( $build_meta['ms_tables'] ) and is_array( $build_meta['ms_tables'] ) ) {
+				foreach( $build_meta['ms_tables'] as $table ) {
 					$db->query( "DROP TABLE IF EXISTS {$db->base_prefix}{$table['name']}" );
 				}
 			}
-		}		
+			
+			// Remove settings
+			foreach( $this->getSettings() as $settings ) {
+				delete_option( $settings->getStorageId() );
+			}
+		}
 		
 		$this->setData( 'install-meta', NULL );
 	}
