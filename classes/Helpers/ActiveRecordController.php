@@ -165,13 +165,19 @@ class ActiveRecordController
 	{
 		$recordClass = $this->recordClass;
 		
-		return array( 
+		$actions = array( 
 			'new' => array(
 				'title' => __( $recordClass::$lang_create . ' ' . $recordClass::$lang_singular ),
 				'params' => array( 'do' => 'new' ),
 				'attr' => array( 'class' => 'btn btn-primary' ),
 			)
 		);
+		
+		if ( isset( $this->options['getActions'] ) and is_callable( $this->options['getActions'] ) ) {
+			$actions = call_user_func( $this->options['getActions'], $actions, $this );
+		}
+		
+		return is_array( $actions ) ? $actions : array();
 	}
 	
 	/**
@@ -238,8 +244,8 @@ class ActiveRecordController
 			$table->searchableColumns = $options['searchable'];
 		}
 		
-		if ( isset( $options['filters'] ) ) {
-			$table->filters = $options['filters'];
+		if ( isset( $options['extras'] ) ) {
+			$table->extras = $options['extras'];
 		}
 		
 		if ( isset( $options['bulkActions'] ) ) {
