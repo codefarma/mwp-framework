@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.4] - 2018-05-20
+
+- (added) added ability to specify database field type information in the active record column definition
+- (added) new CLI command to 'deploy-table' using an active record columns definition
+- (added) new default field types for editing form based on the database columns definition for an active record
+- (changed) all references to active record static properties should now go through the associated static method
+- (changed) when an active record is saved, only the properties which have been changed are updated in the database row
+
 ## [2.0.3] - 2018-05-15
 
 - (added) New default styling for viewing a record in a record controller
