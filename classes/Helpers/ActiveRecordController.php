@@ -242,6 +242,10 @@ class ActiveRecordController
 			$table->filters = $options['filters'];
 		}
 		
+		if ( isset( $options['joins'] ) ) {
+			$table->joins = $options['joins'];
+		}
+		
 		if ( isset( $options['bulkActions'] ) ) {
 			$table->bulkActions = $options['bulkActions'];
 		} else {

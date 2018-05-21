@@ -163,6 +163,17 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $searchableColumns = array();
 	
 	/**
+	 * @var array {
+	 *     A list of tables which should be joined.
+	 *     $joins = [
+	 *         'table_name' => array( 'table_name.col_name=id' )
+	 *     ]
+	 * }
+	 *
+	 */
+	public $joins = array();
+	
+	/**
 	 * @var	int  Number of records to show per page
 	 */
 	public $perPage = 50;
@@ -932,10 +943,27 @@ class _ActiveRecordTable extends \WP_List_Table
 		$prefix        = $class::_getMultisite() ? $db->prefix : $db->base_prefix;
 		$table         = $class::_getTable();
 		
-		$query          = "SELECT * FROM {$prefix}{$table} WHERE {$compiled['where']}";
-		$prepared_query = ! empty( $compiled['params'] ) ? $db->prepare( $query, $compiled['params'] ) : $query;
+		$joins = '';
+		$join_params = array();
+		$join_clauses = array();
+		if ( ! empty( $this->joins ) ) {
+			foreach( $this->joins as $join ) {
+				if ( isset( $join['table'] ) and $join['table'] ) {
+					$join_table = $join['table'];
+					$join_as = isset( $join['as'] ) ? $join['as'] : $join_table;
+					$join_type = isset( $join['type'] ) ? $join['type'] : 'LEFT';
+					$join_clauses[] = "{$join_type} JOIN {$prefix}{$join_table} AS {$join_as} ON {$join_compiled['where']}";
+					$join_params = array_merge( $join_params, $join_compiled['params'] );
+				}
+			}
+			$joins = implode( ' ', $join_clauses );
+		}
 		
-		$total_items   = $db->get_var( str_replace( "SELECT * ", 'SELECT COUNT(*) ', $prepared_query ) );
+		$query          = "SELECT {$table}.* FROM {$prefix}{$table} AS {$table} {$joins} WHERE {$compiled['where']}";
+		$query_params   = array_merge( $join_params, $compiled['params'] );
+		$prepared_query = ! empty( $query_params ) ? $db->prepare( $query, $query_params ) : $query;
+		
+		$total_items   = $db->get_var( str_replace( "SELECT {$table}.* ", 'SELECT COUNT(*) ', $prepared_query ) );
 		$this->items   = $db->get_results( $prepared_query . " ORDER BY {$sortBy} {$sortOrder} LIMIT {$start_at}, {$per_page}", ARRAY_A );
 		
 		/**
