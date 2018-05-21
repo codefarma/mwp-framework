@@ -119,14 +119,21 @@ class _ActiveRecordTable extends \WP_List_Table
 	/**
 	 * @var array {
 	 *     Custom filter callbacks to modify the query.
-	 *     $filters = [
-	 *         'filter-name' => function( $table ) {
-	 *             $table->hardFilters[] = array( 'column_name=%s', 'value to filter' );
+	 *     $extras = [
+	 *         'my_extra' => array(
+	 *             'init' => function( $table ) {
+	 *                 if ( isset( $_REQUEST['extra_filter'] ) and $_REQUEST['extra_filter'] == 'yes' ) {
+	 *                     $table->addFilter( array( 'column_name=%s', 'value to filter' ) );
+	 *                 }
+	 *             },
+	 *             'output' => function( $table ) {
+	 *                 echo 'Filter By Custom: <select name="extra_filter"><option value="no">No</option><option value="yes">Yes</option></select>';
+	 *             }
 	 *         }
 	 *     ];
 	 * }			
 	 */
-	public $filters = array();
+	public $extras = array();
 	
 	/**
 	 * @var	array  {
@@ -310,6 +317,20 @@ class _ActiveRecordTable extends \WP_List_Table
     }
 	
 	/**
+	 * Add a hard query filter
+	 */
+	public function addFilter( $filter )
+	{
+		if ( is_string( $filter ) ) {
+			$filter = array( $filter );
+		}
+		
+		if ( is_array( $filter ) ) {
+			$this->hardFilters[] = $filter;
+		}
+	}
+	
+	/**
 	 * Get a list of all, hidden and sortable columns, with filter applied
 	 *
 	 * @return array
@@ -358,6 +379,24 @@ class _ActiveRecordTable extends \WP_List_Table
 	 */
 	public function no_items() {
 		_e( 'No ' . ( isset( $this->_args_raw['plural'] ) ? strtolower( $this->_args_raw['plural'] ) : 'items' ) . ' found.' );
+	}
+	
+	/**
+	 * Extra controls to be displayed between bulk actions and pagination
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $which
+	 */
+	protected function extra_tablenav( $which ) 
+	{
+		if ( $which == 'top' ) {
+			foreach( $this->extras as $extra ) {
+				if ( isset( $extra['output'] ) and is_callable( $extra['output'] ) ) {
+					call_user_func( $extra['output'], $this );
+				}
+			}
+		}
 	}
 	
 	/**
@@ -805,9 +844,9 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->sortOrder = $_REQUEST['order'];
 		}
 		
-		if ( isset( $_REQUEST['filter'] ) and in_array( $_REQUEST['filter'], array_keys( $this->filters ) ) ) {
-			if ( is_callable( $this->filters[ $_REQUEST['filter'] ] ) ) {
-				call_user_func( $this->filters[ $_REQUEST['filter'] ], $this );
+		foreach( $this->extras as $extra ) {
+			if ( isset( $extra['init'] ) and is_callable( $extra['init'] ) ) {
+				call_user_func( $extra['init'], $this );
 			}
 		}
 		
