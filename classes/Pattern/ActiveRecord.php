@@ -914,6 +914,10 @@ abstract class ActiveRecord
 					continue;
 				}
 				
+				if ( isset( $column_props['edit'] ) and $column_props['edit'] === false ) {
+					continue;
+				}
+				
 				switch( $column_props['type'] ) {
 					case 'text':
 					case 'tinytext':
