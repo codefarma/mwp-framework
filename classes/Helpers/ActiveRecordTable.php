@@ -117,6 +117,18 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $handlers = array();
 	
 	/**
+	 * @var array {
+	 *     Custom filter callbacks to modify the query.
+	 *     $filters = [
+	 *         'filter-name' => function( $table ) {
+	 *             $table->hardFilters[] = array( 'column_name=%s', 'value to filter' );
+	 *         }
+	 *     ];
+	 * }			
+	 */
+	public $filters = array();
+	
+	/**
 	 * @var	array  {
 	 *     An associative array of available bulk actions.
 	 *     $bulkActions = [
@@ -793,6 +805,12 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->sortOrder = $_REQUEST['order'];
 		}
 		
+		if ( isset( $_REQUEST['filter'] ) and in_array( $_REQUEST['filter'], array_keys( $this->filters ) ) ) {
+			if ( is_callable( $this->filters[ $_REQUEST['filter'] ] ) ) {
+				call_user_func( $this->filters[ $_REQUEST['filter'] ], $this );
+			}
+		}
+		
 		if ( $searchable_columns = $this->get_searchable_columns() ) 
 		{
 			if ( isset( $_REQUEST['s'] ) and $_REQUEST['s'] ) 
@@ -911,12 +929,13 @@ class _ActiveRecordTable extends \WP_List_Table
 		$compiled      = $class::compileWhereClause( array_merge( $this->hardFilters, array( $where ) ) );
 		$per_page      = $this->perPage;
 		$start_at      = $current_page > 0 ? ( $current_page - 1 ) * $per_page : 0;
-		$prefix        = $class::$site_specific ? $db->prefix : $db->base_prefix;
+		$prefix        = $class::_getMultisite() ? $db->prefix : $db->base_prefix;
+		$table         = $class::_getTable();
 		
-		$query          = "SELECT * FROM {$prefix}{$class::$table} WHERE {$compiled['where']}";
-		$prepared_query = ! empty( $compiled[ 'params' ] ) ? $db->prepare( $query, $compiled[ 'params' ] ) : $query;		
+		$query          = "SELECT * FROM {$prefix}{$table} WHERE {$compiled['where']}";
+		$prepared_query = ! empty( $compiled['params'] ) ? $db->prepare( $query, $compiled['params'] ) : $query;
 		
-		$total_items   = $db->get_var( str_replace( 'SELECT * ', 'SELECT COUNT(*) ', $prepared_query ) );
+		$total_items   = $db->get_var( str_replace( "SELECT * ", 'SELECT COUNT(*) ', $prepared_query ) );
 		$this->items   = $db->get_results( $prepared_query . " ORDER BY {$sortBy} {$sortOrder} LIMIT {$start_at}, {$per_page}", ARRAY_A );
 		
 		/**

@@ -238,6 +238,10 @@ class ActiveRecordController
 			$table->searchableColumns = $options['searchable'];
 		}
 		
+		if ( isset( $options['filters'] ) ) {
+			$table->filters = $options['filters'];
+		}
+		
 		if ( isset( $options['bulkActions'] ) ) {
 			$table->bulkActions = $options['bulkActions'];
 		} else {
