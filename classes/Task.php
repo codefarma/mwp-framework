@@ -463,13 +463,13 @@ class _Task extends ActiveRecord
 		$max_execution_time = ini_get('max_execution_time');
 		
 		// Update failover status of tasks that appear to have ended abruptly
-		$db->query( "UPDATE " . $db->base_prefix . $table . " SET task_running=0, task_fails=task_fails + 1 WHERE task_running=1 AND task_last_iteration < " . ( time() - $max_execution_time ) );
+		$db->query( "UPDATE " . $db->base_prefix . $table . " SET task_running=0, task_fails=task_fails + 1 WHERE task_running=1 AND task_last_iteration < %d AND task_blog_id=%d", time() - $max_execution_time, get_current_blog_id() );
 		
 		$retention_period = Framework::instance()->getSetting( 'mwp_task_retainment_period' );
 		
 		if ( $retention_period !== 'paranoid' ) { // Easter!
 			// Remove completed tasks older than the retention period
-			$db->query( "DELETE FROM " . $db->base_prefix . $table . " WHERE task_completed > 0 AND task_completed < " . ( time() - ( 60 * 60 * ( abs( intval( $retention_period ) ) ) ) ) );
+			$db->query( "DELETE FROM " . $db->base_prefix . $table . " WHERE task_completed > 0 AND task_completed < %d AND task_blog_id=%d", time() - ( 60 * 60 * ( abs( intval( $retention_period ) ) ) ), get_current_blog_id() );
 		}
 	}
 }
