@@ -522,7 +522,6 @@ class ActiveRecordController
 		return $this->getPlugin()->getTemplateContent( $this->getOutputWrapper(), array_merge( array(
 			'title' => $title,
 			'output' => $output,
-			'classes' => $classes,
 			'controller' => $this,
 		), $params ));
 	}
