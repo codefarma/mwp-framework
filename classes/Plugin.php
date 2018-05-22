@@ -267,7 +267,7 @@ abstract class _Plugin extends Singleton
 					}
 					
 					// Remove settings
-					foreach( $this->getSettings() as $settings ) {
+					foreach( $this->getSettings(NULL) as $settings ) {
 						delete_option( $settings->getStorageId() );
 					}
 					
@@ -285,7 +285,7 @@ abstract class _Plugin extends Singleton
 			}
 			
 			// Remove settings
-			foreach( $this->getSettings() as $settings ) {
+			foreach( $this->getSettings(NULL) as $settings ) {
 				delete_option( $settings->getStorageId() );
 			}
 		}
