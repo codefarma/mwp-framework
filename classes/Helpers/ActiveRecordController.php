@@ -201,7 +201,7 @@ class ActiveRecordController
 	public function createDisplayTable( $table_options=array() )
 	{
 		$options     = array_replace( ( isset( $this->options['tableConfig'] ) ? $this->options['tableConfig'] : array() ), $table_options );
-		$table_args  = array_replace( array( 'ajax' => true ), ( isset( $options['constructor'] ) ? $options['constructor'] : array() ) );
+		$table_args  = array_replace( array( 'ajax' => false ), ( isset( $options['constructor'] ) ? $options['constructor'] : array() ) );
 		$recordClass = $this->recordClass;
 		$table       = $recordClass::createDisplayTable( $table_args );
 		$plugin      = $this->getPlugin();
@@ -236,8 +236,16 @@ class ActiveRecordController
 			$table->actionsColumn = '_row_actions';
 		}
 		
+		if ( isset( $options['sortableColumns'] ) ) {
+			$table->sortableColumns = $options['sortableColumns'];
+		}
+		
 		if ( isset( $options['sortable'] ) ) {
 			$table->sortableColumns = $options['sortable'];
+		}
+		
+		if ( isset( $options['searchableColumns'] ) ) {
+			$table->searchableColumns = $options['searchableColumns'];
 		}
 		
 		if ( isset( $options['searchable'] ) ) {
@@ -254,6 +262,14 @@ class ActiveRecordController
 			$table->bulkActions = array(
 				'delete' => 'Delete'
 			);
+		}
+		
+		if ( isset( $options['orderby'] ) ) {
+			$table->sortBy = $options['orderby'];
+		}
+		
+		if ( isset( $options['order'] ) ) {
+			$table->sortOrder = $options['order'];
 		}
 		
 		if ( isset( $options['sort_by'] ) ) {
