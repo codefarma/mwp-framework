@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: MWP Application Framework for WordPress
- * Version: 2.0.4
+ * Version: 2.0.5
  * Description: Provides an object oriented utility framework for building plugins/applications using WordPress.
  * Author: Kevin Carwile
  * Author URI: http://www.millermedia.io/
@@ -49,13 +49,14 @@ call_user_func( function() {
 	if ( $pagenow == 'plugins.php' and isset( $_REQUEST['action'] ) and $_REQUEST['action'] == 'activate' and ! did_action( 'plugins_loaded' ) ) {
 		$activating_plugin = $_REQUEST['plugin'];
 		$activating_plugin_path = dirname( WP_PLUGIN_DIR . '/' . plugin_basename( trim( $activating_plugin ) ) );
-		if ( file_exists( $activating_plugin_path . '/framework/mwp-framework.php' ) )
-		{
+		if ( file_exists( $activating_plugin_path . '/framework/mwp-framework.php' ) ) {
 			include_once $activating_plugin_path . '/framework/plugin.php';
 		}
 	}
 	
 	/**
+	 * Framework initialization routine
+	 *
 	 * Only attempt to load the framework which is the most up to date after
 	 * all plugins and themes have been included, and had a chance to report 
 	 * their bundled framework version.
@@ -65,7 +66,7 @@ call_user_func( function() {
 	 *
 	 * @return	void
 	 */
-	add_action( 'after_setup_theme', function() use ( $plugin_meta, &$_mwp_fw_latest )
+	$framework_init = function() use ( $plugin_meta, &$_mwp_fw_latest )
 	{
 		// Let's always skip including bundled frameworks if we are in development
 		$in_development = ( defined( 'MWP_FRAMEWORK_DEV' ) and \MWP_FRAMEWORK_DEV );
@@ -212,6 +213,16 @@ call_user_func( function() {
 
 			MWPFramework::init();
 		}
-	}, 1 );
+	};
+	
+	/**
+	 * Under normal conditions, the framework should init after the theme has been
+	 * included to allow the theme to register extensions.
+	 *
+	 * But in the case of uninstalling the plugin, the framework will need to be
+	 * manually initialized from the uninstall.php file.
+	 */
+	add_action( 'after_setup_theme', $framework_init, 1 );
+	add_action( 'mwp_framework_manual_init', $framework_init );
 
 });
