@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.5] - 2018-05-22
+
+- (fixed) Fixed broken sorting in active record table class
+- (fixed) Issue where task maintenance routine was crossing multisite barrier
+- (added) Added 'extras' property to active record table for generating extra navigation/sorting elements
+- (added) Implementation of ajax for active record tables specifying the 'ajax' constructor option 
+- (added) Ability to filter default admin controller getActions() using a function provided in the 'getActions' controller config
+- (changed) Fixed the framework initialization to accomodate manual initialization for plugin un-installation
+- (added) Plugin settings will also be deleted on plugin uninstall
+- (fixed) Various PHP notices
+
 ## [2.0.4] - 2018-05-20
 
 - (added) added ability to specify database field type information in the active record column definition
