@@ -6,7 +6,7 @@
  *
  * @package  MWP Application Framework
  * @author   Kevin Carwile
- * @since    {build_version}
+ * @since    2.0.5
  *
  * @param	Plugin		$this		The plugin instance which is loading this template
  *

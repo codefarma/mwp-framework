@@ -8,7 +8,7 @@ return <<<'JSON'
     "description": "Provides an object oriented utility framework for building plugins\/applications using WordPress.",
     "author": "Kevin Carwile",
     "author_url": "http:\/\/www.millermedia.io\/",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "tables": "mwp_queued_tasks"
 }
 JSON;
