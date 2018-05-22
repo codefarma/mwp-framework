@@ -88,7 +88,12 @@ class _ActiveRecordTable extends \WP_List_Table
 	 *
 	 */
 	public $_column_headers;
-
+	
+	/**
+	 * @var string
+	 */
+	public $searchPhrase;
+	
 	/**
 	 * @var string			Active Record Classname
 	 */
@@ -312,6 +317,12 @@ class _ActiveRecordTable extends \WP_List_Table
 		
 		$this->_args_raw = $args;
 		
+		if ( isset( $args['ajax'] ) and $args['ajax'] ) {
+			add_action( 'admin_enqueue_scripts', function() {
+				wp_enqueue_script( 'jquery-loading-overlay' );
+			});
+		}
+		
 		//Set parent defaults
 		parent::__construct( $args );		
     }
@@ -391,6 +402,10 @@ class _ActiveRecordTable extends \WP_List_Table
 	protected function extra_tablenav( $which ) 
 	{
 		if ( $which == 'top' ) {
+			if ( ! empty( $this->searchableColumns ) ) {
+				echo $this->getPlugin()->getTemplateContent( 'views/management/records/search_input', [ 'table' => $this ] );
+			}
+			
 			foreach( $this->extras as $extra ) {
 				if ( isset( $extra['output'] ) and is_callable( $extra['output'] ) ) {
 					call_user_func( $extra['output'], $this );
@@ -428,7 +443,7 @@ class _ActiveRecordTable extends \WP_List_Table
 	/**
 	 * @var	array
 	 */
-	public $tableClasses = array( 'widefat', 'fixed', 'striped' );
+	public $tableClasses = array( 'widefat', 'fixed', 'striped', 'active-record-table' );
 	
 	/**
 	 * Get a list of CSS classes for the WP_List_Table table tag.
@@ -854,7 +869,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		{
 			if ( isset( $_REQUEST['s'] ) and $_REQUEST['s'] ) 
 			{
-				$phrase = $_REQUEST['s'];
+				$this->searchPhrase = $phrase = $_REQUEST['s'];
 				$clauses = array();
 				$where = array();
 				foreach( $searchable_columns as $column_name => $column_config ) 
@@ -963,9 +978,10 @@ class _ActiveRecordTable extends \WP_List_Table
 		 */
 		$db = Framework::instance()->db();
 		
-		$sortBy        = isset( $this->sortBy ) ? $this->sortBy : $class::$prefix . $class::$key;
+		$sortBy        = isset( $this->sortBy ) ? $this->sortBy : $class::_getPrefix() . $class::_getKey();
 		$sortOrder     = $this->sortOrder;
-		$compiled      = $class::compileWhereClause( array_merge( $this->hardFilters, array( $where ) ) );
+		$where_filters = array_merge( $this->hardFilters, array( $where ) );
+		$compiled      = $class::compileWhereClause( $where_filters );
 		$per_page      = $this->perPage;
 		$start_at      = $current_page > 0 ? ( $current_page - 1 ) * $per_page : 0;
 		$prefix        = $class::_getMultisite() ? $db->prefix : $db->base_prefix;
@@ -984,6 +1000,9 @@ class _ActiveRecordTable extends \WP_List_Table
 			'total_items' => $total_items,
 			'per_page'    => $this->perPage,
 			'total_pages' => ceil( $total_items / $per_page ),
+			'orderby' => $sortBy,
+			'order' => $sortOrder,
+			'where' => $where_filters,
 		) );
 	}
 
@@ -1031,4 +1050,20 @@ class _ActiveRecordTable extends \WP_List_Table
 		return ob_get_clean();
 	}
 	
+	/**
+	 * Send required variables to JavaScript land
+	 *
+	 */
+	public function _js_vars() {
+		$args = array(
+			'class'  => $this->activeRecordClass,
+			'args' => $this->_pagination_args,
+			'screen' => array(
+				'id'   => $this->screen->id,
+				'base' => $this->screen->base,
+			)
+		);
+
+		//printf( "<script type='text/javascript'>list_args = %s;</script>\n", wp_json_encode( $args ) );
+	}	
 }

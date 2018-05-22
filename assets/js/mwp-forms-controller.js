@@ -40,6 +40,7 @@
 			mwp.on( 'views.ready', function() {
 				self.applyToggles();
 				self.setupCollections();
+				self.setupAjaxTables();
 			});
 		},
 		
@@ -87,8 +88,70 @@
 		},
 		
 		/**
+		 * Setup display tables to load via ajax
+		 *
+		 * @return	void
+		 */
+		setupAjaxTables: function()
+		{
+			var self = this;
+			
+			$(document).on( 'submit', 'form[data-table-nav="ajax"]', function(e) {
+				e.preventDefault();
+				var formEl = $(this);
+				self.updateTableViaAjax( formEl, window.location, new FormData(this) )
+			});
+			
+			$(document).on( 'click', 'form[data-table-nav="ajax"] .pagination-links a, form[data-table-nav="ajax"] .manage-column a', function(e) {
+				e.preventDefault();
+				var linkEl = $(this);
+				var formEl = linkEl.closest('form');
+				var formData = new FormData( formEl[0] );
+				formData.delete('paged');
+				self.updateTableViaAjax( formEl, linkEl.attr('href'), formData );
+			});
+		},
+		
+		/**
+		 * Perform an ajax request to update a table
+		 *
+		 * @param 	jQuery		formEl			The jquery wrapped form element which contains the display table
+		 * @param	string		url				The url which should be posted to
+		 * @return	$.Deferred
+		 */
+		updateTableViaAjax: function( formEl, url, formData )
+		{
+			var table = formEl.find('table.wp-list-table');
+			var topNav = formEl.find('.tablenav.top');
+			var bottomNav = formEl.find('.tablenav.bottom');
+			var overlayAvailable = typeof $.fn.LoadingOverlay !== 'undefined';
+			
+			overlayAvailable && table.LoadingOverlay('show');
+			
+			return $.ajax({
+				url: url,
+				type: 'post',
+				data: formData,
+				processData: false,
+				contentType: false
+			}).done( function( response ) {
+				var page = $(response);
+				var _table = page.find('table.wp-list-table');
+				var _topNav = page.find('.tablenav.top');
+				var _bottomNav = page.find('.tablenav.bottom');
+				
+				if ( _table.length && table.length ) { table.replaceWith( _table.eq(0) ); }
+				if ( _topNav.length && topNav.length ) { topNav.replaceWith( _topNav.eq(0) ); }
+				if ( _bottomNav.length && bottomNav.length ) { bottomNav.replaceWith( _bottomNav.eq(0) ); }
+			}).always( function() {
+				overlayAvailable && table.LoadingOverlay('hide');
+			});
+		},
+		
+		/**
 		 * Resequence records
 		 *
+		 * @return	void
 		 */
 		resequenceRecords: function( event, ui, sortableElement, config )
 		{
@@ -221,4 +284,3 @@
 		}
 	});	
 })( jQuery );
- 
