@@ -398,7 +398,7 @@ class _Framework extends Plugin
 	public function clearCaches()
 	{
 		// Delete files in cache folder
-		array_map( 'unlink', glob( dirname( __DIR__ ) . "/annotations/cache/*.cache.php" ) );
+		@array_map( 'unlink', glob( dirname( __DIR__ ) . "/annotations/cache/*.cache.php" ) );
 		
 		do_action( 'mwp_framework_clear_caches' );
 		
