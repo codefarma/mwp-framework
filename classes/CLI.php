@@ -376,6 +376,9 @@ class _CLI extends \WP_CLI_Command {
 	 * <name>
 	 * : The name of the new class (can be namespaced)
 	 *
+	 * [--type=<type>]
+	 * : The type of class to create ('generic', 'model', etc).
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     # Add a new php class file
@@ -392,7 +395,7 @@ class _CLI extends \WP_CLI_Command {
 		try
 		{
 			\WP_CLI::line( 'Creating new plugin class file...' );
-			$framework->createClass( $args[0], $args[1] );
+			$framework->createClass( $args[0], $args[1], isset( $assoc['type'] ) && $assoc['type'] ? $assoc['type'] : 'generic' );
 		}
 		catch( \ErrorException $e )
 		{

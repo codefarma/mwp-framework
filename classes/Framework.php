@@ -1002,7 +1002,7 @@ require_once 'plugin.php';" );
 	 * @return	string
 	 * @throws	\ErrorException
 	 */
-	public function createClass( $slug, $name )
+	public function createClass( $slug, $name, $type='generic' )
 	{
 		$plugin_data_file = WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php';
 		
@@ -1018,7 +1018,7 @@ require_once 'plugin.php';" );
 			throw new \ErrorException( "Namespace not defined in the plugin metadata." );
 		}
 		
-		$namespace = $plugin_data[ 'namespace' ];
+		$base_namespace = $namespace = $plugin_data[ 'namespace' ];
 		$name = trim( str_replace( $namespace, '', $name ), '\\' );
 		$parts = explode( '\\', $name );
 		$classname = array_pop( $parts );
@@ -1047,11 +1047,191 @@ require_once 'plugin.php';" );
 		}
 		
 		$version_tag = '{' . 'build_version' . '}';
+		$class_contents = '';
 		
-		$class_contents = <<<CLASS
+		switch( $type ) 
+		{
+			case 'model':
+				$class_contents = <<<CLASS
 <?php
 /**
- * Plugin Class File
+ * $classname Model [ActiveRecord]
+ *
+ * Created:   {date_time}
+ *
+ * @package:  {plugin_name}
+ * @author:   {plugin_author}
+ * @since:    $version_tag
+ */
+namespace $namespace;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+use MWP\Framework\Pattern\ActiveRecord;
+
+/**
+ * $classname Class
+ */
+class _$classname extends ActiveRecord
+{
+	/**
+	 * @var	array		Multitons cache (needs to be defined in subclasses also)
+	 */
+	protected static \$multitons = array();
+	
+	/**
+	 * @var	string		Table name
+	 */
+	protected static \$table;
+	
+	/**
+	 * @var	array		Table columns
+	 */
+	protected static \$columns = array(
+		'id',
+		'title' => [ 'type' => 'varchar', 'length' => 255 ],
+	);
+	
+	/**
+	 * @var	string		Table primary key
+	 */
+	protected static \$key = 'id';
+	
+	/**
+	 * @var	string		Table column prefix
+	 */
+	protected static \$prefix = '';
+	
+	/**
+	 * @var bool		Site specific table? (for multisites)
+	 */
+	protected static \$site_specific = FALSE;
+	
+	/**
+	 * @var	string
+	 */
+	protected static \$plugin_class = '{$base_namespace}\Plugin';
+	
+	/**
+	 * @var	string
+	 */
+	public static \$sequence_col;
+	
+	/**
+	 * @var	string
+	 */
+	public static \$parent_col;
+
+	/**
+	 * @var	string
+	 */
+	public static \$lang_singular = 'Record';
+	
+	/**
+	 * @var	string
+	 */
+	public static \$lang_plural = 'Records';
+	
+	/**
+	 * @var	string
+	 */
+	public static \$lang_view = 'View';
+
+	/**
+	 * @var	string
+	 */
+	public static \$lang_create = 'Create';
+
+	/**
+	 * @var	string
+	 */
+	public static \$lang_edit = 'Edit';
+	
+	/**
+	 * @var	string
+	 */
+	public static \$lang_delete = 'Delete';
+
+}
+
+CLASS;
+				break;
+				
+			case 'singleton':
+				$class_contents = <<<CLASS
+<?php
+/**
+ * $classname Class [Singleton]
+ *
+ * Created:   {date_time}
+ *
+ * @package:  {plugin_name}
+ * @author:   {plugin_author}
+ * @since:    $version_tag
+ */
+namespace $namespace;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+use MWP\Framework\Pattern\Singleton;
+
+/**
+ * $classname
+ */
+class _$classname extends Singleton
+{
+	/**
+	 * @var self
+	 */
+	protected static \$_instance;
+	
+	/**
+	 * @var 	\MWP\Framework\Plugin		Provides access to the plugin instance
+	 */
+	protected \$plugin;
+	
+	/**
+ 	 * Get plugin
+	 *
+	 * @return	\MWP\Framework\Plugin
+	 */
+	public function getPlugin()
+	{
+		if ( isset( \$this->plugin ) ) {
+			return \$this->plugin;
+		}
+		
+		\$this->setPlugin( \MWP\Boilerplate\Plugin::instance() );
+		
+		return \$this->plugin;
+	}
+	
+	/**
+	 * Set plugin
+	 *
+	 * @return	this			Chainable
+	 */
+	public function setPlugin( \MWP\Framework\Plugin \$plugin=NULL )
+	{
+		\$this->plugin = \$plugin;
+		return \$this;
+	}
+
+}
+
+CLASS;
+				break;
+				
+			case 'generic':
+			default:
+				$class_contents = <<<CLASS
+<?php
+/**
+ * $classname Class
  *
  * Created:   {date_time}
  *
@@ -1066,7 +1246,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * $classname Class
+ * $classname
  */
 class _$classname
 {
@@ -1082,6 +1262,12 @@ class _$classname
 	 */
 	public function getPlugin()
 	{
+		if ( isset( \$this->plugin ) ) {
+			return \$this->plugin;
+		}
+		
+		\$this->setPlugin( \MWP\Boilerplate\Plugin::instance() );
+		
 		return \$this->plugin;
 	}
 	
@@ -1096,19 +1282,12 @@ class _$classname
 		return \$this;
 	}
 	
-	/**
-	 * Constructor
-	 *
-	 * @param	\MWP\Framework\Plugin	\$plugin			The plugin to associate this class with, or NULL to auto-associate
-	 * @return	void
-	 */
-	public function __construct( \MWP\Framework\Plugin \$plugin=NULL )
-	{
-		\$this->setPlugin( \$plugin ?: \MWP\Boilerplate\Plugin::instance() );
-	}
 }
 
 CLASS;
+				break;				
+		}
+		
 		file_put_contents( $class_file, $this->replaceMetaContents( $class_contents, $plugin_data ) );
 	
 		return $class_file;
