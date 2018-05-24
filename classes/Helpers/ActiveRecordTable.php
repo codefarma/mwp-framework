@@ -295,7 +295,7 @@ class _ActiveRecordTable extends \WP_List_Table
 	{
 		if ( ! isset( $this->plugin ) ) {
 			$recordClass = $this->activeRecordClass;
-			$pluginClass = $recordClass::$plugin_class;
+			$pluginClass = $recordClass::_getPluginClass();
 			if ( class_exists( $pluginClass ) and is_subclass_of( $pluginClass, 'MWP\Framework\Plugin' ) ) {
 				$this->plugin = $pluginClass::instance();
 			}

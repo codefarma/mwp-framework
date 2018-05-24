@@ -32,32 +32,32 @@ abstract class ActiveRecord
 	/**
 	 * @var	string		Table name
 	 */
-	public static $table;
+	protected static $table;
 	
 	/**
 	 * @var	array		Table columns
 	 */
-	public static $columns = array();
+	protected static $columns = array();
 	
 	/**
 	 * @var	string		Table primary key
 	 */
-	public static $key;
+	protected static $key;
 	
 	/**
 	 * @var	string		Table column prefix
 	 */
-	public static $prefix = '';
+	protected static $prefix = '';
 	
 	/**
 	 * @var bool		Site specific table? (for multisites)
 	 */
-	public static $site_specific = FALSE;
+	protected static $site_specific = FALSE;
 	
 	/**
 	 * @var	string
 	 */
-	public static $plugin_class = 'MWP\Framework\Framework';
+	protected static $plugin_class = 'MWP\Framework\Framework';
 	
 	/**
 	 * @var	string
@@ -185,6 +185,16 @@ abstract class ActiveRecord
 	}
 	
 	/**
+	 * Get the plugin class
+	 *
+	 * @return	string
+	 */
+	public static function _getPluginClass()
+	{
+		return static::$plugin_class;
+	}
+	
+	/**
 	 * Get the 'create record' page title
 	 * 
 	 * @return	string
@@ -252,7 +262,7 @@ abstract class ActiveRecord
 	 */
 	public function getPlugin()
 	{
-		$pluginClass = static::$plugin_class;
+		$pluginClass = static::_getPluginClass();
 		return $pluginClass::instance();
 	}
 	
@@ -845,7 +855,7 @@ abstract class ActiveRecord
 	public static function createForm( $type='', $options=[] )
 	{
 		$name = strtolower( str_replace( '\\', '_', get_called_class() ) ) . ( $type ? '_' . $type : '' ) . '_form';
-		$pluginClass = static::$plugin_class;
+		$pluginClass = static::_getPluginClass();
 		$plugin = $pluginClass::instance();
 		
 		$form = $plugin->createForm( $name, $options );

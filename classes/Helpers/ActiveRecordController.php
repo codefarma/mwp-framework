@@ -117,7 +117,7 @@ class ActiveRecordController
 	public function __construct( $recordClass, $options=array() )
 	{
 		$this->recordClass = $recordClass;
-		$pluginClass = $recordClass::$plugin_class;
+		$pluginClass = $recordClass::_getPluginClass();
 		$this->setPlugin( $pluginClass::instance() );
 		$this->options = array_replace_recursive( apply_filters( 'mwp_controller_default_config', $this->getDefaultConfig(), $recordClass ), $options );
 		if ( isset( $this->options['adminPage'] ) ) {
