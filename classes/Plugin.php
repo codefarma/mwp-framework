@@ -235,13 +235,30 @@ abstract class _Plugin extends Singleton
 	 */
 	public function uninstall()
 	{
+		$protected_tables = array(
+			'commentmeta',
+			'comments',
+			'links',
+			'options',
+			'postmeta',
+			'posts',
+			'termmeta',
+			'terms',
+			'term_relationships',
+			'term_taxonomy',
+			'usermeta',
+			'users',
+		);
+		
 		$build_meta = $this->data( 'build-meta' ) ?: array();
 		$db = Framework::instance()->db();
 		
 		// Remove global tables on uninstall
 		if ( is_array( $build_meta[ 'tables' ] ) ) {
 			foreach( $build_meta[ 'tables' ] as $table ) {
-				$db->query( "DROP TABLE IF EXISTS {$db->base_prefix}{$table['name']}" );
+				if ( ! in_array( $table['name'], $protected_tables ) ) {
+					$db->query( "DROP TABLE IF EXISTS {$db->base_prefix}{$table['name']}" );
+				}
 			}
 		}
 		
@@ -262,7 +279,9 @@ abstract class _Plugin extends Singleton
 					// Remove multisite specific tables on uninstall
 					if ( isset( $build_meta['ms_tables'] ) and is_array( $build_meta['ms_tables'] ) ) {
 						foreach( $build_meta['ms_tables'] as $table ) {
-							$db->query( "DROP TABLE IF EXISTS {$db->prefix}{$table['name']}" );
+							if ( ! in_array( $table['name'], $protected_tables ) ) {
+								$db->query( "DROP TABLE IF EXISTS {$db->prefix}{$table['name']}" );
+							}
 						}
 					}
 					
@@ -280,7 +299,9 @@ abstract class _Plugin extends Singleton
 			// Update multisite tables under global context
 			if ( isset( $build_meta['ms_tables'] ) and is_array( $build_meta['ms_tables'] ) ) {
 				foreach( $build_meta['ms_tables'] as $table ) {
-					$db->query( "DROP TABLE IF EXISTS {$db->base_prefix}{$table['name']}" );
+					if ( ! in_array( $table['name'], $protected_tables ) ) {
+						$db->query( "DROP TABLE IF EXISTS {$db->base_prefix}{$table['name']}" );
+					}
 				}
 			}
 			
