@@ -30,7 +30,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	  <?php if ( isset( $action['html'] ) ) : ?>
 		<?php echo $action['html'] ?>
 	  <?php else: ?>
-	  <a class="btn btn-sm btn-default" href="<?php echo ( isset( $action['url'] ) and $action['url'] ) ? $action['url'] : $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
+	  <a class="btn btn-sm btn-default" <?php 
+		if ( isset( $action['link_attr'] ) ) {
+			foreach( $action['link_attr'] as $k => $v ) {
+				if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
+			}
+		}
+		?> href="<?php echo ( isset( $action['url'] ) and $action['url'] ) ? $action['url'] : $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
 		<span <?php 
 			if ( isset( $action['attr'] ) ) {
 				foreach( $action['attr'] as $k => $v ) {
@@ -56,7 +62,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php if ( isset( $action['html'] ) ) : ?>
 				<?php echo $action['html'] ?>
 			<?php else: ?>
-			<a href="<?php echo ( isset( $action['url'] ) and $action['url'] ) ? $action['url'] : $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
+			<a <?php 
+				if ( isset( $action['link_attr'] ) ) {
+					foreach( $action['link_attr'] as $k => $v ) {
+						if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
+					}
+				}
+				?> href="<?php echo ( isset( $action['url'] ) and $action['url'] ) ? $action['url'] : $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
 				<span <?php 
 					if ( isset( $action['attr'] ) ) {
 						foreach( $action['attr'] as $k => $v ) {
