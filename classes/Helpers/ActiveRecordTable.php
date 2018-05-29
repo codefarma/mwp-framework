@@ -517,7 +517,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		if ( $controller = $this->getController() ) {
 			try {
 				$recordClass = $this->activeRecordClass;
-				$record = $recordClass::load( $item[ $recordClass::$prefix . $recordClass::$key ] );
+				$record = $recordClass::load( $item[ $recordClass::_getPrefix() . $recordClass::_getKey() ] );
 				return $this->getPlugin()->getTemplateContent( $this->rowActionsTemplate, array( 
 					'controller' => $controller, 
 					'record' => $record, 
@@ -574,7 +574,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		if ( ! empty( $this->bulkActions ) )
 		{
 			$class = $this->activeRecordClass;
-			return sprintf( '<input type="checkbox" name="%1$s[]" value="%2$s" />', $this->_args[ 'singular' ], $item[ $class::$prefix . $class::$key ] );
+			return sprintf( '<input type="checkbox" name="%1$s[]" value="%2$s" />', $this->_args[ 'singular' ], $item[ $class::_getPrefix() . $class::_getKey() ] );
 		}
 	}
 	

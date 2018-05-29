@@ -21,6 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 $recordClass = $table->activeRecordClass;
 
 ?>
-<tr id="<?php echo $item[ $recordClass::$prefix . $recordClass::$key ] ?>">
+<tr id="<?php echo $item[ $recordClass::_getPrefix() . $recordClass::_getKey() ] ?>">
 	<?php echo $table->single_row_columns( $item ); ?>
 </tr>
