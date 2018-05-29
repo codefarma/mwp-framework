@@ -790,7 +790,7 @@ require_once 'plugin.php';" );
 		// Simple copy for a file
 		if ( is_file( $source ) ) 
 		{
-			if ( ! in_array( basename( $source ), array( 'README.md', '.gitignore' ) ) )
+			if ( ! in_array( basename( $source ), array( 'README.md' ) ) )
 			{
 				copy( $source, $dest );
 				
@@ -1052,6 +1052,7 @@ require_once 'plugin.php';" );
 		switch( $type ) 
 		{
 			case 'model':
+				$table_name = strtolower( end( explode( '-', $slug ) ) . '_' . $classname );
 				$class_contents = <<<CLASS
 <?php
 /**
@@ -1084,7 +1085,7 @@ class _$classname extends ActiveRecord
 	/**
 	 * @var	string		Table name
 	 */
-	protected static \$table;
+	protected static \$table = '$table_name';
 	
 	/**
 	 * @var	array		Table columns
