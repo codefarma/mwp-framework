@@ -949,6 +949,7 @@ abstract class ActiveRecord
 					case 'int':
 					case 'bigint':
 						$field_type = 'integer';
+						$field_options['data'] = (int) $field_options['data'];
 						$field_options['attr']['step'] = 1;
 						if ( isset( $column_props['unsigned'] ) && $column_props['unsigned'] ) {
 							$field_options['attr']['min'] = 0;
@@ -958,6 +959,7 @@ abstract class ActiveRecord
 					case 'float':
 					case 'double':
 						$field_type = 'number';
+						$field_options['data'] = (float) $field_options['data'];
 						if ( isset( $column_props['decimals'] ) ) {
 							$field_options['scale'] = (int) $column_props['decimals'];
 							if ( intval( $column_props['decimals'] ) ) {
@@ -1010,7 +1012,7 @@ abstract class ActiveRecord
 						break;
 					case 'timestamp':
 						$field_type = 'datetime';
-						$field_options['input'] = 'timestamp';
+						$field_options['input'] = 'string';
 						if ( isset( $timezone_string ) ) {
 							$field_options['view_timezone'] = $timezone_string;
 						}
