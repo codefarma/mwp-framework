@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.6] - 2018-05-29
+
+- (changed) Made database related static properties on ActiveRecord class protected by default
+- (added) Added hard protection for core tables to prevent them from being dropped on plugin uninstall
+- (added) Scaffolding of different php classes using the --type parameter of the 'add-class' CLI command
+
 ## [2.0.5] - 2018-05-22
 
 - (fixed) Fixed broken sorting in active record table class
