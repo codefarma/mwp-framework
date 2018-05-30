@@ -22,7 +22,7 @@ use MWP\Framework\Helpers\ActiveRecordTable;
  * An active record design pattern
  *
  */
-abstract class ActiveRecord
+abstract class _ActiveRecord
 {
 	/**
 	 * @var	array		Multitons cache (needs to be defined in subclasses also)

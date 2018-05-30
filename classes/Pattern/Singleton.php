@@ -14,7 +14,7 @@ namespace MWP\Framework\Pattern;
 /**
  * Implements singleton design pattern
  */
-abstract class Singleton
+abstract class _Singleton
 {
 	/**
 	 * @var	Instance Cache
