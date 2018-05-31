@@ -1052,7 +1052,8 @@ require_once 'plugin.php';" );
 		switch( $type ) 
 		{
 			case 'model':
-				$table_name = strtolower( end( explode( '-', $slug ) ) . '_' . $classname );
+				$pieces = explode( '-', $slug );
+				$table_name = strtolower( end( $pieces ) . '_' . $classname );
 				$class_contents = <<<CLASS
 <?php
 /**
