@@ -169,3 +169,8 @@
 .wrap.management.records .tablenav {
 	height: auto;
 }
+
+/* Bootstrap Tweaks */
+.mwp-bootstrap .btn-group {
+  display: flex;
+}
