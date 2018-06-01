@@ -2,11 +2,11 @@
 /**
  * Plugin HTML Template
  *
- * Created:  December 13, 2017
+ * Created:  May 4, 2018
  *
  * @package  MWP Application Framework
  * @author   Kevin Carwile
- * @since    1.4.0
+ * @since    2.0.0
  *
  * @param	string												$title			The provided title
  * @param	MWP\Framework\Plugin								$plugin			The plugin associated with the active records/view
@@ -29,10 +29,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach( $record->dataArray() as $property => $value ) : ?>
+			<?php foreach( $record::_getColumns() as $prop => $config ) : 
+				if ( ! is_array( $config ) ) {
+					$prop = $config;
+					$config = [];
+				}
+				
+				$value = $record->$prop;
+			?>
 			<tr>
-				<td><?php echo $property ?></td>
-				<td><pre><?php echo esc_html( $value ) ?></pre></td>
+				<td><?php echo $record::_getPrefix() . $prop ?></td>
+				<td><pre><?php echo esc_html( print_r( $value, true ) ?: '&nbsp;' ) ?></pre></td>
 			</tr>
 			<?php endforeach ?>
 		</tbody>
