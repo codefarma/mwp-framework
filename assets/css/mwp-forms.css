@@ -140,6 +140,7 @@
 
 .wp-list-table .column-_row_actions {
 	text-align: right;
+	overflow: visible !important;
 }
 
 /* Wrapped Output */
@@ -174,3 +175,8 @@
 .mwp-bootstrap .btn-group {
   display: flex;
 }
+
+.wp-list-table .column-_row_actions .btn-group {
+	float: right;
+}
+
