@@ -263,11 +263,11 @@ class _DbHelper extends Singleton
 		{
 			if( isset( $data['unsigned'] ) and $data['unsigned'] === TRUE )
 			{
-				$definition .= 'UNSIGNED ';
+				$definition .= 'unsigned ';
 			}
 			if( isset( $data['zerofill'] ) and $data['zerofill'] === TRUE )
 			{
-				$definition .= 'ZEROFILL ';
+				$definition .= 'zerofill ';
 			}
 		}
 		
@@ -286,7 +286,7 @@ class _DbHelper extends Singleton
 		/* Some types can be binary or not */
 		if( isset( $data['binary'] ) and $data['binary'] === TRUE and in_array( \strtoupper( $data['type'] ), array( 'CHAR', 'VARCHAR', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT' ) ) )
 		{
-			$definition .= 'BINARY ';
+			$definition .= 'binary ';
 		}
 		
 		/* Text types specify a character set and collation */
