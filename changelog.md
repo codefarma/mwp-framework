@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.7] - 2018-06-01
+
+- (changed) Changed the default record view template to better format record data
+- (changed) Opted ActiveRecord and Singleton framework base classes into the extensibility pattern
+- (fixed) Fixed some more display table awkwardness
+- (fixed) Fixed db schema helper to avoid core dbDelta function from detecting changes on an unchanged table
+
 ## [2.0.6] - 2018-05-29
 
 - (changed) Made database related static properties on ActiveRecord class protected by default
