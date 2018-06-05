@@ -428,7 +428,7 @@ class _Task extends ActiveRecord
 	public static function popQueue()
 	{		
 		$db = Framework::instance()->db();
-		$table = static::getTable();
+		$table = static::_getTable();
 		$running = $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->base_prefix}" . $table . " WHERE task_running=1 AND task_blog_id=%d", get_current_blog_id() ) );
 		
 		if ( $running >= Framework::instance()->getSetting( 'mwp_task_max_runners' ) ) {
