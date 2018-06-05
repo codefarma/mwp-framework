@@ -24,14 +24,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <?php if ( ! empty( $error ) ) : ?>
-	<div class="alert alert-error">
-		<ul>
-		<?php foreach( $error->errors as $type => $errors ) : ?>
-			<?php foreach( $errors as $message ) : ?>
-				<li><?php echo $message ?></li>
+	<div class="mwp-bootstrap">
+		<div class="alert alert-danger">
+			<ul>
+			<?php foreach( $error->errors as $type => $errors ) : ?>
+				<?php foreach( $errors as $message ) : ?>
+					<li><?php echo $message ?></li>
+				<?php endforeach; ?>
 			<?php endforeach; ?>
-		<?php endforeach; ?>
-		</ul>
+			</ul>
+		</div>
 	</div>
 <?php endif; ?>
 <?php echo $form->render() ?>

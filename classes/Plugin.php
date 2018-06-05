@@ -467,12 +467,13 @@ abstract class _Plugin extends Singleton
 	}
 	
 	/**
-	 * Set some cached data 
+	 * Set some transient cached data 
 	 *
 	 * @param   string       $key             A key to identify the cached data
 	 * @param   mixed        $data            The data to cache
-	 * @param   string       $group           A group to categorize the cached data
 	 * @param   bool         $network         Indicate if the data is network wide
+	 * @param   int          $expiration      Set the amount of time before the cache will expire
+	 * @param   string       $group           A group to categorize the cached data
 	 * @return	bool
 	 */
 	public function setCache( $key, $data, $network=FALSE, $expiration=0, $group='' )
@@ -502,11 +503,11 @@ abstract class _Plugin extends Singleton
 	}
 	
 	/**
-	 * Get some cached data
+	 * Get some transient cached data
 	 *
 	 * @param   string       $key             A key to identify the cached data
-	 * @param   string       $group           A group to categorize the cached data
 	 * @param   bool         $network         Indicate if the data is network wide
+	 * @param   string       $group           A group to categorize the cached data
 	 * @return	mixed
 	 */
 	public function getCache( $key, $network=FALSE, $group='' )
@@ -518,11 +519,11 @@ abstract class _Plugin extends Singleton
 	}
 	
 	/**
-	 * Clear some cached data
+	 * Clear some transient cached data
 	 *
 	 * @param   string       $key             A key to identify the cached data
-	 * @param   string       $group           A group to categorize the cached data
 	 * @param   bool         $network         Indicate if the data is network wide
+	 * @param   string       $group           A group to categorize the cached data
 	 * @return	void
 	 */
 	public function clearCache( $key=NULL, $network=FALSE, $group='' )
