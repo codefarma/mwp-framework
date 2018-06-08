@@ -62,12 +62,12 @@ abstract class _ActiveRecord
 	/**
 	 * @var	string
 	 */
-	public static $sequence_col;
+	protected static $sequence_col;
 	
 	/**
 	 * @var	string
 	 */
-	public static $parent_col;
+	protected static $parent_col;
 
 	/**
 	 * @var	string
