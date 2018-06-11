@@ -169,7 +169,6 @@ class ActiveRecordController
 			'new' => array(
 				'title' => __( $recordClass::$lang_create . ' ' . $recordClass::$lang_singular ),
 				'params' => array( 'do' => 'new' ),
-				'attr' => array( 'class' => 'btn btn-primary' ),
 			)
 		);
 		

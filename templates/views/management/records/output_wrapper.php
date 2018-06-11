@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <div class="wrap management records <?php echo $classes ?>">
-	<h1><span><?php echo $title ?></span></h1>
+	<h1 class="wp-heading-inline"><?php echo $title ?></h1>
+	<hr style="position: absolute">
 	<?php echo $output ?>
 </div>

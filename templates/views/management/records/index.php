@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <?php echo $controller->getActionsHtml() ?>
-
+<hr class="wp-header-end" />
 <form method="post"<?php if ( isset( $table->_args['ajax'] ) and $table->_args['ajax'] ) { ?> data-table-nav="ajax"<?php } ?>>
 	<?php echo $table->getDisplay() ?>
 </form>

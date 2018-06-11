@@ -21,18 +21,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<div class="mwp-bootstrap" style="text-align:right">
-	<?php foreach ( $actions as $action ) : ?>
-	<a <?php 
-		if ( isset( $action['attr'] ) ) {
-			foreach( $action['attr'] as $k => $v ) {
-				if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
-			}
+<?php foreach ( $actions as $action ) : ?>
+<a <?php 
+	if ( isset( $action['link_attr'] ) ) {
+		foreach( $action['link_attr'] as $k => $v ) {
+			if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
 		}
-	?> href="<?php echo $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
+	}
+?> class="page-title-action" href="<?php echo $controller->getUrl( isset( $action['params'] ) ? $action['params'] : array() ) ?>">
+	<span <?php 
+			if ( isset( $action['attr'] ) ) {
+				foreach( $action['attr'] as $k => $v ) {
+					if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
+				}
+			}
+		?>>
 		<?php if ( isset( $action['icon'] ) ) : ?>
 			<i class="<?php echo $action['icon'] ?>"></i>
 		<?php endif ?>
 		<?php echo $action['title'] ?>
-	</a>
-	<?php endforeach ?></div>
+	</span>
+</a>
+<?php endforeach ?>

@@ -402,10 +402,6 @@ class _ActiveRecordTable extends \WP_List_Table
 	protected function extra_tablenav( $which ) 
 	{
 		if ( $which == 'top' ) {
-			if ( ! empty( $this->searchableColumns ) ) {
-				echo $this->getPlugin()->getTemplateContent( 'views/management/records/search_input', [ 'table' => $this ] );
-			}
-			
 			foreach( $this->extras as $extra ) {
 				if ( isset( $extra['output'] ) and is_callable( $extra['output'] ) ) {
 					call_user_func( $extra['output'], $this );

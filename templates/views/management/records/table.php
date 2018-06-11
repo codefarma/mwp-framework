@@ -18,6 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $singular = $table->_args['singular'];
+
+if ( ! empty( $table->searchableColumns ) ) {
+	echo $this->getTemplateContent( 'views/management/records/search_input', [ 'table' => $table ] );
+}
 ?>
 
 <?php 

@@ -26,4 +26,3 @@ $input_id = "record-search-input";
 	<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php if ( $table->searchPhrase ) { echo esc_html( $table->searchPhrase ); } ?>" />
 	<?php submit_button( $text, '', '', false, array( 'id' => 'search-submit' ) ); ?>
 </p>
-<div style="clear:both"></div>
