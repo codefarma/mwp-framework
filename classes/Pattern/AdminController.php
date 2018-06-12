@@ -120,6 +120,7 @@ abstract class _AdminController
 		$adminPage->type = isset( $options['type'] ) ? $options['type'] : $adminPage->type;
 		$adminPage->parent = isset( $options['parent'] ) ? $options['parent'] : $adminPage->parent;
 		$adminPage->menu_submenu = isset( $options['menu_submenu'] ) ? $options['menu_submenu'] : null;
+		$adminPage->for = isset( $options['for'] ) ? $options['for'] : $adminPage->for;
 		
 		$adminPage->applyToObject( $this );
 		
@@ -136,7 +137,8 @@ abstract class _AdminController
 	public function getUrl( $args=array() )
 	{
 		if ( isset( $this->adminPage ) ) {
-			return add_query_arg( $args, menu_page_url( $this->adminPage->slug, false ) );
+			$network = $this->adminPage->for == 'all' ? is_network_admin() : $this->adminPage->for == 'network';
+			return add_query_arg( $args, $network ? network_menu_page_url( $this->adminPage->slug, false ) : menu_page_url( $this->adminPage->slug, false ) );
 		}
 		
 		return '';

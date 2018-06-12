@@ -23,7 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <?php if ( ! empty( $error ) ) : ?>
-	<div class="notice notice-error">
+<div class="mwp-bootstrap">
+	<div class="alert alert-danger">
 		<ul>
 		<?php foreach( $error->errors as $type => $errors ) : ?>
 			<?php foreach( $errors as $message ) : ?>
@@ -32,5 +33,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php endforeach; ?>
 		</ul>
 	</div>
+</div>
 <?php endif; ?>	
 <?php echo $form->render() ?>

@@ -4,7 +4,7 @@
  * Version: 2.0.7.2
  * Description: Provides an object oriented utility framework for building plugins/applications using WordPress.
  * Author: Kevin Carwile
- * Author URI: http://www.millermedia.io/
+ * Author URI: http://www.codefarma.com/
  * License: GPL2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */

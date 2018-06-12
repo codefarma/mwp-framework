@@ -74,6 +74,11 @@ class AdminPage extends \MWP\Framework\Annotation
 	public $parent;
 	
 	/**
+	 * @var string
+	 */
+	public $for = 'site';
+	
+	/**
 	 * Apply to Method
 	 *
 	 * @param	object					$instance		The object that the method belongs to
@@ -84,7 +89,7 @@ class AdminPage extends \MWP\Framework\Annotation
 	public function applyToMethod( $instance, $method, $vars=[] )
 	{
 		$annotation = $this;
-		mwp_add_action( 'admin_menu', function() use ( $annotation, $instance, $method )
+		$page_callback = function() use ( $annotation, $instance, $method )
 		{
 			$add_page_func = 'add_' . $annotation->type . '_page';
 			if ( is_callable( $add_page_func ) )
@@ -99,7 +104,15 @@ class AdminPage extends \MWP\Framework\Annotation
 					} 
 				}
 			}
-		});
+		};
+		
+		if ( in_array( $annotation->for, [ 'site', 'all' ] ) ) {
+			mwp_add_action( 'admin_menu', $page_callback );
+		}
+		
+		if ( in_array( $annotation->for, [ 'network', 'all' ] ) ) {
+			mwp_add_action( 'network_admin_menu', $page_callback );
+		}
 	}
 	
 	/**
@@ -112,7 +125,7 @@ class AdminPage extends \MWP\Framework\Annotation
 	public function applyToObject( $instance, $vars=[] )
 	{
 		$annotation = $this;
-		mwp_add_action( 'admin_menu', function() use ( $annotation, $instance )
+		$page_callback = function() use ( $annotation, $instance ) 
 		{
 			$add_page_func = 'add_' . $annotation->type . '_page';
 			if ( is_callable( $add_page_func ) )
@@ -150,7 +163,15 @@ class AdminPage extends \MWP\Framework\Annotation
 					$output = $buffered_output . $output;
 				});
 			}
-		});
+		};
+		
+		if ( in_array( $annotation->for, [ 'site', 'all' ] ) ) {
+			mwp_add_action( 'admin_menu', $page_callback );
+		}
+		
+		if ( in_array( $annotation->for, [ 'network', 'all' ] ) ) {
+			mwp_add_action( 'network_admin_menu', $page_callback );
+		}
 		
 	}
 	
