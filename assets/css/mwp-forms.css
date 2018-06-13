@@ -174,3 +174,20 @@
 	float: right;
 }
 
+.mwp-bootstrap .popover > .arrow {
+	margin-left: 0;
+	overflow: visible;
+}
+
+.mwp-bootstrap .popover > .arrow:after {
+	background-color: inherit;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	top: auto;
+	transform: none;
+	-moz-transform: none;
+	-webkit-transform; none;
+	
+}
+
