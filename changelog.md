@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.8] - 2018-06-13
+
+- (fixed) Bad method reference in task runner
+- (changed) sequence_col and parent_col on ActiveRecord are protected by default
+- (changed) Active record controller styling now closely mimics core styling
+- (changed) Removed unused dependency tracking scripts
+- (added) New support for admin pages to add them to the network admin menu
+- (fixed) Various php notices
+- (fixed) Cross contamination of css styles affecting bootstrap popovers
+
 ## [2.0.7] - 2018-06-01
 
 - (changed) Changed the default record view template to better format record data
