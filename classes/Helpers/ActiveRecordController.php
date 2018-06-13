@@ -187,7 +187,7 @@ class ActiveRecordController
 	 */
 	public function getActionsHtml( $actions=null )
 	{
-		$actions = $actions ?: $this->getActions();
+		$actions = $actions !== NULL ? $actions : $this->getActions();
 		
 		return $this->getPlugin()->getTemplateContent( 'views/management/records/table_actions', array( 'plugin' => $this->getPlugin(), 'controller' => $this, 'actions' => $actions ) );
 	}

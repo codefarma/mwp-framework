@@ -1160,7 +1160,7 @@ abstract class _ActiveRecord
 			
 				// Save original value for reference later
 				if ( ! $change_exists ) {
-					$this->_changed[ $prop_key ] = $this->_data[ $prop_key ];
+					$this->_changed[ $prop_key ] = isset( $this->_data[ $prop_key ] ) ? $this->_data[ $prop_key ] : NULL;
 				}
 				
 				// Update the data
