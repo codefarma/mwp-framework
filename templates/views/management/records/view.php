@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				$value = $record->$prop;
 			?>
 			<tr>
-				<td><?php echo $record::_getPrefix() . $prop ?></td>
+				<td><?php echo ( isset( $config['title'] ) and $config['title'] ) ? __( $config['title'] ) : $record::_getPrefix() . $prop ?></td>
 				<td><pre><?php echo esc_html( print_r( $value, true ) ?: '&nbsp;' ) ?></pre></td>
 			</tr>
 			<?php endforeach ?>
