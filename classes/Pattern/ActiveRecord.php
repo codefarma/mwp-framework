@@ -398,7 +398,7 @@ abstract class _ActiveRecord
 	/**
 	 * Get any changed values
 	 *
-	 * 
+	 * @return	array
 	 */
 	public function _getChanged()
 	{
