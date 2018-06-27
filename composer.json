@@ -15,7 +15,8 @@
         "symfony/validator": "^3.2",
         "symfony/http-foundation": "^3.2",
         "symfony/templating": "^3.2",
-        "symfony/security-csrf": "^3.2"
+        "symfony/security-csrf": "^3.2",
+        "symfony/polyfill-mbstring": "^1.8"
     },
     "autoload": {
         "psr-4": {
