@@ -167,7 +167,8 @@
 }
 
 /* Bootstrap Tweaks */
-.mwp-bootstrap .wp-list-table .btn-group {
+.mwp-bootstrap .wp-list-table .btn-group,
+.wp-list-table .mwp-bootstrap .btn-group {
 	display: flex;
 }
 
