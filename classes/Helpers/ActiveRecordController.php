@@ -84,6 +84,15 @@ class ActiveRecordController
 	}
 	
 	/**
+	 * Init
+	 *
+	 */
+	public function init()
+	{
+		
+	}
+	
+	/**
 	 * Default controller configuration
 	 *
 	 * @return	array
