@@ -14,12 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
+use MWP\Framework\Pattern\Controller;
 use MWP\WordPress\AdminPage;
+use MWP\WordPress\PostPage;
 
 /**
  * Active Record Controller
  */
-class ActiveRecordController
+class _ActiveRecordController extends Controller
 {
 	
 	/**
@@ -31,11 +33,6 @@ class ActiveRecordController
 	 * @var	string
 	 */
 	public $recordClass;
-	
-	/**
-	 * @var	array
-	 */
-	public $options = array();
 	
 	/**
 	 * @var string
@@ -84,12 +81,26 @@ class ActiveRecordController
 	}
 	
 	/**
-	 * Init
+	 * Initialization (runs only when a controller page is being viewed)
 	 *
 	 */
 	public function init()
 	{
+		parent::init();
 		
+		/* Front End */ 
+		if ( ! is_admin() ) 
+		{
+			/* Enqueue styles/functions to support wp list tables */
+			add_action( 'wp_enqueue_scripts', function() { 
+				wp_enqueue_style( 'list-tables' );
+				wp_enqueue_style( 'common' );
+				wp_enqueue_script( 'common' );
+			});
+			
+			/* Stop WP from redirecting paged=X requests to the /page/X url */
+			remove_filter( 'template_redirect', 'redirect_canonical' );
+		}		
 	}
 	
 	/**
@@ -121,28 +132,26 @@ class ActiveRecordController
 	 *
 	 * @param	string		$recordClass			The active record class
 	 * @param	array		$options				Optional configuration options
+	 * @throws 	ErrorException
 	 * @return	void
 	 */
-	public function __construct( $recordClass, $options=array() )
+	protected function constructed()
 	{
-		$this->recordClass = $recordClass;
+		if ( ! isset( $this->config['recordClass'] ) ) {
+			throw new \ErrorException( 'Active Record Controllers must have a valid recordClass specified.' );
+		}
+		
+		$this->recordClass = $recordClass = $this->config['recordClass'];
 		$pluginClass = $recordClass::_getPluginClass();
 		$this->setPlugin( $pluginClass::instance() );
-		$this->options = array_replace_recursive( apply_filters( 'mwp_controller_default_config', $this->getDefaultConfig(), $recordClass ), $options );
-		if ( isset( $this->options['adminPage'] ) ) {
-			$this->registerAdminPage( $this->options['adminPage'] );
-		}
+		$this->config = apply_filters( 'mwp_active_record_controller_config', array_replace_recursive( $this->getDefaultConfig(), $this->config ), $recordClass );
 	}
-	
-	/**
-	 * @var	MWP\WordPress\AdminPage
-	 */
-	public $adminPage;
 	
 	/**
 	 * Register the controller as an admin page
 	 *
 	 * @param	array			$options			Admin page options
+	 * @return	AdminPage
 	 */
 	public function registerAdminPage( $options=array() )
 	{
@@ -182,8 +191,8 @@ class ActiveRecordController
 			)
 		);
 		
-		if ( isset( $this->options['getActions'] ) and is_callable( $this->options['getActions'] ) ) {
-			$actions = call_user_func( $this->options['getActions'], $actions, $this );
+		if ( isset( $this->config['getActions'] ) and is_callable( $this->config['getActions'] ) ) {
+			$actions = call_user_func( $this->config['getActions'], $actions, $this );
 		}
 		
 		return is_array( $actions ) ? $actions : array();
@@ -209,7 +218,7 @@ class ActiveRecordController
 	 */
 	public function createDisplayTable( $table_options=array() )
 	{
-		$options     = array_replace( ( isset( $this->options['tableConfig'] ) ? $this->options['tableConfig'] : array() ), $table_options );
+		$options     = array_replace( ( isset( $this->config['tableConfig'] ) ? $this->config['tableConfig'] : array() ), $table_options );
 		$table_args  = array_replace( array( 'ajax' => false ), ( isset( $options['constructor'] ) ? $options['constructor'] : array() ) );
 		$recordClass = $this->recordClass;
 		$table       = $recordClass::createDisplayTable( $table_args );
@@ -354,23 +363,6 @@ class ActiveRecordController
 	}
 	
 	/**
-	 * Get the controller url
-	 *
-	 * @param	array			$args			Optional query args
-	 * @param	bool|NULL		$network		Flag indicating if url should point to network admin or not. NULL for auto-detect.
-	 * @return	string
-	 */
-	public function getUrl( $args=array() )
-	{
-		if ( isset( $this->adminPage ) ) {
-			$network = $this->adminPage->for == 'all' ? is_network_admin() : $this->adminPage->for == 'network';
-			return add_query_arg( $args, $network ? network_menu_page_url( $this->adminPage->slug, false ) : menu_page_url( $this->adminPage->slug, false ) );
-		}
-		
-		return '';
-	}
-	
-	/**
 	 * Index Page
 	 * 
 	 * @return	string
@@ -378,7 +370,7 @@ class ActiveRecordController
 	public function do_index()
 	{
 		$table = $this->createDisplayTable();
-		$where = isset( $this->options['tableConfig']['default_where'] ) ? $this->options['tableConfig']['default_where'] : array('1=1');
+		$where = isset( $this->config['tableConfig']['default_where'] ) ? $this->config['tableConfig']['default_where'] : array('1=1');
 		
 		$table->read_inputs();
 		$table->prepare_items( $where );
