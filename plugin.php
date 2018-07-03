@@ -177,6 +177,7 @@ call_user_func( function() {
 					$annotationRegistry::registerFile( __DIR__ . "/annotations/Inherit.php" );
 					$annotationRegistry::registerFile( __DIR__ . "/annotations/Override.php" );
 					$annotationRegistry::registerFile( __DIR__ . "/annotations/AdminPage.php" );
+					$annotationRegistry::registerFile( __DIR__ . "/annotations/PostPage.php" );
 					$annotationRegistry::registerFile( __DIR__ . "/annotations/AjaxHandler.php" );
 					$annotationRegistry::registerFile( __DIR__ . "/annotations/Plugin.php" );
 					$annotationRegistry::registerFile( __DIR__ . "/annotations/Action.php" );
