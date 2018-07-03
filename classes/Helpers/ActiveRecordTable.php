@@ -180,6 +180,11 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $perPage = 50;
 	
 	/**
+	 * @var	int	 The current page number
+	 */
+	public $current_page = 1;
+	
+	/**
 	 * @var	string  Default column to sort by
 	 */
 	public $sortBy;
@@ -657,6 +662,17 @@ class _ActiveRecordTable extends \WP_List_Table
 	}
 	
 	/**
+	 * Get the current page number
+	 *
+	 * @since 3.1.0
+	 *
+	 * @return int
+	 */
+	public function get_pagenum() {
+		return $this->current_page;
+	}
+	
+	/**
 	 * Display the pagination.
 	 *
 	 * @since 3.1.0
@@ -855,6 +871,8 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->sortOrder = $_REQUEST['order'];
 		}
 		
+		$this->current_page = absint( get_query_var('paged') ) ?: 1;
+
 		foreach( $this->extras as $extra ) {
 			if ( isset( $extra['init'] ) and is_callable( $extra['init'] ) ) {
 				call_user_func( $extra['init'], $this );
@@ -1000,6 +1018,12 @@ class _ActiveRecordTable extends \WP_List_Table
 			'order' => $sortOrder,
 			'where' => $where_filters,
 		) );
+		
+		/* If we are on a non-existant page, go to last page in set */
+		if ( isset( $this->_pagination_args['total_pages'] ) && $current_page > $this->_pagination_args['total_pages'] ) {
+			$this->current_page = $this->_pagination_args['total_pages'];
+			$this->prepare_items( $where );
+		}
 	}
 
 	/**
