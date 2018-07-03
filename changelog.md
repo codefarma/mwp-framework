@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.0] - 2018-07-03
+
+- (added) Avoid errors from missing mbstring php extension using a symfony polyfill
+- (added) New annotation to register a controller to a post page (front end controllers)
+- (added) Active Record Controllers are now usable on the front end
+- (added) Shortcode annotation can now be used on a controller class
+- (changed) Improved tracking of of deployed active record tables in plugin meta
+- (changed) The 'AdminController' pattern class was refactored to a more generic 'Controller'
+- (changed) Certain active record class _get methods now accept a boolean flag to return their prefixed name
+- (fixed) Active record table action button styling
+- (fixed) The current page number for active record tables is now only read when the read_inputs() method is called
+
 ## [2.0.8.1] - 2018-06-20
 
 - (added) Title of column now displays when viewing a record in the default view
