@@ -57,6 +57,9 @@ class Shortcode extends \MWP\Framework\Annotation
 		/* Run Controller */
 		add_shortcode( $this->name, function( $atts, $content, $name ) use ( $instance ) { 
 			ob_start();
+			if ( is_callable( array( $instance, 'init' ) ) ) {
+				call_user_func( array( $instance, 'init' ), $atts, $content, $name );
+			}
 			$action = Framework::instance()->getRequest()->get( 'do', 'index' );
 			if( is_callable( array( $instance, 'do_' . $action ) ) ) {
 				$output = call_user_func( array( $instance, 'do_' . $action ), $atts, $content, $name );
