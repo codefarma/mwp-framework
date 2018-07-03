@@ -117,11 +117,19 @@ abstract class _ActiveRecord
 	/**
 	 * Get database table
 	 *
+	 * @param	bool			$include_prefix				Include the database prefix
 	 * @return	string
 	 */
-	public static function _getTable()
+	public static function _getTable( $include_prefix=false )
 	{
-		return static::$table;
+		if ( ! $include_prefix ) {
+			return static::$table;
+		}
+		
+		$db = Framework::instance()->db();
+		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
+		
+		return $db_prefix . static::$table;
 	}	
 	
 	/**
@@ -149,9 +157,13 @@ abstract class _ActiveRecord
 	 *
 	 * @return	string
 	 */
-	public static function _getKey()
+	public static function _getKey( $include_prefix=false )
 	{
-		return static::$key;
+		if ( ! $include_prefix ) {
+			return static::$key;
+		}
+		
+		return static::$prefix . static::$key;
 	}
 	
 	/**
@@ -169,9 +181,13 @@ abstract class _ActiveRecord
 	 *
 	 * @return	string
 	 */
-	public static function _getSequenceCol()
+	public static function _getSequenceCol( $include_prefix=false )
 	{
-		return static::$sequence_col;
+		if ( ! $include_prefix ) {
+			return static::$sequence_col;
+		}
+		
+		return static::$prefix . static::$sequence_col;
 	}
 	
 	/**
@@ -179,9 +195,13 @@ abstract class _ActiveRecord
 	 *
 	 * @return	string
 	 */
-	public static function _getParentCol()
+	public static function _getParentCol( $include_prefix=false )
 	{
-		return static::$parent_col;
+		if ( ! $include_prefix ) {
+			return static::$parent_col;
+		}
+		
+		return static::$prefix . static::$parent_col;
 	}
 	
 	/**
@@ -810,7 +830,7 @@ abstract class _ActiveRecord
 	public static function createController( $key, $options=array() )
 	{
 		$controllerClass = static::getControllerClass();
-		$controller = new $controllerClass( get_called_class(), $options );
+		$controller = $controllerClass::create( $key . ':' . get_called_class(), array_merge( $options, [ 'recordClass' => get_called_class() ] ) );
 		static::setController( $key, $controller );
 		
 		return $controller;
