@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: MWP Application Framework for WordPress
- * Version: 2.1.0
+ * Version: 2.1.1
  * Description: Provides an object oriented utility framework for building plugins/applications using WordPress.
  * Author: Kevin Carwile
  * Author URI: http://www.codefarma.com/
