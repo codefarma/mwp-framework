@@ -73,6 +73,7 @@ abstract class _Controller
 	 * Create Instance
 	 *
 	 * @param	string				$name				The name of the controller
+	 * @param	array				$config				The controller configuration
 	 * @throws  \ErrorException
 	 * @return	Controller
 	 */
@@ -100,6 +101,7 @@ abstract class _Controller
 	/**
 	 * Get a controller instance
 	 *
+	 * @param	string		$name			The name used to reference the controller
 	 * @return Controller|NULL
 	 */
 	public static function get( $name )

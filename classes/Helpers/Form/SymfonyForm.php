@@ -649,6 +649,27 @@ class _SymfonyForm extends Form
 	}
 	
 	/**
+	 * Remove a field from the form
+	 * 
+	 * @param	string			$name			The name of the field to remove
+	 * @return	bool
+	 */
+	public function removeField( $name )
+	{
+		if ( isset( $this->fieldRefs[ $name ] ) and isset( $this->parentRefs[ $name ] ) ) {
+			$builder = $this->parentRefs[ $name ];
+			$builder->remove( $name );
+			unset( $this->fields[ $name ] );
+			unset( $this->fieldRefs[ $name ] );
+			unset( $this->parentRefs[ $name ] );
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Get a field type class
 	 *
 	 * @param	string			$type			Either a class or a shorthand key to lookup in the types array
