@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.1] - 2018-07-09
+
+- (added) Added ability to remove form fields using removeField() method on form helper
+
 ## [2.1.0] - 2018-07-03
 
 - (added) Avoid errors from missing mbstring php extension using a symfony polyfill
