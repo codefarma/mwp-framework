@@ -75,8 +75,12 @@ class PostPage extends \MWP\Framework\Annotation
 					$output = $buffered_output . $output;
 					
 					/* Add the filter to control the page content output */
-					add_filter( 'the_content', function( $content ) use ( $annotation, $instance, $output ) {
-						return $output;
+					add_filter( 'the_content', function( $content ) use ( $output ) {
+						if( is_singular() && is_main_query() ) {
+							return $output;
+						}
+						
+						return $content;
 					});
 				}
 			});
