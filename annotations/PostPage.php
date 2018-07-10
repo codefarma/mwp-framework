@@ -65,23 +65,33 @@ class PostPage extends \MWP\Framework\Annotation
 					
 					ob_start();
 					$action = Framework::instance()->getRequest()->get( 'do', 'index' );
-					if( is_callable( array( $instance, 'do_' . $action ) ) ) {
-						$output = call_user_func( array( $instance, 'do_' . $action ) );
-					} else {
-						$output = '<strong>Controller Error:</strong><br><br>Implement a "do_' . $action . '()" method on this controller to generate the output of this page.</p>';
-					}
-					$buffered_output = ob_get_clean();
+					$output = is_callable( array( $instance, 'do_' . $action ) ) ? 
+						call_user_func( array( $instance, 'do_' . $action ) ) :
+						'<strong>Controller Error:</strong><br><br>Implement a "do_' . $action . '()" method on this controller to generate the output of this page.</p>';
 					
-					$output = $buffered_output . $output;
+					$output = ob_get_clean() . $output;
 					
-					/* Add the filter to control the page content output */
-					add_filter( 'the_content', function( $content ) use ( $output ) {
-						if( is_singular() && is_main_query() ) {
-							return $output;
+					/* Callback to return our controller output */
+					$return_output = function( $content ) use ( $annotation, $output, &$return_output ) 
+					{
+						/**
+						 * Try to protect against incorrectly returning our controller output when code uses 'the_content' filter for other 
+						 * posts within the context of our controller page (such as widgets that use WP_Query loops)
+						 */
+						if ( $post = get_post() and $post->ID == $annotation->post_id ) { // double check
+							/* Moreover, try to protect against if this post happens to appear within one of those said loops */
+							if ( is_singular() && is_main_query() ) {
+								/* Finally, ensure we only send our controller output to the page one time max. */
+								remove_filter( 'the_content', $return_output );
+								return $output;
+							}
 						}
 						
 						return $content;
-					});
+					};
+					
+					/* Add the filter to control the page content output */
+					add_filter( 'the_content', $return_output );
 				}
 			});
 		}
