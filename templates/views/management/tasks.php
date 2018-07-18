@@ -33,7 +33,6 @@ use MWP\Framework\Task;
 	<?php echo $this->getTemplateContent( 'views/management/task-submenu' ) ?>
 	
 	<form method="post">
-		<?php $table->search_box('search', 'search_text'); ?>
 		<?php echo $table->getDisplay() ?>
 	</form>
 	
