@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	  </button>
 	  <ul class="dropdown-menu dropdown-menu-right">
 		<?php foreach ( $actions as $action ) : ?>
-		<?php if ( isset( $action['separator'] ) and $action['separator'] ) :?><li role="separator" class="divider"></li><?php endif ?>
+		<?php if ( isset( $action['separator'] ) and $action['separator'] !== 'bottom' ) :?><li role="separator" class="divider"></li><?php endif ?>
 		<li>
 			<?php if ( isset( $action['html'] ) ) : ?>
 				<?php echo $action['html'] ?>
@@ -84,6 +84,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</a>
 			<?php endif ?>
 		</li>
+		<?php if ( isset( $action['separator'] ) and $action['separator'] === 'bottom' ) :?><li role="separator" class="divider"></li><?php endif ?>
 		<?php endforeach ?>
 	  </ul>
 	</div>
