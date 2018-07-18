@@ -871,8 +871,8 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->sortOrder = $_REQUEST['order'];
 		}
 		
-		$this->current_page = absint( get_query_var('paged') ) ?: 1;
-
+		$this->current_page = isset( $_REQUEST['paged'] ) ? (int) $_REQUEST['paged'] : ( absint( get_query_var('paged') ) ?: 1 );
+		
 		foreach( $this->extras as $extra ) {
 			if ( isset( $extra['init'] ) and is_callable( $extra['init'] ) ) {
 				call_user_func( $extra['init'], $this );
