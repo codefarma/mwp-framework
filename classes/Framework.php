@@ -578,10 +578,10 @@ class _Framework extends Plugin
 	{		
 		$db = $this->db();
 		$begin_time = time();
-		$max_execution_time = ini_get( 'max_execution_time' );
+		$task_max_execution_time = $max_execution_time = ini_get( 'max_execution_time' );
 		$max_task_runners = $this->getSetting( 'mwp_task_max_runners' ) ?: 4;
 		
-		/* Attempt to increase execution time if it is set to less than 60 seconds */
+		/* Attempt to increase execution time if it is set to less than what is needed to spin up all task runners (1 per minute) */
 		if ( $max_execution_time < ( 60 * $max_task_runners ) ) {
 			if ( set_time_limit( ( 60 * $max_task_runners ) ) ) {
 				$max_execution_time = ( 60 * $max_task_runners );
@@ -643,7 +643,7 @@ class _Framework extends Plugin
 						 * Even though we are enforcing an overall max_execution_time limit, allow each individual iteration
 						 * to use a full execution time block if needed before being killed by the system.
 						 */
-						set_time_limit( $max_execution_time );
+						set_time_limit( $task_max_execution_time );
 						
 						$task->breaker = $task->breaker + 1;
 						$task->execute();
