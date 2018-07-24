@@ -1155,7 +1155,67 @@ class _$classname extends ActiveRecord
 CLASS;
 				break;
 				
-			case 'singleton':
+			case 'controller':
+				$class_contents = <<<CLASS
+<?php
+/**
+ * $classname [Controller]
+ *
+ * Created:   {date_time}
+ *
+ * @package:  {plugin_name}
+ * @author:   {plugin_author}
+ * @since:    $version_tag
+ */
+namespace $namespace;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+use MWP\Framework\Pattern\Controller;
+
+/**
+ * $classname Class
+ */
+class _$classname extends Controller
+{
+	/**
+	 * Constructed
+	 *
+	 * @return    void
+	 */
+	protected function constructed()
+	{
+		// constructor function for when the instance is first created
+	}
+	
+	/**
+	 * Initialize
+	 *
+	 * @return    void
+	 */
+	public function init()
+	{
+		// initialization routine when the controller is used
+	}
+	
+	/**
+	 * Initialize
+	 *
+	 * @return    void
+	 */
+	public function do_index()
+	{
+		echo 'Output the index page of the controller.';
+	}
+
+}
+
+CLASS;
+				break;
+
+				case 'singleton':
 				$class_contents = <<<CLASS
 <?php
 /**
