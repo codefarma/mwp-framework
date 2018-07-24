@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.2] - 2018-07-24
+
+- (added) Bottom seperator option for active record table row action links
+- (fixed) Broken task maintenance database queries
+- (fixed) Duplicate table search box on task view table
+- (fixed) Paging issue on active record tables
+- (fixed) Excessive time limits being set on task iterations
+
 ## [2.1.1] - 2018-07-09
 
 - (added) Added ability to remove form fields using removeField() method on form helper
