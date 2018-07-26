@@ -399,14 +399,15 @@ class _Framework extends Plugin
 	{
 		// Delete files in cache folder
 		if ( $cache_files = glob( dirname( __DIR__ ) . "/annotations/cache/*.cache.php" ) ) {
-			array_map( 'unlink', $cache_files );
+			@array_map( 'unlink', $cache_files );
 		}
 		
 		do_action( 'mwp_framework_clear_caches' );
 		
 		if ( ! $this->isDev() ) {
-			$instance_meta = $this->data( 'instance-meta' ) ?: array();		
-			$instance_meta[ 'cache_timestamp' ] = time();
+			$instance_meta = $this->data( 'instance-meta' );
+			if ( ! is_array( $instance_meta ) ) { $instance_meta = array(); }
+			$instance_meta['cache_timestamp'] = time();
 			$this->setData( 'instance-meta', $instance_meta );
 		}
 	}
