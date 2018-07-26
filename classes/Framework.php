@@ -398,7 +398,9 @@ class _Framework extends Plugin
 	public function clearCaches()
 	{
 		// Delete files in cache folder
-		@array_map( 'unlink', glob( dirname( __DIR__ ) . "/annotations/cache/*.cache.php" ) );
+		if ( $cache_files = glob( dirname( __DIR__ ) . "/annotations/cache/*.cache.php" ) ) {
+			array_map( 'unlink', $cache_files );
+		}
 		
 		do_action( 'mwp_framework_clear_caches' );
 		
@@ -1201,13 +1203,13 @@ class _$classname extends Controller
 	}
 	
 	/**
-	 * Initialize
+	 * Index
 	 *
-	 * @return    void
+	 * @return    string
 	 */
 	public function do_index()
 	{
-		echo 'Output the index page of the controller.';
+		return 'Output the index page of the controller.';
 	}
 
 }
