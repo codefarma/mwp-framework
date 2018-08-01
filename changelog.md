@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.3] - 2018-08-01
+
+- (added) Added new class scaffold cli option for 'controller'
+- (fixed) PHP Warnings
+- (fixed) Conflict between bulk action form param and active records named 'action'
+
 ## [2.1.2] - 2018-07-24
 
 - (added) Bottom seperator option for active record table row action links

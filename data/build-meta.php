@@ -1,7 +1,7 @@
 <?php
 return <<<'JSON'
 {
-    "framework_version": "2.1.1.1",
+    "framework_version": "2.1.2",
     "framework_bundled": true,
     "tables": [
         {
@@ -216,6 +216,46 @@ return <<<'JSON'
                     ],
                     "columns": [
                         "task_fails"
+                    ]
+                },
+                "task_next_up": {
+                    "type": "key",
+                    "name": "task_next_up",
+                    "length": [
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    ],
+                    "columns": [
+                        "task_blog_id",
+                        "task_completed",
+                        "task_running",
+                        "task_next_start",
+                        "task_fails"
+                    ]
+                },
+                "task_action_tag": {
+                    "type": "key",
+                    "name": "task_action_tag",
+                    "length": [
+                        null,
+                        191
+                    ],
+                    "columns": [
+                        "task_action",
+                        "task_tag"
+                    ]
+                },
+                "task_blog_id": {
+                    "type": "key",
+                    "name": "task_blog_id",
+                    "length": [
+                        null
+                    ],
+                    "columns": [
+                        "task_blog_id"
                     ]
                 }
             }
