@@ -202,7 +202,7 @@ abstract class _Plugin extends Singleton
 								$tableSql = $dbHelper->buildTableSQL( $table, TRUE );
 								$updates = dbDelta( $tableSql, $execute );
 								if ( $updates ) {
-									$delta_updates[ $wpdb->prefix . $table ] = $updates;
+									$delta_updates[ $wpdb->prefix . $table['name'] ] = $updates;
 								}
 							}
 						}
@@ -219,7 +219,7 @@ abstract class _Plugin extends Singleton
 					$tableSql = $dbHelper->buildTableSQL( $table, FALSE );
 					$updates = dbDelta( $tableSql, $execute );
 					if ( $updates ) {
-						$delta_updates[ $wpdb->base_prefix . $table ] = $updates;
+						$delta_updates[ $wpdb->base_prefix . $table['name'] ] = $updates;
 					}					
 				}
 			}
