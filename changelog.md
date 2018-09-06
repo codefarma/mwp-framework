@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.4] - 2018-09-06
+
+- (changed) Set caches are no longer tracked by the framework to improve caching performance
+- (fixed) various php notices
+- (fixed) incorrect network admin url in controllers when not in the network admin
+- (added) column definitions on active records can specify if the field should be shown on edit/create forms
+- (added) more exception handling to wrap symfony forms error conditions in a more user friendly way
 
 ## [2.1.3] - 2018-08-01
 
