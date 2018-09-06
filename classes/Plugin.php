@@ -472,7 +472,7 @@ abstract class _Plugin extends Singleton
 	 * @param   string       $key             A key to identify the cached data
 	 * @param   mixed        $data            The data to cache
 	 * @param   bool         $network         Indicate if the data is network wide
-	 * @param   int          $expiration      Set the amount of time before the cache will expire
+	 * @param   int          $expiration      Set the amount of time before the cache will expire (in seconds)
 	 * @param   string       $group           A group to categorize the cached data
 	 * @return	bool
 	 */
@@ -481,25 +481,7 @@ abstract class _Plugin extends Singleton
 		$cache_key = 'mwp_fw_cache_' . $this->pluginSlug() . '_' . ( $group ? $group . '_' : '' ) . $key;
 		$set_cache_func = $network ? 'set_site_transient' : 'set_transient';
 		
-		$result = call_user_func( $set_cache_func, $cache_key, $data, $expiration );
-		
-		/* Track the cached data in a site option */
-		if ( $result ) {
-			$get_option_func = $network ? 'get_site_option' : 'get_option';
-			$option_data = call_user_func( $get_option_func, 'mwp_fw_caches' );
-			$caches_data = $option_data ?: array();
-			$caches_data[$this->pluginSlug()][$group][$key] = [ 'md5' => md5( json_encode( $data ) ), 'ts' => time(), 'exp' => $expiration ];
-			
-			if ( $option_data === false ) {
-				$add_option_func = $network ? 'add_site_option' : 'add_option';
-				call_user_func( $add_option_func, 'mwp_fw_caches', $caches_data, '', 'no' );
-			} else {
-				$update_option_func = $network ? 'update_site_option' : 'update_option';
-				call_user_func( $update_option_func, 'mwp_fw_caches', $caches_data );
-			}
-		}
-		
-		return $result;
+		return call_user_func( $set_cache_func, $cache_key, $data, $expiration );
 	}
 	
 	/**
@@ -528,22 +510,11 @@ abstract class _Plugin extends Singleton
 	 */
 	public function clearCache( $key=NULL, $network=FALSE, $group='' )
 	{
-		$get_option_func = $network ? 'get_site_option' : 'get_option';
-		$option_data = call_user_func( $get_option_func, 'mwp_fw_caches' );
-		$caches_data = $option_data ?: array();
-		
 		if ( $key ) {
 			$cache_key = 'mwp_fw_cache_' . $this->pluginSlug() . '_' . ( $group ? $group . '_' : '' ) . $key;
 			$delete_cache_func = $network ? 'delete_site_transient' : 'delete_transient';
 			
-			call_user_func( $delete_cache_func, $cache_key );
-			
-			/* Track the cached data in a site option */
-			if ( isset( $caches_data[ $this->pluginSlug() ][$group][$key] ) ) {
-				unset( $caches_data[ $this->pluginSlug() ][$group][$key] );
-				$update_option_func = $network ? 'update_site_option' : 'update_option';
-				call_user_func( $update_option_func, 'mwp_fw_caches', $caches_data );
-			}
+			call_user_func( $delete_cache_func, $cache_key );			
 		}
 	}
 	
