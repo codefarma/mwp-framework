@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-use \Doctrine\Common\Annotations\AnnotationReader;
-use \Doctrine\Common\Annotations\FileCacheReader;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\FileCacheReader;
 
 /**
  * Provides access to core framework methods and features. 
@@ -206,6 +206,22 @@ class _Framework extends Plugin
 		return $options;
 	}
 	
+	/**
+	 * Run updates when framework is updated
+	 *
+	 * @return	void
+	 */
+	public function versionUpdated()
+	{
+		parent::versionUpdated();
+		
+		delete_option( 'mwp_fw_caches' );
+		
+		if ( function_exists( 'delete_site_option' ) ) {
+			delete_site_option( 'mwp_fw_caches' );
+		}
+	}
+
 	/**
 	 * Return the form class for supported form engines
 	 * 
