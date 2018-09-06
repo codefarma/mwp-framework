@@ -60,7 +60,7 @@ if ( ! function_exists( 'network_menu_page_url' ) ) {
 				$url = network_admin_url( 'admin.php?page=' . $menu_slug );
 			}
 		} else {
-			$url = '';
+			$url = network_admin_url( 'admin.php?page=' . $menu_slug );
 		}
 
 		$url = esc_url( $url );
