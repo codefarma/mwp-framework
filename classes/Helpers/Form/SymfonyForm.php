@@ -637,7 +637,7 @@ class _SymfonyForm extends Form
 		}
 		catch( \Exception $e ) {
 			$builder->remove( $field['name'] );
-			return $this->addHtml( $name, "<div class=\"alert alert-danger\">Error adding widget for: " . esc_html( $field['name'] ) . "</p><p>" . $e->getMessage() . "</p></div>" );
+			return $this->addHtml( $name, "<div class=\"alert alert-danger\"><p>Error adding widget for: " . esc_html( $field['name'] ) . "</p><p>" . $e->getMessage() . "</p></div>" );
 		}
 		
 		/* Cache field references */
@@ -731,12 +731,17 @@ class _SymfonyForm extends Form
 	 */
 	public function isSubmitted()
 	{
-		if ( ! $this->requestHandled )
-		{
+		if ( ! $this->requestHandled ) {
 			$this->handleRequest();
 		}
 		
-		return $this->getForm()->isSubmitted();
+		try {
+			return $this->getForm()->isSubmitted();
+		}
+		catch( \Throwable $t ) { }
+		catch( \Exception $e ) { }
+
+		return false;
 	}
 	
 	/**
@@ -746,7 +751,13 @@ class _SymfonyForm extends Form
 	 */
 	public function isValidSubmission()
 	{	
-		return $this->isSubmitted() and $this->getForm()->isValid();
+		try {
+			return $this->isSubmitted() and $this->getForm()->isValid();
+		}
+		catch( \Throwable $t ) { }
+		catch( \Exception $e ) { }
+		
+		return false;
 	}
 	
 	/**
@@ -773,8 +784,7 @@ class _SymfonyForm extends Form
 	{
 		$values = array();
 		
-		if ( $this->isValidSubmission() )
-		{
+		if ( $this->isValidSubmission() ) {
 			$values = $this->applyFilters( 'values', $this->getSubmissionData() ); 
 		}
 		
@@ -790,8 +800,7 @@ class _SymfonyForm extends Form
 	{
 		$errors = array();
 		
-		if ( $this->isSubmitted() )
-		{
+		if ( $this->isSubmitted() ) {
 			return $this->applyFilters( 'errors', $this->getForm()->getErrors() );
 		}
 		
@@ -805,26 +814,34 @@ class _SymfonyForm extends Form
 	 */
 	public function render()
 	{
-		$template_vars = $this->applyFilters( 'render', array( 
-			'formWrapper' => $this,
-			'form' => $this->getForm()->createView(),
-		) );
-		
-		$this->renderHelper = new \MWP\Framework\Symfony\FormRenderHelper( 
-			new \Symfony\Component\Form\FormRenderer( 
-				new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
-					$this->getTemplateEngine(), array_merge( $this->themes, array( 'form/symfony' ) )
+		try {
+			$template_vars = $this->applyFilters( 'render', array( 
+				'formWrapper' => $this,
+				'form' => $this->getForm()->createView(),
+			) );
+			
+			$this->renderHelper = new \MWP\Framework\Symfony\FormRenderHelper( 
+				new \Symfony\Component\Form\FormRenderer( 
+					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
+						$this->getTemplateEngine(), array_merge( $this->themes, array( 'form/symfony' ) )
+					)
 				)
-			)
-		);
-		
-		$this->translatorHelper = new \MWP\Framework\Symfony\TranslatorHelper();
-		
-		foreach( $this->engines as $engine ) {
-			$engine->addHelpers( array( $this->renderHelper, $this->translatorHelper ) );
+			);
+			
+			$this->translatorHelper = new \MWP\Framework\Symfony\TranslatorHelper();
+			
+			foreach( $this->engines as $engine ) {
+				$engine->addHelpers( array( $this->renderHelper, $this->translatorHelper ) );
+			}
+			
+			return $this->getPlugin()->getTemplateContent( 'form/wrapper', array( 'form' => $this, 'form_html' => $this->renderHelper->form( $template_vars[ 'form' ], $template_vars ) ) );
 		}
-		
-		return $this->getPlugin()->getTemplateContent( 'form/wrapper', array( 'form' => $this, 'form_html' => $this->renderHelper->form( $template_vars[ 'form' ], $template_vars ) ) );
+		catch( \Throwable $t ) {
+			return "<strong>Form Render Error:</strong> <pre>" . $t->getMessage() . "</pre>";
+		}
+		catch( \Exception $e ) {
+			return "<strong>Form Render Error:</strong> <pre>" . $e->getMessage() . "</pre>";
+		}
 	}
 	
 }
