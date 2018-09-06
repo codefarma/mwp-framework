@@ -926,6 +926,10 @@ abstract class _ActiveRecord
 				$column_props = is_array( $v ) ? $v : [ 'type' => 'varchar', 'length' => 255 ];
 				$column_props = array_combine( array_map( 'strtolower', array_keys( $column_props ) ), array_values( $column_props ) );
 				
+				if ( isset( $column_props[ $this->id() ? 'edit' : 'create' ] ) and $column_props[ $this->id() ? 'edit' : 'create' ] === false ) {
+					continue;
+				}
+				
 				if ( ! isset( $column_props['type'] ) ) {
 					$column_props['type'] = 'varchar';
 				}
@@ -936,15 +940,19 @@ abstract class _ActiveRecord
 					'data' => $this->_getDirectly( $k ),
 				);
 				
+				if ( is_null( $field_options['data'] ) and isset( $column_props['default'] ) ) {
+					$field_options['data'] = $column_props['default'];
+				}
+				
+				if ( isset( $column_props['allow_null'] ) and $column_props['allow_null'] === false ) {
+					$field_options['required'] = true;
+				}
+				
 				if ( strstr( $column_props['type'], 'blob' ) > -1 ) {
 					continue;
 				}
 				
 				if ( strstr( $column_props['type'], 'binary' ) > -1 ) {
-					continue;
-				}
-				
-				if ( isset( $column_props['edit'] ) and $column_props['edit'] === false ) {
 					continue;
 				}
 				
