@@ -1058,7 +1058,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		/**
 		 * REQUIRED. Build the query and fetch the database results
 		 */
-		$db = Framework::instance()->db();
+		$db = $class::getDb();
 		
 		$sortBy        = isset( $this->sortBy ) ? $this->sortBy : $class::_getPrefix() . $class::_getKey();
 		$sortOrder     = $this->sortOrder;

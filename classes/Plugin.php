@@ -86,6 +86,15 @@ abstract class _Plugin extends Singleton
 	}
 	
 	/**
+	 * Get database
+	 *
+	 */
+	public function getDb()
+	{
+		return Framework::instance()->db();
+	}
+	
+	/**
 	 * Get plugin version
 	 *
 	 * @return	string
@@ -251,7 +260,7 @@ abstract class _Plugin extends Singleton
 		);
 		
 		$build_meta = $this->data( 'build-meta' ) ?: array();
-		$db = Framework::instance()->db();
+		$db = $this->getDb();
 		
 		// Remove global tables on uninstall
 		if ( is_array( $build_meta[ 'tables' ] ) ) {

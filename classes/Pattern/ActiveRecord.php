@@ -115,6 +115,16 @@ abstract class _ActiveRecord
 	protected $_changed = array();
 	
 	/**
+	 * Get the database
+	 *
+	 */
+	public static function getDb()
+	{
+		$plugin_class = static::$plugin_class;
+		return $plugin_class::instance()->getDb();
+	}
+	
+	/**
 	 * Get database table
 	 *
 	 * @param	bool			$include_prefix				Include the database prefix
@@ -126,7 +136,7 @@ abstract class _ActiveRecord
 			return static::$table;
 		}
 		
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 		
 		return $db_prefix . static::$table;
@@ -511,7 +521,7 @@ abstract class _ActiveRecord
 			return static::$multitons[ $id ];
 		}
 		
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 
 		$row = $db->get_row( $db->prepare( "SELECT * FROM " . $db_prefix . static::_getTable() . " WHERE `" . static::_getPrefix() . static::_getKey() . "`=%d", $id ), ARRAY_A );
@@ -544,7 +554,7 @@ abstract class _ActiveRecord
 		$prefix = static::_getPrefix();
 		$sequence_col = static::_getSequenceCol();
 		
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 
 		$results = array();
@@ -597,7 +607,7 @@ abstract class _ActiveRecord
 		}
 		
 		$table = static::_getTable();
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$db_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 
 		$compiled = static::compileWhereClause( $where );
@@ -623,7 +633,7 @@ abstract class _ActiveRecord
 		}
 		
 		$table = static::_getTable();
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$db_prefix = static::$site_specific ? $db->prefix : $db->base_prefix;
 
 		$compiled = static::compileWhereClause( $where );
@@ -1230,7 +1240,7 @@ abstract class _ActiveRecord
 	 */
 	public function save()
 	{
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$self = get_called_class();
 		
 		$table = static::_getTable();
@@ -1304,7 +1314,7 @@ abstract class _ActiveRecord
 		
 		if ( isset( $this->_data[ $id_column ] ) and $this->_data[ $id_column ] )
 		{
-			$db = Framework::instance()->db();
+			$db = static::getDb();
 			$id = $this->_data[ $id_column ];
 			$format = static::dbFormat( $id );
 			
@@ -1430,7 +1440,7 @@ abstract class _ActiveRecord
 			return $this->_wpdb_prefix;
 		}
 		
-		$db = Framework::instance()->db();
+		$db = static::getDb();
 		$this->_wpdb_prefix = static::_getMultisite() ? $db->prefix : $db->base_prefix;
 		
 		return $this->_wpdb_prefix;
