@@ -624,11 +624,12 @@ class _Framework extends Plugin
 		/* Run tasks */
 		while 
 		( 
-			/* We have a task to run */
-			$task = Task::popQueue() and
+			/* We have time to run a task */
+			( time() - $begin_time < $max_execution_time - 10 ) &&
 			
-			/* and we have time to run it */
-			( time() - $begin_time < $max_execution_time - 10 )
+			/* We have a task to run */
+			$task = Task::popQueue()
+			
 		)
 		{
 			$task->breaker = 0;

@@ -435,16 +435,23 @@ class _Task extends ActiveRecord
 			return null;
 		}
 		
+		$db->query( "START TRANSACTION" );
+		
 		$row = $db->get_row( 
 			$db->prepare( "
 				SELECT * FROM {$db->base_prefix}" . $table . " 
 					WHERE task_completed=0 AND task_running=0 AND task_next_start <= %d AND task_fails < 3 AND task_blog_id=%d
-					ORDER BY task_priority DESC, task_last_start ASC, task_id ASC", time(), get_current_blog_id()
+					ORDER BY task_priority DESC, task_last_start ASC, task_id ASC LIMIT 1 FOR UPDATE", time(), get_current_blog_id()
 			), ARRAY_A
 		);
 		
-		if ( $row === NULL )
-		{
+		if ( $row !== NULL ) {
+			$db->query( $db->prepare( "UPDATE {$db->base_prefix}" . $table . " SET task_running=1 WHERE task_id=%d", $row['task_id'] ) );
+		}
+		
+		$db->query( "COMMIT" );
+		
+		if ( $row === NULL ) {
 			return null;
 		}
 		
