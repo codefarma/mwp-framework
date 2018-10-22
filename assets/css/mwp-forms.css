@@ -142,6 +142,12 @@
 	padding: 8px 10px;
 }
 
+.mwp-form legend {
+	font-size: 16px;
+	line-height: 25px;
+	font-weight: bold;
+}
+
 .wp-list-table .column-_row_actions {
 	text-align: right;
 	overflow: visible !important;
