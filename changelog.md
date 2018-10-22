@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.6] - 2018-10-22
+
+- (fixed) Default record display not showing a value if field value was zero
+- (fixed) Task runner now pulls tasks from the queue in an atomic way to prevent multiple runners from pulling the same task
+- (added) New tasks view to display currently running tasks
+- (added) New form styling for the fieldset/legend html elements
+
 ## [2.1.5] - 2018-10-05
 
 - (changed) Abstracted the database connection used to CRUD active records so classes can load/save to alternate databases
