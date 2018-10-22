@@ -142,12 +142,17 @@ class _Tasks extends \MWP\Framework\Pattern\Singleton
 		);
 		
 		// Default to all non-completed tasks
-		$where = array( 'task_completed=0 AND task_blog_id=%d AND task_fails<3', get_current_blog_id() );
+		$where = array( 'task_completed=0 AND task_running=0 AND task_blog_id=%d AND task_fails<3', get_current_blog_id() );
 		
 		if ( isset( $_REQUEST[ 'status' ] ) )
 		{
 			switch( $_REQUEST[ 'status' ] )
 			{
+				case 'running':
+				
+					$where = array( 'task_running=1 AND task_blog_id=%d', get_current_blog_id() );
+					break;
+					
 				case 'completed':
 				
 					$where = array( 'task_completed>0 AND task_blog_id=%d', get_current_blog_id() );

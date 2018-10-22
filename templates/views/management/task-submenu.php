@@ -35,6 +35,12 @@ use MWP\Framework\Task;
 			<span class="count">(<?php echo Task::countTasks( NULL, NULL, 'pending' ) ?>)</span>
 		</a> | 
 	</li>
+	<li class="running">
+		<a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks', 'status' => 'running' ), admin_url( 'tools.php' ) ) ?>" class="<?php if ( isset( $_REQUEST[ 'status' ] ) and $_REQUEST[ 'status' ] == 'running' ) { echo "current"; } ?>">
+			<?php _e( 'Running', 'mwp-framework' ) ?>
+			<span class="count">(<?php echo Task::countTasks( NULL, NULL, 'running' ) ?>)</span>
+		</a> | 
+	</li>
 	<li class="completed">
 		<a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks', 'status' => 'completed' ), admin_url( 'tools.php' ) ) ?>" class="<?php if ( isset( $_REQUEST[ 'status' ] ) and $_REQUEST[ 'status' ] == 'completed' ) { echo "current"; } ?>">
 			<?php _e( 'Completed', 'mwp-framework' ) ?>
