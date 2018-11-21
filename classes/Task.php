@@ -419,7 +419,30 @@ class _Task extends ActiveRecord
 			return $db->get_var( $db->prepare( "SELECT COUNT(*) FROM  " . $db->base_prefix . $table . " WHERE task_action=%s AND task_tag=%s AND task_blog_id=%d AND {$status_clause}", $action, $tag, get_current_blog_id() ) );
 		}
 	}
-
+	
+	/**
+	 * Load tasks for the current site
+	 *
+	 * @param	array|string		$where 			Where clause with associated replacement values
+	 * @param	string				$order			Order by ( include field + ASC or DESC ) ex. "field_name DESC"
+	 * @param   int|array           $limit          Limit clause. If an int is provided, it should be the number of records to limit by
+	 * @return	array
+	 */
+	public static function loadTasks( $where, $order=NULL, $limit=NULL )
+	{
+		if ( is_string( $where ) ) {
+			$where = array( $where );
+		}
+		
+		if ( ! is_array( $where[0] ) ) {
+			$where = array( $where );
+		}
+		
+		$where[] = array( 'task_blog_id=%d', get_current_blog_id() );
+		
+		return static::loadWhere( $where, $order, $limit );
+	}
+	
 	/**
 	 * Get the next task that needs to be run
 	 *
