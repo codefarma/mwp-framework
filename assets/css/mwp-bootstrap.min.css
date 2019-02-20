@@ -35,7 +35,8 @@
 .mwp-bootstrap textarea{overflow:auto}
 .mwp-bootstrap optgroup{font-weight:700}
 .mwp-bootstrap table{border-collapse:collapse;border-spacing:0}
-.mwp-bootstrap td,.mwp-bootstrap th{padding:0}
+.mwp-bootstrap table:not(.widefat) td,.mwp-bootstrap table:not(.widefat) th{padding:0}
+.mwp-bootstrap .widefat .check-column { padding: 8px 10px; }
 @media print {
 .mwp-bootstrap *,.mwp-bootstrap :before,.mwp-bootstrap :after{background:transparent!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
 .mwp-bootstrap a,.mwp-bootstrap a:visited{text-decoration:underline}
