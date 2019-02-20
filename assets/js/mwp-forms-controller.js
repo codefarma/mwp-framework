@@ -67,7 +67,9 @@
 						e.preventDefault();
 						e.stopPropagation();
 						var counter = collection.data('entry-counter') || collection.children().length;
-						var newEntry = collection.attr('data-prototype').replace(/__name__/g, counter);
+						var newEntry = collection.attr('data-prototype')
+							.replace(/__name__/g, counter)
+							.replace(/__number__/g, counter+1);
 						collection.data('entry-counter', ++counter);
 						collection.append( newEntry );
 					});
