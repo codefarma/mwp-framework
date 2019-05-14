@@ -89,9 +89,9 @@ call_user_func( function() {
 		{
 			/* Include packaged autoloader if present */
 			if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-				require_once 'vendor/autoload.php';
+				require_once __DIR__ . '/vendor/autoload.php';
 			}
-			
+
 			/* Include global functions */
 			require_once 'includes/mwp-global-functions.php';
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
