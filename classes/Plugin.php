@@ -263,8 +263,8 @@ abstract class _Plugin extends Singleton
 		$db = $this->getDb();
 		
 		// Remove global tables on uninstall
-		if ( is_array( $build_meta[ 'tables' ] ) ) {
-			foreach( $build_meta[ 'tables' ] as $table ) {
+		if ( isset( $build_meta['tables'] ) and is_array( $build_meta['tables'] ) ) {
+			foreach( $build_meta['tables'] as $table ) {
 				if ( ! in_array( $table['name'], $protected_tables ) ) {
 					$db->query( "DROP TABLE IF EXISTS {$db->base_prefix}{$table['name']}" );
 				}
