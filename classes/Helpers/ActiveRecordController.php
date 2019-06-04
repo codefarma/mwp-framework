@@ -157,10 +157,19 @@ class _ActiveRecordController extends Controller
 	{
 		$recordClass = $this->recordClass;
 		$adminPage = new AdminPage;
+		$adminPage->slug = isset( $options['slug'] ) ? $options['slug'] : sanitize_title( str_replace( '\\', '-', $this->recordClass ) );
+
+		// Automatically generate a custom capability and give default access to admins
+		if ( ! isset( $options['capability'] ) ) {
+			$options['capability'] = 'admin_' . $adminPage->slug;
+			$role = get_role('administrator');
+			if ( ! $role->has_cap( $options['capability'] ) ) {
+				$role->add_cap( $options['capability'] );
+			}
+		}
 		
 		$adminPage->title = isset( $options['title'] ) ? $options['title'] : ( isset( $recordClass::$lang_plural ) ? __( $recordClass::$lang_plural ) : array_pop( explode( '\\', $this->recordClass ) ) . ' Management' );
 		$adminPage->menu  = isset( $options['menu'] ) ? $options['menu'] : $adminPage->title;
-		$adminPage->slug  = isset( $options['slug'] ) ? $options['slug'] : sanitize_title( str_replace( '\\', '-', $this->recordClass ) );
 		$adminPage->capability = isset( $options['capability'] ) ? $options['capability'] : $adminPage->capability;
 		$adminPage->icon = isset( $options['icon'] ) ? $options['icon'] : $adminPage->icon;
 		$adminPage->position = isset( $options['position'] ) ? $options['position'] : NULL;
