@@ -1428,6 +1428,34 @@ abstract class _ActiveRecord
 
 		return $record_schema;
 	}
+
+	/**
+	 * Initialize a cloned copy
+	 *
+	 * @return 	void
+	 */
+	public function __clone()
+	{
+		$prefix = static::_getPrefix();
+		$key = static::_getKey();
+		
+		$id_column = $prefix . $key;
+		unset( $this->_data[ $id_column ] );
+		$this->_changed = array_combine( array_keys( $this->_data ), array_map( function($d) { return null; }, $this->_data ) );
+	}
+
+	/**
+	 * Create and save a copy of this record
+	 *
+	 * @return 	ActiveRecord
+	 */
+	public function copy()
+	{
+		$copy = clone $this;
+		$copy->save();
+
+		return $copy;
+	}
 	
 	/**
 	 * Get the site db prefix for this record
