@@ -1,0 +1,1 @@
+<?php return unserialize('a:1:{i:0;O:20:"MWP\\WordPress\\Filter":3:{s:3:"for";s:17:"script_loader_tag";s:8:"priority";i:10;s:4:"args";i:3;}}');
