@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Annotations\FileCacheReader;
 
 /**
@@ -34,22 +35,23 @@ class _Framework extends Plugin
 	 * @var Annotations Reader
 	 */
 	protected $reader;
-		
+
 	/**
 	 * Constructor
 	 */
 	protected function __construct()
 	{
+		// Simple annotation reader class reduces chances of fatal error in production
+		$annotation_reader_class = $this->isDev() ? AnnotationReader::class : SimpleAnnotationReader::class;
+
 		/* Load Annotation Reader */		
-		try 
-		{
+		try {
 			// Attempt to read from file caches
-			$this->reader = new FileCacheReader( new AnnotationReader(), dirname( __DIR__ ) . "/annotations/cache", $this->isDev() );
+			$this->reader = new FileCacheReader( new $annotation_reader_class, dirname( __DIR__ ) . "/data/annotations", $this->isDev() );
 		} 
-		catch( \InvalidArgumentException $e )
-		{
+		catch( \InvalidArgumentException $e ) {
 			// Fallback to reading on the fly every time if the directory cannot be loaded
-			$this->reader = new AnnotationReader();
+			$this->reader = new $annotation_reader_class;
 		}
 		
 		/* Register WP CLI */
@@ -64,10 +66,31 @@ class _Framework extends Plugin
 	/**
 	 * Get annotation reader
 	 *
+	 * @param	object		$instance			The instance being read
 	 * @return	Reader
 	 */
-	public function getAnnotationReader()
+	public function getAnnotationReader($instance=NULL)
 	{
+		if ( is_object( $instance ) ) {
+			// Look for a plugin which owns the provided instance type
+			$instance_plugin = NULL;
+
+			if ( is_callable([$instance, 'getPlugin']) ) {
+				$instance_plugin = $instance->getPlugin();
+			}
+			else {
+				list( $vendor, $package ) = explode("\\", get_class($instance));
+				$plugin_class = "{$vendor}\\{$package}\\Plugin";
+				if ( class_exists($plugin_class) and is_subclass_of('MWP\Framework\Plugin', $plugin_class) ) {
+					$instance_plugin = $plugin_class::instance();
+				}
+			}
+
+			if ( isset( $instance_plugin ) ) {
+				return $instance_plugin->getAnnotationReader();
+			}
+		}
+
 		return $this->reader;
 	}
 	
@@ -266,13 +289,14 @@ class _Framework extends Plugin
 		$reflClass = new \ReflectionClass( get_class( $instance ) );
 		$vars = array();
 		$framework = $this;
+		$reader = $this->getAnnotationReader($instance);
 		
 		/**
 		 * Class Annotations
 		 */
-		$getClassAnnotationsRecursively = function( $reflClass ) use ( $framework, &$getClassAnnotationsRecursively ) 
+		$getClassAnnotationsRecursively = function( $reflClass ) use ( $reader, &$getClassAnnotationsRecursively ) 
 		{
-			$annotations = $reflClass->getDocComment() ? $framework->reader->getClassAnnotations( $reflClass ) : array();
+			$annotations = $reflClass->getDocComment() ? $reader->getClassAnnotations( $reflClass ) : array();
 			$inheritByDefault = true;
 			foreach( $annotations as $k => $annotation ) {
 				if ( $annotation instanceof \MWP\Annotations\Inherit ) {
@@ -309,9 +333,9 @@ class _Framework extends Plugin
 		/**
 		 * Property Annotations
 		 */
-		$getPropertyAnnotationsRecursively = function( $property ) use ( $framework, &$getPropertyAnnotationsRecursively ) 
+		$getPropertyAnnotationsRecursively = function( $property ) use ( $reader, &$getPropertyAnnotationsRecursively ) 
 		{
-			$annotations = $framework->reader->getPropertyAnnotations( $property );
+			$annotations = $reader->getPropertyAnnotations( $property );
 			$inheritByDefault = true;
 			foreach( $annotations as $k => $annotation ) {
 				if ( $annotation instanceof \MWP\Annotations\Inherit ) {
@@ -358,8 +382,8 @@ class _Framework extends Plugin
 		/**
 		 * Method Annotations
 		 */
-		$getMethodAnnotationsRecursively = function( $method ) use ( $framework, &$getMethodAnnotationsRecursively ) {
-			$annotations = $framework->reader->getMethodAnnotations( $method );
+		$getMethodAnnotationsRecursively = function( $method ) use ( $reader, &$getMethodAnnotationsRecursively ) {
+			$annotations = $reader->getMethodAnnotations( $method );
 			$inheritByDefault = true;
 			foreach( $annotations as $k => $annotation ) {
 				if ( $annotation instanceof \MWP\Annotations\Inherit ) {

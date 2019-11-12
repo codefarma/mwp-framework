@@ -24,6 +24,9 @@ use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Extension\Templating\TemplatingExtension;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Templating\DelegatingEngine;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\FileCacheReader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 
 /**
  * All mwp application framework plugins should extend this class.
@@ -107,6 +110,38 @@ abstract class _Plugin extends Singleton
 		}
 
 		return '';
+	}
+
+	/**
+	 * @var		AnnotationReader
+	 */
+	protected $annotation_reader;
+
+	/**
+	 * Get a plugin specific annotation reader
+	 *
+	 *
+	 */
+	public function getAnnotationReader()
+	{
+		if ( isset( $this->annotation_reader ) ) {
+			return $this->annotation_reader;
+		}
+
+		// Simple annotation reader class reduces chances of fatal error in production
+		$annotation_reader_class = Framework::instance()->isDev() ? AnnotationReader::class : SimpleAnnotationReader::class;
+
+		/* Load Annotation Reader */		
+		try {
+			// Attempt to read from file caches
+			$this->annotation_reader = new FileCacheReader( new $annotation_reader_class, $this->getPath() . "/data/annotations", Framework::instance()->isDev() );
+		} 
+		catch( \InvalidArgumentException $e ) {
+			// Fallback to reading on the fly every time if the directory cannot be loaded
+			$this->annotation_reader = new $annotation_reader_class;
+		}
+
+		return $this->annotation_reader;
 	}
 	
 	/**
@@ -942,7 +977,8 @@ abstract class _Plugin extends Singleton
 		 * Create the ZIP Archive
 		 */
 		{
-			$zip_filename = WP_PLUGIN_DIR . '/' . $slug . '/builds/' . $slug . '-' . $plugin_version . '.zip';
+			$lite = $slug !== 'mwp-framework' && !$bundle;
+			$zip_filename = WP_PLUGIN_DIR . '/' . $slug . '/builds/' . $slug . '-' . $plugin_version . ( $lite ? '-lite' : '' ) . '.zip';
 			$zip = new \ZipArchive();
 			if ( $zip->open( $zip_filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) !== TRUE ) 
 			{
