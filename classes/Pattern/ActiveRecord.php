@@ -911,61 +911,61 @@ abstract class _ActiveRecord
 		
 		return static::createForm( $type );
 	}
-	
+
 	/**
-	 * Get editing form
+	 * Generate array of fields for use with edit forms based on the model's
+	 * table columns.
 	 *
-	 * @return	MWP\Framework\Helpers\Form
+	 * @return array
 	 */
-	protected function buildEditForm()
+	protected function getBaseFields()
 	{
-		$form = static::createForm( 'edit' );
-		
+		$form = array();
 		$columns = static::_getColumns();
 		$id_column = static::_getKey();
-		
+
 		$timezone_string = get_option( 'timezone_string' );
-		
+
 		foreach( $columns as $k => $v ) {
 			if ( is_numeric( $k ) and ! is_array( $v ) ) {
 				$k = $v;
 			}
-			
-			if ( $k !== $id_column ) 
+
+			if ( $k !== $id_column )
 			{
 				$column_props = is_array( $v ) ? $v : [ 'type' => 'varchar', 'length' => 255 ];
 				$column_props = array_combine( array_map( 'strtolower', array_keys( $column_props ) ), array_values( $column_props ) );
-				
+
 				if ( isset( $column_props[ $this->id() ? 'edit' : 'create' ] ) and $column_props[ $this->id() ? 'edit' : 'create' ] === false ) {
 					continue;
 				}
-				
+
 				if ( ! isset( $column_props['type'] ) ) {
 					$column_props['type'] = 'varchar';
 				}
-				
-				$field_type = 'text';				
+
+				$field_type = 'text';
 				$field_options = array(
 					'label' => isset( $column_props['title'] ) ? $column_props['title'] : ucwords( str_replace( '_', ' ', $k ) ),
 					'data' => $this->_getDirectly( $k ),
 				);
-				
+
 				if ( is_null( $field_options['data'] ) and isset( $column_props['default'] ) ) {
 					$field_options['data'] = $column_props['default'];
 				}
-				
+
 				if ( isset( $column_props['allow_null'] ) and $column_props['allow_null'] === false ) {
 					$field_options['required'] = true;
 				}
-				
+
 				if ( strstr( $column_props['type'], 'blob' ) > -1 ) {
 					continue;
 				}
-				
+
 				if ( strstr( $column_props['type'], 'binary' ) > -1 ) {
 					continue;
 				}
-				
+
 				switch( $column_props['type'] ) {
 					case 'text':
 					case 'tinytext':
@@ -1056,10 +1056,10 @@ abstract class _ActiveRecord
 						}
 						break;
 					case 'enum':
-						$choices = isset( $column_props['values'] ) && is_array( $column_props['values'] ) ? 
+						$choices = isset( $column_props['values'] ) && is_array( $column_props['values'] ) ?
 							array_combine( array_values( $column_props['values'] ), array_values( $column_props['values'] ) ) :
 							array();
-					
+
 						$field_type = 'choice';
 						$field_options['required'] = true;
 						$field_options['choices'] = $choices;
@@ -1070,28 +1070,45 @@ abstract class _ActiveRecord
 						}
 						break;
 					case 'set':
-						$choices = isset( $column_props['values'] ) && is_array( $column_props['values'] ) ? 
+						$choices = isset( $column_props['values'] ) && is_array( $column_props['values'] ) ?
 							array_combine( array_values( $column_props['values'] ), array_values( $column_props['values'] ) ) :
 							array();
-					
+
 						$field_type = 'choice';
 						$field_options['required'] = true;
 						$field_options['choices'] = $choices;
 						$field_options['expanded'] = true;
 						$field_options['multiple'] = true;
 						$field_options['data'] = explode( ',', $field_options['data'] );
-						
+
 						if ( count( $choices ) >= 5 ) {
 							$field_options['expanded'] = false;
 						}
 						break;
-						
-						
+
+
 					default:
 				}
-				
-				$form->addField( $k, $field_type, $field_options );				
+
+				$form[] = array( 'key' => $k, 'type' => $field_type, 'options' => $field_options );
 			}
+		}
+
+		return $form;
+	}
+	
+	/**
+	 * Get editing form
+	 *
+	 * @return	MWP\Framework\Helpers\Form
+	 */
+	protected function buildEditForm()
+	{
+		$form = static::createForm( 'edit' );
+
+		$baseFields = $this->getBaseFields();
+		foreach( $baseFields as $field ) {
+			$form->addField( $field['key'], $field['type'], $field['options'] );
 		}
 		
 		$form->addField( 'submit', 'submit', [ 'label' => 'Save', 'row_attr' => [ 'class' => 'text-center' ] ] );
