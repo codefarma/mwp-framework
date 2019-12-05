@@ -9,4 +9,5 @@ phpunit.xml.dist
 tests/bootstrap.php
 data/install-meta.php
 data/instance-meta.php
+data/annotations/*
 includes/redux
