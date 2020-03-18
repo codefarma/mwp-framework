@@ -21,7 +21,8 @@
     "autoload": {
         "psr-4": {
             "MWP\\Framework\\": "classes/"
-        }
+        },
+        "classmap": [ "includes/stubs" ]
     },
     "extra": {
         "branch-alias": {
