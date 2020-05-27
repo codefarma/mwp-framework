@@ -781,6 +781,10 @@ class _CLI extends \WP_CLI_Command {
 					}
 				}
 			}
+
+			if ( ! file_exists( WP_PLUGIN_DIR . '/' . $slug . '/vendor/autoload.php' ) ) {
+				\WP_CLI::error( 'The vendor/autoload.php for this plugin is missing. You should be building from the development environment where this plugin is activated.');
+			}
 			
 			$build_file = $pluginClass::createBuild( $slug, $assoc );
 		}
