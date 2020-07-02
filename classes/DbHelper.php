@@ -66,16 +66,23 @@ class _DbHelper extends Singleton
 		}
 		
 		$columns = $this->db->get_results( "SHOW FULL COLUMNS FROM `{$prefix}" . esc_sql( $table ) . '`', ARRAY_A );
+		$extension_columns = [];
 		
 		foreach ( $columns as $row )
 		{
+			if ( strstr( strtolower($row['Comment']), 'extended by' ) !== FALSE ) {
+				$extension_columns[] = $row['Field'];
+				continue;
+			}
+
 			/* Init column definition */
 			$columnDefinition = array(
 				'name' 		=> $row['Field'],
 				'type'		=> '',
 				'length'	=> 0,
 				'decimals'	=> NULL,
-				'values'	=> array()
+				'values'	=> array(),
+				'comment'  => $row['Comment'],
 			);
 			
 			if ( isset( $row['Collation'] ) )
@@ -181,6 +188,13 @@ class _DbHelper extends Singleton
 					'length'	=> array( $length ),
 					'columns'	=> array( $row['Column_name'] )
 					);
+			}
+		}
+
+		// Look for indexes on extension columns and exclude them
+		foreach( $indexes as $key => $index ) {
+			if ( array_intersect( $index['columns'], $extension_columns ) ) {
+				unset( $indexes[$key] );
 			}
 		}
 		
@@ -341,6 +355,11 @@ class _DbHelper extends Singleton
 		if( isset( $data['key'] ) )
 		{
 			$definition .= 'KEY ';
+		}
+
+		/* Comment? */
+		if ( isset( $data['comment'] ) and $data['comment'] ) {
+			$definition .= "COMMENT '" . esc_sql($data['comment']) . "' ";
 		}
 		
 		/* Return */
