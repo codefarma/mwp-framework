@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.4] - 2020-07-02
+
+- (added) New form builder method to embed active record tables into forms more easily
+- (added) New support for creating extensions that add additional columns to ActiveRecord models
+
+## [2.2.3] - 2020-05-27
+
+- (added) New validation checks when building plugins to ensure composer dependencies are not missing
+
+## [2.2.2] - 2020-03-18
+
+- (fixed) Updated for compatibility with facebook-for-woocommerce
+
+## [2.2.1] - 2019-12-05
+
+- (added) - Default form generation for ActiveRecords has been abstracted to allow it to be re-usable
+
+## [2.2.0] - 2019-11-25
+
+- (changed) Annotations are now permanently cached and included in each plugin build to avoid crashes on systems where docblocks cant be read
+
+## [2.1.10] - 2019-06-10
+
+- (added) Added copy() method to the ActiveRecord class for cloning records
+
+## [2.1.9] - 2091-06-04
+
+- (fixed) Quieted some PHP notices
+- (added) Admin controllers now have capabilities that can be used to control user access to them
+
+## [2.1.8] - 2019-05-14
+
+- (fixed) Fixed problem with class autoloader not able to find classes when using WP CLI
+
 ## [2.1.7] - 2019-02-20
 
 - (fixed) Adjusted default form fields for models to better support data columns that allow null values
