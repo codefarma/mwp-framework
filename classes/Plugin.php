@@ -210,6 +210,7 @@ abstract class _Plugin extends Singleton
 		{
 			foreach( $build_meta[ 'tables' ] as $table )
 			{
+				$table = $this->getTableSchema( $table, FALSE );
 				$tableSql = $dbHelper->buildTableSQL( $table, FALSE );
 				$updates = dbDelta( $tableSql, $execute );
 				if ( $updates ) {
@@ -243,6 +244,7 @@ abstract class _Plugin extends Singleton
 							// Create tables for this site
 							foreach( $build_meta[ 'ms_tables' ] as $table )
 							{
+								$table = $this->getTableSchema( $table, TRUE );
 								$tableSql = $dbHelper->buildTableSQL( $table, TRUE );
 								$updates = dbDelta( $tableSql, $execute );
 								if ( $updates ) {
@@ -270,6 +272,19 @@ abstract class _Plugin extends Singleton
 		}
 		
 		return $delta_updates;
+	}
+
+	/**
+	 * Allow filters to run on the table schema
+	 *
+	 * @param	array 			$table				The original table definition
+	 * @param	Plugin			$this				A reference to this plugin
+	 * @param	bool			$multisite_table	Flag indicating if this table is being created for every site
+	 * @return	array 								The filtered table schema
+	 */
+	public function getTableSchema( $table, $multisite_table )
+	{
+		return apply_filters( 'mwp_table_schema', $table, $this, $multisite_table );
 	}
 	
 	/**
