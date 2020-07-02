@@ -425,6 +425,53 @@ class _SymfonyForm extends Form
 	}
 	
 	/**
+	 * Embed records using an active record controller
+	 *
+	 * @param	string						$name				The form item name
+	 * @param	ActiveRecordController		$controller			The CRUD controller to use for the records
+	 * @param	$array 						$options			An array of configuration options
+	 *	@param	array|NULL					 itemsWhere			A where clause to filter the records by or NULL for all records
+	 * 	@param	array|NULL					 actionParams		An associative array of params to add to controller action links
+	 * 	@param	array|NULL					 tableConfig		The configuration to pass to the createDisplayTable controller method
+	 * @param	string			$parent_name		The parent element to add to
+	 * @param	string|NULL		$insert_name		The name of a field around which this field should be inserted
+	 * @param	string			$insert_position	The position at which to insert this field if using $insert_name 
+	 * @return	object
+	 */
+	public function embedRecords( $name, $controller, $options=NULL, $parent_name=NULL, $insert_name=NULL, $insert_position='after' )
+	{
+		$options = $options ?: [];
+		$itemsWhere = @$options['itemsWhere'] ?: ['1=1'];
+		$actionParams = @$options['actionParams'] ?: NULL;
+		$tableConfig = @$options['tableConfig'] ?: NULL;
+
+		$actions = $controller->getActions();
+		if ( is_array( $actionParams ) ) {
+			foreach( $actions as $key => &$action ) {
+				$action['params'] = array_merge( $action['params'], $actionParams );
+			}
+		}
+		else if ( is_callable( $actionParams ) ) {
+			$actions = call_user_func( $actionParams, $actions );
+		}
+
+		$tableConfig = $tableConfig ?: [
+			'bulkActions' => [],
+			'perPage' => 1000,
+		];
+
+		$table = $controller->createDisplayTable( $tableConfig );
+		$table->prepare_items( $itemsWhere );
+		
+		return $this->addHtml( $name, "
+			<div style='padding:25px 0'>
+				{$controller->getActionsHtml($actions)} 
+			</div>
+			{$table->getDisplay()}
+		");				
+	}
+	
+	/**
 	 * Prepare a field to be added to the form
 	 *
 	 * @param	string			$name				The field name
