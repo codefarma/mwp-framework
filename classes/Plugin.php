@@ -262,6 +262,7 @@ abstract class _Plugin extends Singleton
 				// Update tables under global context
 				foreach( $build_meta[ 'ms_tables' ] as $table )
 				{
+					$table = $this->getTableSchema( $table, FALSE );
 					$tableSql = $dbHelper->buildTableSQL( $table, FALSE );
 					$updates = dbDelta( $tableSql, $execute );
 					if ( $updates ) {
