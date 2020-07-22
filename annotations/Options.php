@@ -56,10 +56,50 @@ class Options extends \MWP\Framework\Annotation
 			$capability = $this->capability;
 			$page_id = $instance->getStorageId();
 			
-			add_action( 'admin_menu', function() use ( $menu, $title, $capability, $page_id, $instance ) {
-				add_options_page( $title, $menu, $capability, $page_id, function() use ( $title, $page_id, $instance ) {
-					echo $instance->getPlugin()->getTemplateContent( 'admin/settings/form', array( 'title' => $title, 'page_id' => $page_id ) );
-				});
+			add_action( $instance->isNetworkGlobal && is_multisite() ? 'network_admin_menu' : 'admin_menu', function() use ( $menu, $title, $capability, $page_id, $instance ) {
+				if ( $instance->isForNetwork ) {
+					/* Implementation sourced from: https://vedovini.net/2015/10/04/using-the-wordpress-settings-api-with-network-admin-pages/ */
+
+					/* Create settings page */
+					add_submenu_page( 'settings.php', $title, $menu, $capability, $page_id, function() use ( $title, $page_id, $instance ) {
+						echo $instance->getPlugin()->getTemplateContent( 'admin/settings/form', array( 
+							'title' => $title, 
+							'page_id' => $page_id, 
+							'action' => 'edit.php?action=update_' . $page_id,
+						));
+					});
+
+					/* Handle submitted settings form */
+					add_action( 'network_admin_edit_update_' . $page_id, function() use ( $page_id ) {
+						check_admin_referer( $page_id . '-options' );
+
+						global $new_whitelist_options;
+						$options = $new_whitelist_options[ $page_id ];
+
+						foreach ( $options as $option ) {
+							if ( isset( $_POST[ $option ] ) ) {
+								update_site_option( $option, $_POST[ $option ] );
+							}
+						} 
+
+						// Redirect back to our options page.
+						wp_redirect( add_query_arg( array( 
+							'page' => $page_id,
+							'updated' => 'true'
+						), network_admin_url('settings.php') ));
+						
+						exit;
+					});
+
+				} else {
+					add_options_page( $title, $menu, $capability, $page_id, function() use ( $title, $page_id, $instance ) {
+						echo $instance->getPlugin()->getTemplateContent( 'admin/settings/form', array( 
+							'title' => $title, 
+							'page_id' => $page_id,
+							'action' => 'options.php',
+						));
+					});
+				}
 			});
 			
 			add_action( 'admin_init', function() use ( $page_id, $instance ) {

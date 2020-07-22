@@ -101,20 +101,15 @@ class Field extends \MWP\Framework\Annotation
 	{
 		extract( $vars );
 		
-		if ( $instance instanceof \MWP\Framework\Plugin\Settings )
-		{
+		if ( $instance instanceof \MWP\Framework\Plugin\Settings ) {
 			$instance->setDefault( $this->name, $this->default );
 			
-			if ( isset( $page_id ) and isset( $section_id ) )
-			{
+			if ( isset( $page_id ) and isset( $section_id ) ) {
 				$self = $this;
-				add_action( 'admin_init', function() use ( $page_id, $section_id, $self, $instance )
-				{
-					add_settings_field( md5( $page_id . $self->name ), $self->title, function() use ( $page_id, $section_id, $self, $instance )
-					{
+				add_action( 'admin_init', function() use ( $page_id, $section_id, $self, $instance ) {
+					add_settings_field( md5( $page_id . $self->name ), $self->title, function() use ( $page_id, $section_id, $self, $instance ) {
 						echo call_user_func( array( $self, 'getFieldHtml' ), $instance );
-					}
-					, $page_id, $section_id );
+					}, $page_id, $section_id );
 				});
 			}
 		}

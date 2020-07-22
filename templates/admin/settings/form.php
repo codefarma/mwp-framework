@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="wrap">
 	<h1><?php echo $title ?></h1>
-	<form action="options.php" method="post">
+	<form action="<?php echo esc_attr($action); ?>" method="post">
 		<?php settings_fields( $page_id ); ?>
 		<?php do_settings_sections( $page_id ); ?>
 		<?php submit_button(); ?>

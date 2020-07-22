@@ -53,6 +53,11 @@ abstract class Settings extends Singleton
 	 * @var	string	The database option_name used to store these settings
 	 */
 	protected $storageId;
+
+	/**
+	 * @var	bool	Indicates if these settings are network wide
+	 */
+	public $isNetworkGlobal = false;
 	
 	/**
 	 * Constructor
@@ -111,6 +116,15 @@ abstract class Settings extends Singleton
 	{
 		return $this->storageId;
 	}
+
+	/**
+	 * Load the settings
+	 *
+	 */
+	public function refreshSettings()
+	{
+		$this->settings = $this->isNetworkGlobal ? get_site_option( $this->storageId, array() ) : get_option( $this->storageId, array() );
+	}
 	
 	/**
 	 * Get A Setting
@@ -120,13 +134,11 @@ abstract class Settings extends Singleton
 	 */
 	public function getSetting( $name )
 	{
-		if ( ! isset( $this->settings ) )
-		{
-			$this->settings = get_option( $this->storageId, array() );
+		if ( ! isset( $this->settings ) ) {
+			$this->refreshSettings();
 		}
 		
-		if ( array_key_exists( $name, $this->settings ) )
-		{
+		if ( array_key_exists( $name, $this->settings ) ) {
 			return $this->settings[ $name ];
 		}
 		
@@ -142,9 +154,8 @@ abstract class Settings extends Singleton
 	 */
 	public function setSetting( $name, $val )
 	{
-		if ( ! isset( $this->settings ) )
-		{
-			$this->settings = get_option( $this->storageId, array() );
+		if ( ! isset( $this->settings ) ) {
+			$this->refreshSettings();
 		}
 		
 		$this->settings[ $name ] = $val;
@@ -160,12 +171,11 @@ abstract class Settings extends Singleton
 	 */
 	public function saveSettings()
 	{
-		if ( ! isset( $this->settings ) )
-		{
-			$this->settings = get_option( $this->storageId, array() );
+		if ( ! isset( $this->settings ) ) {
+			$this->refreshSettings();
 		}
 		
-		update_option( $this->storageId, $this->settings );
+		$this->isNetworkGlobal ? update_site_option( $this->storageId, $this->settings ) : update_option( $this->storageId, $this->settings );
 		return $this;
 	}
 	
