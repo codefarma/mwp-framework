@@ -55,9 +55,10 @@ class Options extends \MWP\Framework\Annotation
 			$title 	= $this->title ?: $menu . ' ' . __( 'Options' );
 			$capability = $this->capability;
 			$page_id = $instance->getStorageId();
+			$hook = $instance->isNetworkGlobal && is_multisite() ? 'network_admin_menu' : 'admin_menu';
 			
-			add_action( $instance->isNetworkGlobal && is_multisite() ? 'network_admin_menu' : 'admin_menu', function() use ( $menu, $title, $capability, $page_id, $instance ) {
-				if ( $instance->isForNetwork ) {
+			add_action( $hook, function() use ( $menu, $title, $capability, $page_id, $instance, $hook ) {
+				if ( $hook == 'network_admin_menu' ) {
 					/* Implementation sourced from: https://vedovini.net/2015/10/04/using-the-wordpress-settings-api-with-network-admin-pages/ */
 
 					/* Create settings page */
