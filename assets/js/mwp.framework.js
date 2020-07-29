@@ -341,11 +341,16 @@
 			/* Bind all views */
 			views.each( function() {
 				var view = $(this);
-				var view_name = view.data( 'view-model' );
-				var controller = mwp.controller.get( view_name );
-				if ( typeof controller !== 'undefined' && typeof controller.viewModel !== 'undefined' ) {
-					ko.applyBindings( controller.viewModel, this );
+				var view_model= view.data('view-model');
+				
+				if ( typeof view_model === 'string' ) {
+					var controller = mwp.controller.get(view_model);
+					if ( typeof controller !== 'undefined' && typeof controller.viewModel !== 'undefined' ) {
+						view_model = controller.viewModel;
+					}
 				}
+				
+				ko.applyBindings( view_model, this );
 			});
 		}
 	};
