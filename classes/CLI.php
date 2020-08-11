@@ -586,6 +586,107 @@ class _CLI extends \WP_CLI_Command {
 	}
 	
 	/**
+	 * Update plugin database schema contents
+	 * 
+	 * @param	$args		array		Positional command line arguments
+	 * @param	$assoc		array		Named command line arguments
+	 *
+	 * ## OPTIONS
+	 *
+	 * <slug>
+	 * : The slug of the mwp application framework plugin
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Update the database to match the built plugin schema
+	 *     $ wp mwp update-schema my-plugin
+	 *     Success: Plugin schema generated/updated.
+	 *
+	 * @subcommand update-schema
+	 * @when after_wp_load
+	 */
+	public function updateSchema( $args, $assoc )
+	{
+		$slug = $args[0];
+		
+		if ( ! is_dir( WP_PLUGIN_DIR . '/' . $slug ) )
+		{
+			\WP_CLI::error( 'Plugin directory is not valid: ' . $slug );
+		}
+		
+		$meta_data = array();
+		
+		if ( ! is_dir( WP_PLUGIN_DIR . '/' . $slug . '/data' ) )
+		{
+			\WP_CLI::error( 'Could not find plugin meta data directory: ' . WP_PLUGIN_DIR . '/' . $slug . '/data' );
+		}
+		else
+		{
+			/* Read existing metadata */
+			if ( file_exists( WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php' ) )
+			{
+				$meta_data = json_decode( include WP_PLUGIN_DIR . '/' . $slug . '/data/plugin-meta.php', TRUE );
+				
+				if ( ! $meta_data['namespace'] ) {
+					\WP_CLI::error( 'Could not detect plugin namespace.' );
+				}
+				
+				$build_meta = file_exists( WP_PLUGIN_DIR . '/' . $slug . '/data/build-meta.php' ) ? 
+					json_decode( include WP_PLUGIN_DIR . '/' . $slug . '/data/build-meta.php', TRUE )
+					: array(
+						'framework_version' => Framework::instance()->data('plugin-meta')['version'],
+					);
+
+				unset( $build_meta['tables'] );
+				unset( $build_meta['ms_tables'] );
+
+				$dbHelper = \MWP\Framework\DbHelper::instance();
+				
+				/* Update table schema data file */
+				if ( isset( $meta_data[ 'tables' ] ) and $meta_data[ 'tables' ] )
+				{
+					$build_meta['tables'] = array();
+					
+					$tables = is_array( $meta_data['tables'] ) ? $meta_data['tables'] : explode( ',', $meta_data['tables'] );
+					foreach( $tables as $table )
+					{
+						// trim spaces from table names
+						$table = trim( $table );
+						
+						try {
+							$build_meta[ 'tables' ][] = $dbHelper->getTableDefinition( $table, FALSE );
+						}
+						catch( \ErrorException $e ) { }
+					}
+				}
+			
+				/* Update table schema data file */
+				if ( isset( $meta_data[ 'ms_tables' ] ) and $meta_data[ 'ms_tables' ] )
+				{
+					$build_meta['ms_tables'] = array();
+					
+					$tables = is_array( $meta_data['ms_tables'] ) ? $meta_data['ms_tables'] : explode( ',', $meta_data['ms_tables'] );
+					foreach( $tables as $table )
+					{
+						// trim spaces from table names
+						$table = trim( $table );
+						
+						try {
+							$build_meta[ 'ms_tables' ][] = $dbHelper->getTableDefinition( $table, FALSE );
+						}
+						catch( \ErrorException $e ) { }
+					}
+				}
+				
+				/* Save the build meta */
+				file_put_contents( WP_PLUGIN_DIR . '/' . $slug . '/data/build-meta.php', "<?php\nreturn <<<'JSON'\n" . json_encode( $build_meta, JSON_PRETTY_PRINT ) . "\nJSON;\n" );
+
+				\WP_CLI::success( 'Plugin schema generated/updated.' );
+			}
+		}
+	}
+
+	/**
 	 * Deploy a database table from an active record definition
 	 * 
 	 * @param	$args		array		Positional command line arguments
