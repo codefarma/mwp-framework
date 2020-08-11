@@ -228,6 +228,53 @@ class _CLI extends \WP_CLI_Command {
 	}
 	
 	/**
+	 * Activate or deactivate developer mode
+	 *
+	 * @param	$args		array		Positional command line arguments
+	 * @param	$assoc		array		Named command line arguments
+	 *
+	 * ## OPTIONS
+	 *
+	 * <command>
+	 * : The mode to enter: (activate, deactivate)
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Update the boilerplate
+	 *     $ wp mwp developer activate
+	 *     Success: Developer mode activated
+	 *
+	 * @subcommand developer
+	 * @when after_wp_load
+	 */
+	public function developerMode( $args, $assoc ) 
+	{		
+		$framework = \MWP\Framework\Framework::instance();
+
+		if ( ! $args || ! $args[0] ) {
+			\WP_CLI::line( 'Developer mode: ' . ( $framework->isDev() ? 'enabled' : 'disabled' ) );
+			return;
+		}
+
+		if ( ! in_array( $args[0], array( 'activate', 'deactivate' ) ) ) {
+			\WP_CLI::error( "Invalid command. Choose either 'activate' or 'deactivate'." );
+			return;
+		}
+
+		switch( $args[0] ) {
+			case 'activate':
+				$framework->setSetting('mwp_developer_mode', true);
+				\WP_CLI::success('Developer mode enabled.');
+				break;
+
+			case 'deactivate':
+				$framework->setSetting('mwp_developer_mode', false);
+				\WP_CLI::success('Developer mode disabled.');
+				break;
+		}
+	}
+
+	/**
 	 * Add a new javascript module
 	 * 
 	 * @param	$args		array		Positional command line arguments
