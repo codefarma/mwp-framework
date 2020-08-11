@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.7] - 2020-08-10
+
+- (added) New update-schema CLI command to bring the build-meta.php current with local database schema without a plugin build
+
 ## [2.2.6] - 2020-07-29
 
 - (changed) - HTML using the data-view-model attribute can now have arbitrary view model objects embedded in the attribute
