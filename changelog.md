@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.2.7] - 2020-08-10
 
 - (added) New update-schema CLI command to bring the build-meta.php current with local database schema without a plugin build
+- (added) New developer CLI command to activate/deactivate mwp developer mode
 
 ## [2.2.6] - 2020-07-29
 
