@@ -1259,7 +1259,46 @@ class _$classname extends Controller
 CLASS;
 				break;
 
-				case 'singleton':
+			case 'model_controller':
+				$class_contents = <<<CLASS
+<?php
+/**
+ * $classname [ActiveRecordController]
+ *
+ * Created:   {date_time}
+ *
+ * @package:  {plugin_name}
+ * @author:   {plugin_author}
+ * @since:    $version_tag
+ */
+namespace $namespace;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Access denied.' );
+}
+
+use MWP\Framework\Helpers\ActiveRecordController;
+
+/**
+ * $classname Class
+ */
+class _$classname extends ActiveRecordController
+{
+	/**
+	 * Initialize
+	 *
+	 * @return    void
+	 */
+	public function init()
+	{
+		
+	}
+}
+
+CLASS;
+				break;
+
+			case 'singleton':
 				$class_contents = <<<CLASS
 <?php
 /**
