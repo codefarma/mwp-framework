@@ -1019,7 +1019,7 @@ abstract class _Plugin extends Singleton
 				{
 					/* Replace tokens in source files */
 					$pathinfo = pathinfo( $source );
-					if ( isset( $pathinfo[ 'extension' ] ) and in_array( $pathinfo[ 'extension' ], array( 'php', 'js', 'json', 'css' , 'txt') ) and substr( $relativename, 0, 7 ) !== 'vendor/' )
+					if ( isset( $pathinfo[ 'extension' ] ) and in_array( $pathinfo[ 'extension' ], array( 'php', 'js', 'json', 'css', 'txt' ) ) and substr( $relativename, 0, 7 ) !== 'vendor/' )
 					{
 						$source_contents = file_get_contents( $source );
 						$updated_contents = strtr( $source_contents, array( '{' . 'build_version' . '}' => $plugin_version ) );
@@ -1040,10 +1040,13 @@ abstract class _Plugin extends Singleton
 
 						if ( $relativename == 'readme.txt' )
 						{
+							
 							$wp_version = strstr(get_bloginfo( 'version' ),'-',true);
-							$newHeaderDoc = preg_replace( '/Stable tag:(.*?)\n/', "Stable tag: " . $plugin_version . "\n", $updated_contents );
-							$newHeaderDoc1 = preg_replace( '/Tested up to:(.*?)\n/', "Tested up to: " . $wp_version . "\n", $newHeaderDoc );
-							$updated_contents = str_replace( $updated_contents, $newHeaderDoc1, $updated_contents );
+							//returns the content of "=== Plugin Name ===" only.
+							$docHeader = substr($updated_contents, 0, strpos($updated_contents, '== Description =='));
+							$newHeaderDoc = preg_replace( '/Stable tag:(.*?)\n/', "Stable tag: " . $plugin_version . "\n", $docHeader);
+							$newHeaderDoc = preg_replace( '/Tested up to:(.*?)\n/', "Tested up to: " . $wp_version . "\n", $newHeaderDoc );
+							$updated_contents = str_replace( $docHeader, $newHeaderDoc, $updated_contents );
 						}
 						
 						if ( $updated_contents != $source_contents )
