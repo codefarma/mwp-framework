@@ -1040,13 +1040,9 @@ abstract class _Plugin extends Singleton
 
 						if ( $relativename == 'readme.txt' )
 						{
-							
 							$wp_version = strstr(get_bloginfo( 'version' ),'-',true);
-							//returns the content of "=== Plugin Name ===" only.
-							$docHeader = substr($updated_contents, 0, strpos($updated_contents, '== Description =='));
-							$newHeaderDoc = preg_replace( '/Stable tag:(.*?)\n/', "Stable tag: " . $plugin_version . "\n", $docHeader);
-							$newHeaderDoc = preg_replace( '/Tested up to:(.*?)\n/', "Tested up to: " . $wp_version . "\n", $newHeaderDoc );
-							$updated_contents = str_replace( $docHeader, $newHeaderDoc, $updated_contents );
+							$updated_contents = preg_replace( '/Stable tag:(.*?)\n/', "Stable tag: " . $plugin_version . "\n", $updated_contents );
+							$updated_contents = preg_replace( '/Tested up to:(.*?)\n/', "Tested up to: " . $wp_version . "\n", $updated_contents );
 						}
 						
 						if ( $updated_contents != $source_contents )
