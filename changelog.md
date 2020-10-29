@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.10] - 2020-10-29
+
+- (added) Build process will now also update the Stable tag to the current version if your plugin has a readme.txt
+- (added) New configuration options for PostPage annotation to control how controller content and post content are merged
+- (added) Ability to specify callback functions as a hard filter on an active record table to run code on demand
+
 ## [2.2.9] - 2020-08-24
 
 - (added) New "model_controller" type for add-class CLI command
