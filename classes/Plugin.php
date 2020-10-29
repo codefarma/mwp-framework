@@ -1019,7 +1019,7 @@ abstract class _Plugin extends Singleton
 				{
 					/* Replace tokens in source files */
 					$pathinfo = pathinfo( $source );
-					if ( isset( $pathinfo[ 'extension' ] ) and in_array( $pathinfo[ 'extension' ], array( 'php', 'js', 'json', 'css' ) ) and substr( $relativename, 0, 7 ) !== 'vendor/' )
+					if ( isset( $pathinfo[ 'extension' ] ) and in_array( $pathinfo[ 'extension' ], array( 'php', 'js', 'json', 'css', 'txt' ) ) and substr( $relativename, 0, 7 ) !== 'vendor/' )
 					{
 						$source_contents = file_get_contents( $source );
 						$updated_contents = strtr( $source_contents, array( '{' . 'build_version' . '}' => $plugin_version ) );
@@ -1036,6 +1036,13 @@ abstract class _Plugin extends Singleton
 							$headerDoc = array_shift( $docComments );
 							$newHeaderDoc = preg_replace( '/Version:(.*?)\n/', "Version: " . $plugin_version . "\n", $headerDoc );
 							$updated_contents = str_replace( $headerDoc, $newHeaderDoc, $updated_contents );
+						}
+
+						if ( $relativename == 'readme.txt' )
+						{
+							$wp_version = strstr(get_bloginfo( 'version' ),'-',true);
+							$updated_contents = preg_replace( '/Stable tag:(.*?)\n/', "Stable tag: " . $plugin_version . "\n", $updated_contents );
+							$updated_contents = preg_replace( '/Tested up to:(.*?)\n/', "Tested up to: " . $wp_version . "\n", $updated_contents );
 						}
 						
 						if ( $updated_contents != $source_contents )
