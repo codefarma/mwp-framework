@@ -162,6 +162,8 @@ abstract class _Controller
 			$postPage = new PostPage;
 		
 			$postPage->post_id = $options['post_id'];
+			$postPage->location = isset( $options['location'] ) ? $options['location'] : 'after';
+			$postPage->placeholder = isset( $options['placeholder'] ) ? $options['placeholder'] : '[insert_content]';
 			$postPage->applyToObject( $this, array() );
 			
 			$this->postPage = $postPage;
