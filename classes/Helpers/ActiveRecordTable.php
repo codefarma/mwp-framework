@@ -345,6 +345,24 @@ class _ActiveRecordTable extends \WP_List_Table
 			$this->hardFilters[] = $filter;
 		}
 	}
+
+	public function getHardFilters()
+	{
+		$hardFilters = [];
+		foreach( $this->hardFilters as $filter ) {
+			if ( is_callable( $filter ) ) {
+				$result = call_user_func($filter, $this);
+				if ( $result ) {
+					$hardFilters[] = $result;
+				}
+			}
+			else {
+				$hardFilters[] = $filter;
+			}
+		}
+
+		return $hardFilters;
+	}
 	
 	/**
 	 * Get a list of all, hidden and sortable columns, with filter applied
@@ -1062,7 +1080,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		
 		$sortBy        = isset( $this->sortBy ) ? $this->sortBy : $class::_getPrefix() . $class::_getKey();
 		$sortOrder     = $this->sortOrder;
-		$where_filters = array_merge( $this->hardFilters, array( $where ) );
+		$where_filters = array_merge( $this->getHardFilters(), array( $where ) );
 		$compiled      = $class::compileWhereClause( $where_filters );
 		$per_page      = $this->perPage;
 		$start_at      = $current_page > 0 ? ( $current_page - 1 ) * $per_page : 0;
