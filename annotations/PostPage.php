@@ -36,6 +36,16 @@ class PostPage extends \MWP\Framework\Annotation
 	 * @var	string
 	 */
 	public $post_getter = 'getPost';
+
+	/**
+	 * @var string
+	 */
+	public $location = 'after';
+
+	/**
+	 * @var string
+	 */
+	public $placeholder = '[insert_content]';
 	
 	/**
 	 * Apply to Object
@@ -81,9 +91,22 @@ class PostPage extends \MWP\Framework\Annotation
 						if ( $post = get_post() and $post->ID == $annotation->post_id ) { // double check
 							/* Moreover, try to protect against if this post happens to appear within one of those said loops */
 							if ( is_singular() && is_main_query() ) {
-								/* Finally, ensure we only send our controller output to the page one time max. */
-								remove_filter( 'the_content', $return_output );
-								return $output;
+								/* Output the content */
+								switch( $annotation->location ) {
+									case 'after':
+										return $content . $output;
+
+									case 'before':
+										return $output . $content;
+
+									case 'replace':
+										return $output;
+
+									case 'insert':
+										return str_replace($annotation->placeholder, $output, $content);
+								}
+
+								return 'Invalid location specified in PostPage config. Please use one of (after, before, replace, insert)';
 							}
 						}
 						
