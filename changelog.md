@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.12] - 2020-12-30
+
+- (added) Added ability to customize the search input name for active record tables
+- (added) Added ability for tables to have unique ID's and only read inputs for their own form submissions
+
 ## [2.2.11] - 2020-12-04
 
 - (fixed) Issue with Woocommerce 4.7 using the Symfony Intl Collator class
