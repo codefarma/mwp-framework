@@ -824,6 +824,7 @@ abstract class _ActiveRecord
 
 		$table = new $tableClass( array_merge( array( 
 			'recordClass' => $recordClass,
+			'tableID' => md5($recordClass),
 			'singular' => strtolower( static::$lang_singular ),
 			'plural' => strtolower( static::$lang_plural ),
 		), $args ) );

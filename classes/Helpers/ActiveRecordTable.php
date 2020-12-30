@@ -180,6 +180,11 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $searchParam = 'srch';
 
 	/**
+	 * @var	string	An ID for this particular table
+	 */
+	public $tableID;
+
+	/**
 	 * @var	int  Number of records to show per page
 	 */
 	public $perPage = 50;
@@ -325,6 +330,9 @@ class _ActiveRecordTable extends \WP_List_Table
 			unset( $args['recordClass'] );
 		}
 
+		if ( isset( $args['tableID'] ) ) {
+			$this->tableID = $args['tableID'];
+		}
 
 		if ( isset( $args['searchParam'] ) ) {
 			$this->searchParam = $args['searchParam'];
@@ -959,6 +967,12 @@ class _ActiveRecordTable extends \WP_List_Table
 	 */
 	public function read_inputs()
 	{
+		if ( isset( $this->tableID ) ) {
+			if ( ! isset( $_REQUEST['tbl_id'] ) || $_REQUEST['tbl_id'] !== $this->tableID ) {
+				return;
+			}
+		}
+
 		if ( isset( $_REQUEST['orderby'] ) and in_array( $_REQUEST['orderby'], array_map( function( $arr ) { return is_array( $arr ) ? $arr[0] : $arr; }, $this->get_sortable_columns() ) ) ) {
 			$this->sortBy = $_REQUEST['orderby'];
 		}
