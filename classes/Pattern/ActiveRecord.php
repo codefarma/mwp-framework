@@ -820,9 +820,10 @@ abstract class _ActiveRecord
 	public static function createDisplayTable( $args=array() )
 	{
 		$tableClass = static::getTableClass();
-		
+		$recordClass = get_called_class();
+
 		$table = new $tableClass( array_merge( array( 
-			'recordClass' => get_called_class(),
+			'recordClass' => $recordClass,
 			'singular' => strtolower( static::$lang_singular ),
 			'plural' => strtolower( static::$lang_plural ),
 		), $args ) );

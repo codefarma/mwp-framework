@@ -173,7 +173,12 @@ class _ActiveRecordTable extends \WP_List_Table
 	 * }
      */
 	public $searchableColumns = array();
-	
+
+	/**
+	 * @var string	The search parameter to use
+	 */
+	public $searchParam = 'srch';
+
 	/**
 	 * @var	int  Number of records to show per page
 	 */
@@ -318,6 +323,11 @@ class _ActiveRecordTable extends \WP_List_Table
 		if ( isset( $args['recordClass'] ) ) {
 			$this->activeRecordClass = $args['recordClass'];
 			unset( $args['recordClass'] );
+		}
+
+
+		if ( isset( $args['searchParam'] ) ) {
+			$this->searchParam = $args['searchParam'];
 		}
 		
 		$this->_args_raw = $args;
@@ -967,9 +977,9 @@ class _ActiveRecordTable extends \WP_List_Table
 		
 		if ( $searchable_columns = $this->get_searchable_columns() ) 
 		{
-			if ( isset( $_REQUEST['s'] ) and $_REQUEST['s'] ) 
+			if ( isset( $_REQUEST[$this->searchParam] ) and $_REQUEST[$this->searchParam] ) 
 			{
-				$this->searchPhrase = $phrase = $_REQUEST['s'];
+				$this->searchPhrase = $phrase = $_REQUEST[$this->searchParam];
 				$clauses = array();
 				$where = array();
 				foreach( $searchable_columns as $column_name => $column_config ) 
