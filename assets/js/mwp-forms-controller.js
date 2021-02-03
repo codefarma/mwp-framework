@@ -41,6 +41,7 @@
 				self.applyToggles();
 				self.setupCollections();
 				self.setupAjaxTables();
+				self.processFormLinks();
 			});
 		},
 		
@@ -97,7 +98,7 @@
 		setupAjaxTables: function()
 		{
 			var self = this;
-			
+
 			$(document).on( 'submit', 'form[data-table-nav="ajax"]', function(e) {
 				e.preventDefault();
 				var formEl = $(this);
@@ -244,6 +245,25 @@
 			}
 			
 			return current_value;
+		},
+
+		/**
+		 * Process form pagination and sorting links when not in Ajax mode
+		 *
+		 * @return	void
+		 */
+		processFormLinks: function() {
+			var self = this;
+
+			$(document).on( 'click', 'form[data-table-nav="no-ajax"] .pagination-links a, form[data-table-nav="no-ajax"] .manage-column a', function(e) {
+				e.preventDefault();
+				var linkEl = $(this);
+				var url = linkEl.attr('href');
+				var formEl = linkEl.closest('form');
+				formEl.attr("action", url);
+				formEl.find("input[name=paged]").remove();
+				formEl.submit();
+			});
 		}
 	
 	});

@@ -346,6 +346,10 @@ class _ActiveRecordTable extends \WP_List_Table
 			});
 		}
 		
+		add_action( 'wp_enqueue_scripts', function() {
+			wp_enqueue_script( 'mwp-forms-controller' );
+		});
+		
 		//Set parent defaults
 		parent::__construct( $args );		
     }
@@ -982,7 +986,7 @@ class _ActiveRecordTable extends \WP_List_Table
 		}
 		
 		$this->current_page = isset( $_REQUEST['paged'] ) ? (int) $_REQUEST['paged'] : ( absint( get_query_var('paged') ) ?: 1 );
-		
+
 		foreach( $this->extras as $extra ) {
 			if ( isset( $extra['init'] ) and is_callable( $extra['init'] ) ) {
 				call_user_func( $extra['init'], $this );

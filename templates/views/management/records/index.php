@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <?php echo $controller->getActionsHtml() ?>
 <hr class="wp-header-end" />
-<form method="post"<?php if ( isset( $table->_args['ajax'] ) and $table->_args['ajax'] ) { ?> data-table-nav="ajax"<?php } ?>>
+<form method="post"<?php if ( isset( $table->_args['ajax'] ) and $table->_args['ajax'] ) { ?> data-table-nav="ajax"<?php } else { ?> data-table-nav="no-ajax"<?php } ?>>
 	<?php if ( $table->tableID ) : ?>
 		<input type="hidden" name="tbl_id" value="<?php echo esc_attr($table->tableID) ?>" />
 	<?php endif; ?>
