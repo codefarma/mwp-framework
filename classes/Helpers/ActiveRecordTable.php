@@ -1036,7 +1036,6 @@ class _ActiveRecordTable extends \WP_List_Table
 					}
 				}
 				array_unshift( $where, '(' . implode( ') OR (', $clauses ) . ')' );
-				error_log( json_encode( $where ) );
 				$this->hardFilters[] = $where;
 			}
 		}
