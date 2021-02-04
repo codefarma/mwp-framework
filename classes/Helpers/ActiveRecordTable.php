@@ -180,6 +180,11 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $searchParam = 'srch';
 
 	/**
+	 * @var string	The placeholder for the search box
+	 */
+	public $searchPlaceholder;
+
+	/**
 	 * @var	string	An ID for this particular table
 	 */
 	public $tableID;
@@ -1031,6 +1036,7 @@ class _ActiveRecordTable extends \WP_List_Table
 					}
 				}
 				array_unshift( $where, '(' . implode( ') OR (', $clauses ) . ')' );
+				error_log( json_encode( $where ) );
 				$this->hardFilters[] = $where;
 			}
 		}
