@@ -180,6 +180,11 @@ class _ActiveRecordTable extends \WP_List_Table
 	public $searchParam = 'srch';
 
 	/**
+	 * @var string	The placeholder for the search box
+	 */
+	public $searchPlaceholder;
+
+	/**
 	 * @var	string	An ID for this particular table
 	 */
 	public $tableID;

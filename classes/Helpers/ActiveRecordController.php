@@ -278,6 +278,10 @@ class _ActiveRecordController extends Controller
 		if ( isset( $options['searchable'] ) ) {
 			$table->searchableColumns = $options['searchable'];
 		}
+
+		if ( isset( $options['placeholder'] ) ) {
+			$table->searchPlaceholder = $options['placeholder'];
+		}
 		
 		if ( isset( $options['extras'] ) ) {
 			$table->extras = $options['extras'];

@@ -23,6 +23,6 @@ $input_id = "record-search-input";
 ?>
 <p class="search-box">
 	<label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo $text ?>:</label>
-	<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="<?php echo $table->searchParam ?>" value="<?php if ( $table->searchPhrase ) { echo esc_html( $table->searchPhrase ); } ?>" />
+	<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="<?php echo $table->searchParam ?>" value="<?php if ( $table->searchPhrase ) { echo esc_html( $table->searchPhrase ); } ?>" placeholder="<?php if ( $table->searchPlaceholder ) { echo esc_html( $table->searchPlaceholder ); } ?>"/>
 	<?php submit_button( $text, '', '', false, array( 'id' => 'search-submit' ) ); ?>
 </p>
