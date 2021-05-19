@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.14] - 2021-05-18
+
+- (added) Added a new task method `$task->fail()` to fail a task
+- (fixed) Fixed issue preventing switching and searching between pages on task runner management screen
+
 ## [2.2.13] - 2021-02-09
 
 - (added) Added a search input placeholder option to the ActiveRecordTable config
