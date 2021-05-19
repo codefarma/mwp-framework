@@ -17,7 +17,7 @@ return <<<'JSON'
                     "length": 20,
                     "name": "task_id",
                     "type": "BIGINT",
-                    "unsigned": false,
+                    "unsigned": true,
                     "values": [],
                     "zerofill": false
                 },
@@ -46,7 +46,7 @@ return <<<'JSON'
                     "default": null,
                     "length": 0,
                     "name": "task_data",
-                    "type": "MEDIUMTEXT",
+                    "type": "LONGTEXT",
                     "unsigned": false,
                     "values": [],
                     "zerofill": false
@@ -58,9 +58,9 @@ return <<<'JSON'
                     "comment": "",
                     "decimals": null,
                     "default": "5",
-                    "length": 1,
+                    "length": 3,
                     "name": "task_priority",
-                    "type": "TINYINT",
+                    "type": "INT",
                     "unsigned": false,
                     "values": [],
                     "zerofill": false
@@ -145,7 +145,7 @@ return <<<'JSON'
                     "default": "0",
                     "length": 2,
                     "name": "task_fails",
-                    "type": "TINYINT",
+                    "type": "INT",
                     "unsigned": false,
                     "values": [],
                     "zerofill": false
