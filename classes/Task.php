@@ -39,15 +39,15 @@ class _Task extends ActiveRecord
 		'id',
 		'action' => [ 'type' => 'varchar', 'length' => 56 ],
 		'data' => [ 'type' => 'longtext', 'format' => 'JSON' ],
-		'priority' => [ 'type' => 'int', 'length' => 3 ],
+		'priority' => [ 'type' => 'int', 'length' => 3, 'allow_null' => false, 'default' => 5 ],
 		'next_start' => [ 'type' => 'int', 'length' => 11 ],
-		'running' => [ 'type' => 'tinyint', 'length' => 1 ],
+		'running' => [ 'type' => 'tinyint', 'length' => 1, 'default' => 0 ],
 		'last_start' => [ 'type' => 'int', 'length' => 11 ],
-		'last_iteration' => [ 'type' => 'int', 'length' => 11 ],
+		'last_iteration' => [ 'type' => 'int', 'length' => 11, 'allow_null' => false, 'default' => 0 ],
 		'tag' => [ 'type' => 'varchar', 'length' => 255 ],
-		'fails' => [ 'type' => 'int', 'length' => 2 ],
-		'completed' => [ 'type' => 'int', 'length' => 11 ],
-		'blog_id' => [ 'type' => 'int', 'length' => 11 ],
+		'fails' => [ 'type' => 'int', 'length' => 2, 'allow_null' => false, 'default' => 0 ],
+		'completed' => [ 'type' => 'int', 'length' => 11, 'allow_null' => false, 'default' => 0 ],
+		'blog_id' => [ 'type' => 'int', 'length' => 11, 'allow_null' => false ],
 	);
 	
 	/**
