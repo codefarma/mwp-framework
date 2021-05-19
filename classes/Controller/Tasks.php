@@ -70,7 +70,7 @@ class _Tasks extends \MWP\Framework\Helpers\ActiveRecordController
 	 * 
 	 * @return void
 	 */
-	public function do_view()
+	public function do_view( $record=NULL )
 	{
 		if ( isset( $_REQUEST[ 'id' ] ) )
 		{
