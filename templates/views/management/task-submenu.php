@@ -28,29 +28,4 @@ use MWP\Framework\Task;
 
 ?>
 
-<ul class="subsubsub">
-	<li class="pending">
-		<a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks' ), admin_url( 'tools.php' ) ) ?>" class="<?php if ( ! isset( $_REQUEST[ 'status' ] ) and ! isset( $_REQUEST[ 'do' ] ) ) { echo "current"; } ?>">
-			<?php _e( 'Pending', 'mwp-framework' ) ?>
-			<span class="count">(<?php echo Task::countTasks( NULL, NULL, 'pending' ) ?>)</span>
-		</a> | 
-	</li>
-	<li class="running">
-		<a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks', 'status' => 'running' ), admin_url( 'tools.php' ) ) ?>" class="<?php if ( isset( $_REQUEST[ 'status' ] ) and $_REQUEST[ 'status' ] == 'running' ) { echo "current"; } ?>">
-			<?php _e( 'Running', 'mwp-framework' ) ?>
-			<span class="count">(<?php echo Task::countTasks( NULL, NULL, 'running' ) ?>)</span>
-		</a> | 
-	</li>
-	<li class="completed">
-		<a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks', 'status' => 'completed' ), admin_url( 'tools.php' ) ) ?>" class="<?php if ( isset( $_REQUEST[ 'status' ] ) and $_REQUEST[ 'status' ] == 'completed' ) { echo "current"; } ?>">
-			<?php _e( 'Completed', 'mwp-framework' ) ?>
-			<span class="count">(<?php echo Task::countTasks( NULL, NULL, 'completed' ) ?>)</span>
-		</a> | 
-	</li>
-	<li class="failed">
-		<a href="<?php echo add_query_arg( array( 'page' => 'mwp-fw-tasks', 'status' => 'failed' ), admin_url( 'tools.php' ) ) ?>" class="<?php if ( isset( $_REQUEST[ 'status' ] ) and $_REQUEST[ 'status' ] == 'failed' ) { echo "current"; } ?>">
-			<?php _e( 'Failed', 'mwp-framework' ) ?>
-			<span class="count">(<?php echo Task::countTasks( NULL, NULL, 'failed' ) ?>)</span>
-		</a>
-	</li>
-</ul>
+

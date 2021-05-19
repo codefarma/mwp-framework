@@ -196,10 +196,199 @@ call_user_func( function() {
 					$framework = \MWP\Framework\Framework::instance();		
 					$framework->setPath( rtrim( plugin_dir_path( __FILE__ ), '/' ) );
 					$framework->attach( $framework );
-					
-					if ( is_admin() ) {
-						$framework->attach( \MWP\Framework\Controller\Tasks::instance() );
+
+					$taskFilters = [ [ 'task_blog_id=%d', get_current_blog_id() ] ];
+					if ( ! isset( $_REQUEST['tbl_id'] ) ) {
+						$taskFilters[] = array( 'task_fails<3 AND task_completed=0' );
 					}
+
+					\MWP\Framework\Task::setControllerClass( \MWP\Framework\Controller\Tasks::class );
+					\MWP\Framework\Task::createController('admin', [
+						'adminPage' => [
+							'type' => 'management',
+							'slug' => 'mwp-fw-tasks',
+							'menu' => 'MWP Task Runner',
+							'title' => __('Tasks Management', 'mwp-framework'),
+						],
+						'getActions' => function() { return array(); },
+						'tableConfig' => [
+							'constructor' => [
+								'ajax' => true,
+							],
+							'hardFilters' => $taskFilters,
+							'bulkActions' => [
+								'runNext' => 'Run Next', 
+								'unlock' => 'Unlock', 
+								'delete' => 'Delete',
+							],
+							'sortBy' => 'task_running DESC, task_completed ASC, task_next_start ASC, task_priority',
+							'sortOrder' => 'DESC',
+							'columns' => [
+								'task_action'       => __( 'Task Item', 'mwp-framework' ), 
+								'task_last_start'   => __( 'Last Started', 'mwp-framework' ), 
+								'task_next_start'   => __( 'Next Start', 'mwp-framework' ), 
+								'stage'             => __( 'Stage', 'mwp-framework' ), 
+								'task_fails'        => __( 'Fails', 'mwp-framework' ), 
+								'task_data'         => __( 'Status', 'mwp-framework' ),
+								'task_priority'     => __( 'Priority', 'mwp-framework' ),
+							],
+							'sortable' => [
+								'task_action'       => array( 'task_action', false ),
+								'task_last_start'   => array( 'task_last_start', false ), 
+								'task_next_start'   => array( 'task_next_start', false ), 
+								'task_priority'     => array( 'task_priority', false ),
+								'task_fails'        => array( 'task_fails', false ),
+							],
+							'searchable' => [
+								'task_action' => array( 'type' => 'contains', 'combine_words' => 'and' ),
+								'task_tag'    => array( 'type' => 'contains', 'combine_words' => 'and' ),
+								'task_data'   => array( 'type' => 'contains' ),
+							],
+							'handlers' => [
+								'task_action' => function( $task ) use ( $framework ) {
+									return $framework->getTemplateContent( 'views/management/tasks/task-title', array( 'task' => \MWP\Framework\Task::loadFromRowData( $task ) ) );
+								},
+								'task_last_start' => function( $task ) {
+									$taskObj = \MWP\Framework\Task::loadFromRowData( $task );			
+									return $taskObj->getLastStartForDisplay();
+								},
+								'task_next_start' => function( $task ) {
+									$taskObj = \MWP\Framework\Task::loadFromRowData( $task );			
+									return $taskObj->getNextStartForDisplay();
+								},
+								'stage' => function( $task ) {
+									if ( $task['task_running'] ) {
+										return "<span class='mwp-bootstrap'>
+											<span class='label label-info' style='font-size:0.9em'>" . 
+												__( "Running", 'mwp-framework' ) .
+											"</span>
+										</span>";
+									}
+
+									if ( $task['task_completed'] ) {
+										return "<span class='mwp-bootstrap'>
+											<span class='label label-success' style='font-size:0.9em'>" . 
+												__( "Complete", 'mwp-framework' ) .
+											"</span>
+										</span>";
+									}
+									
+									if ( $task['task_fails'] >= 3 ) {
+										return "<span class='mwp-bootstrap'>
+											<span class='label label-danger' style='font-size:0.9em'>" . 
+												__( "Failed", 'mwp-framework' ) .
+											"</span>
+										</span>";
+									}
+
+									return "<span class='mwp-bootstrap'>
+										<span class='label label-primary' style='font-size:0.9em'>" . 
+											__( "Queued", 'mwp-framework' ) .
+										"</span>
+									</span>";
+								},
+								'task_data' => function( $task ) {
+									$taskObj = \MWP\Framework\Task::loadFromRowData( $task );			
+									$status = $taskObj->getStatusForDisplay();
+									return $status;
+								},
+							],
+							'extras' => [
+								'status_filter' => [
+									'init' => function( $table ) {
+										$status = $_REQUEST['status'] ?? 'pending';
+										$status_filter = NULL;
+										
+										switch( $status ) {
+											case 'pending':
+												$status_filter = array( 'task_fails<3 AND task_completed=0' );
+												break;
+
+											case 'running':
+												$status_filter = array( 'task_running=1' );
+												break;
+
+											case 'queued':
+												$status_filter = array( 'task_running=0 AND task_completed=0 AND task_fails<3' );
+												break;
+												
+											case 'completed':
+												$status_filter = array( 'task_completed>0' );
+												break;
+												
+											case 'failed':
+												$status_filter = array( 'task_fails>=3' );
+												break;
+										}
+
+										if ( $status_filter ) {
+											$table->addFilter( $status_filter );
+										}
+									},
+									'output' => function( $table ) {
+										$status = $_REQUEST['status'] ?? 'pending';
+										$statuses = [
+											'pending' => 'Pending Tasks',
+											'running' => 'Running Tasks', 
+											'queued' => 'Queueud Tasks',
+											'completed' => 'Completed Tasks',
+											'failed' => 'Failed Tasks',
+										];
+
+										$options = array_map( function( $val, $title ) use ( $status ) { 
+											return sprintf( 
+												'<option value="%s" %s>%s</option>', 
+												$val, 
+												$status == $val ? 'selected' : '', 
+												$title 
+											); 
+										}, array_keys( $statuses ), $statuses );
+
+										echo 'Show: 
+										<select name="status" onchange="jQuery(this).closest(\'form\').submit()">' . 
+											implode( '', $options ) . 
+										'</select>';
+									},
+								],
+								'status_count' => [
+									'output' => function( $table ) {
+										$blog_id = get_current_blog_id();
+										$pending = \MWP\Framework\Task::countWhere(['task_completed=0 AND task_fails<3 AND task_blog_id=%d', $blog_id]);
+										$running = \MWP\Framework\Task::countWhere(['task_running>0 AND task_blog_id=%d', $blog_id]);
+										$queued = \MWP\Framework\Task::countWhere(['task_running=0 AND task_completed=0 AND task_fails<3 AND task_blog_id=%d', $blog_id]);
+										$completed = \MWP\Framework\Task::countWhere(['task_completed>0 AND task_blog_id=%d', $blog_id]);
+										$failed = \MWP\Framework\Task::countWhere(['task_fails>=3 AND task_blog_id=%d', $blog_id]);
+
+										echo "<div class='mwp-bootstrap' style='display: inline-block; margin:0 15px; font-size:1.2em;'> 
+											<span class='label label-default'>{$pending} pending</span> | 
+											<span class='label label-info'>{$running} running</span> 
+											<span class='label label-primary'>{$queued} queued</span> | 
+											<span class='label label-success'>{$completed} completed</span> 
+											<span class='label label-danger'>{$failed} failed</span>
+										</div>";
+									}
+								],
+								'auto_refresh' => [
+									'output' => function( $table ) {
+										$checked = $_REQUEST['auto_refresh'] ? 'checked' : '';
+										$interval = intval( $_REQUEST['auto_refresh_int'] ?? 30 );
+										$intervalMS = intval($interval * 1000);
+										$intervalMS = $intervalMS < 1000 ? 1000 : $intervalMS;
+										echo "<input type='checkbox' name='auto_refresh' value='1' {$checked}/ onchange=\"jQuery(this).closest('form').submit()\"> Auto Refresh every <input type='text' name='auto_refresh_int' value='{$interval}' style='width: 50px' /> seconds";
+										echo "<script>if ( window.taskRefresh ) { clearTimeout(window.taskRefresh); }</script>";
+										
+										if ( $checked ) {
+											echo "<script>
+												window.taskRefresh = setTimeout(function() {
+													jQuery('.management.records.index form').submit();
+												}, {$intervalMS});
+											</script>";
+										}
+									}
+								],
+							],
+						],
+					]);
 					
 					$ajaxHandlers = \MWP\Framework\AjaxHandlers::instance();
 					$framework->attach( $ajaxHandlers );

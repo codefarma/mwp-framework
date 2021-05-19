@@ -639,7 +639,7 @@ class _Framework extends Plugin
 				$task->fails = $task->fails + 1;
 				$task->next_start = time() + 180;
 				$task->running = 0;
-				$task->setData( 'status', 'Failed' );
+				$task->setData( 'mwp_status', 'Failed' );
 				$task->save();
 				$task->shutdown();
 			}
@@ -698,7 +698,7 @@ class _Framework extends Plugin
 					
 					if ( $task->aborted )
 					{
-						$task->setData( 'status', 'Aborted' );
+						$task->setData( 'mwp_status', 'Aborted' );
 						$task->log( 'Task aborted.' );
 						$task->running = 0;
 						$task->fails = 3;
@@ -707,7 +707,7 @@ class _Framework extends Plugin
 					else
 					{
 						if ( $task->completed ) {
-							$task->setData( 'status', 'Completed' );
+							$task->setData( 'mwp_status', 'Completed' );
 							$task->log( 'Task Complete.' );
 						} else {
 							$task->log( 'Task suspended.' );
@@ -725,7 +725,7 @@ class _Framework extends Plugin
 				{
 					$task->running = 0;
 					$task->fails = 3;
-					$task->setData( 'status', 'Failed' );
+					$task->setData( 'mwp_status', 'Failed' );
 					$task->log( 'Runtime exception encountered: ' . $e->getMessage() );
 					$task->save();
 				}
@@ -735,7 +735,7 @@ class _Framework extends Plugin
 			}
 			else
 			{
-				$task->setData( 'status', 'Unavailable' );
+				$task->setData( 'mwp_status', 'Unavailable' );
 				$task->running = 0;
 				$task->fails = 3;
 				$task->log( 'Action callback not available for this task: ' . $task->action );

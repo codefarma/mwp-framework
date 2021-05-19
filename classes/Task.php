@@ -37,17 +37,17 @@ class _Task extends ActiveRecord
 	 */
 	public static $columns = array(
 		'id',
-		'action',
-		'data' => array( 'format' => 'JSON' ),
-		'priority',
-		'next_start',
-		'running',
-		'last_start',
-		'last_iteration',
-		'tag',
-		'fails',
-		'completed',
-		'blog_id',
+		'action' => [ 'type' => 'varchar', 'length' => 56 ],
+		'data' => [ 'type' => 'longtext', 'format' => 'JSON' ],
+		'priority' => [ 'type' => 'int', 'length' => 3 ],
+		'next_start' => [ 'type' => 'int', 'length' => 11 ],
+		'running' => [ 'type' => 'tinyint', 'length' => 1 ],
+		'last_start' => [ 'type' => 'int', 'length' => 11 ],
+		'last_iteration' => [ 'type' => 'int', 'length' => 11 ],
+		'tag' => [ 'type' => 'varchar', 'length' => 255 ],
+		'fails' => [ 'type' => 'int', 'length' => 2 ],
+		'completed' => [ 'type' => 'int', 'length' => 11 ],
+		'blog_id' => [ 'type' => 'int', 'length' => 11 ],
 	);
 	
 	/**
@@ -60,6 +60,16 @@ class _Task extends ActiveRecord
 	 */
 	public static $prefix = 'task_';
 		
+	/**
+	 * @var	string
+	 */
+	public static $lang_singular = 'Task';
+	
+	/**
+	 * @var	string
+	 */
+	public static $lang_plural = 'Tasks';
+
 	/**
 	 * @var bool		Task aborted
 	 */
@@ -157,6 +167,18 @@ class _Task extends ActiveRecord
 		$this->aborted = true;
 		do_action( $this->action . '_abort', $this );
 	}
+
+	/**
+	 * Fail the task
+	 *
+	 * @param	int		$next_start			When the failed task should be re-started
+	 * @return	void
+	 */
+	public function fail( $next_start=NULL )
+	{
+		$this->fails = $this->fails + 1;
+		$this->next_start = $next_start ?: time() + (60 * 5);
+	}
 	
 	/**
 	 * Unlock the task
@@ -241,7 +263,7 @@ class _Task extends ActiveRecord
 	 */
 	public function getStatusForDisplay()
 	{
-		$status = $this->getData( 'status' ) ?: '---';
+		$status = $this->getData( 'status' ) ?: $this->getData( 'mwp_status' ) ?: '---';
 		$color = $this->completed ? 'green' : ( $this->fails > 2 ? 'red' : 'inherit' );
 		return apply_filters( 'mwp_task_status_display', "<span style='color:{$color}' class='task-status-" . sanitize_title( $status ) . "'>{$status}</span>", $this );
 	}
