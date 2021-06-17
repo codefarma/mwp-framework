@@ -97,7 +97,7 @@ class RestRoute extends \MWP\Framework\Annotation
 				'methods'             => $annotation->methods,
 				'callback'            => array( $instance, $method->name ),
 				'args'                => $args,
-				'permission_callback' => $permission_callback,
+				'permission_callback' => $permission_callback ?? '__return_true',
 			));
 		});
 	}
