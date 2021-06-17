@@ -30,7 +30,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	  <?php if ( isset( $action['html'] ) ) : ?>
 		<?php echo $action['html'] ?>
 	  <?php else: ?>
-	  <a class="btn btn-sm btn-default" <?php 
+	  <a <?php 
+		$class = isset( $action['link_attr']['class'] ) ? $action['link_attr']['class'] : 'btn btn-sm btn-default';
+		unset( $action['link_attr']['class'] );
+		echo "class=\"{$class}\" ";
+
 		if ( isset( $action['link_attr'] ) ) {
 			foreach( $action['link_attr'] as $k => $v ) {
 				if ( is_array( $v ) ) { $v = json_encode( $v ); } printf( '%s="%s" ', $k, esc_attr( $v ) );
